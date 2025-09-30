@@ -30,6 +30,12 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
+  # Trust libvirt bridge interfaces for VM networking (required for Vagrant DHCP)
+  networking.firewall.trustedInterfaces = [ "virbr0" "virbr1" "virbr2" ];
+
+  # Don't let NetworkManager manage libvirt bridges (prevents conflicts)
+  networking.networkmanager.unmanaged = [ "virbr0" "virbr1" "virbr2" ];
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
@@ -166,7 +172,7 @@
     jq
     just
     libvirt
-    dnsmasq
+    virt-manager
     neofetch
     nixd
     packer
@@ -257,7 +263,7 @@
       };
     };
 
-    # Enable virtd for virtualization
+    # Enable libvirtd for virtualization (KVM/QEMU with Vagrant support)
     libvirtd = {
       enable = true;
       qemu = {
@@ -266,6 +272,8 @@
         swtpm.enable = true;
         ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
+      onBoot = "start";        # Auto-start networks on boot
+      onShutdown = "shutdown"; # Proper shutdown handling
     };
 
     # Enable incus for easier
@@ -314,6 +322,7 @@
       };
     };
   };
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
