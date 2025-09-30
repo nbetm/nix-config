@@ -65,4 +65,5 @@ pkgs: with pkgs.u; [
   neofetch
   parallel
   wget
+  xdg-utils
 ]
