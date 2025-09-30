@@ -1,10 +1,19 @@
 {
-  description = "A simple NixOS flake";
+  description = "Multi-system NixOS configuration and development tools";
 
   inputs = {
     # NixOS official package source, using the nixos-25.05 branch here
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+
+    # Flake utilities for multi-system support
+    flake-utils.url = "github:numtide/flake-utils";
+
+    # nix-darwin for macOS system management
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # home-manager
     # home-manager = {
@@ -13,35 +22,119 @@
     # };
 
     # ghostty terminal - official maintainer flake
-    ghostty.url = "github:ghostty-org/ghostty";
+    # ghostty.url = "github:ghostty-org/ghostty";
 
     # helix editor - official maintainer flake
-    helix.url = "github:helix-editor/helix/master";
+    # helix.url = "github:helix-editor/helix/master";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, ghostty, helix, ... }@inputs: {
-    nixosConfigurations.aura = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        # Import the previous configuration.nix we used,
-        # so the old configuration file still takes effect
-        ./configuration.nix
-
-        # Add unstable overlay flake packages
-        ({ config, pkgs, ... }: {
-          nixpkgs.overlays = [
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixpkgs-unstable,
+      flake-utils,
+      nix-darwin,
+      ...
+    }@inputs:
+    let
+      # Modular package management system
+      myLib = {
+        # Import package lists from separate files
+        basePackages = import ./packages/base.nix;
+        desktopPackages = import ./packages/desktop.nix;
+        darwinPackages = import ./packages/darwin.nix;
+      };
+    in
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [
             (final: prev: {
               unstable = import nixpkgs-unstable {
                 system = prev.system;
                 config.allowUnfree = true;
               };
-              # ghostty = ghostty.packages.${prev.system}.default;
-              # helix = helix.packages.${prev.system}.helix;
+              # Short alias for unstable packages
+              u = final.unstable;
             })
           ];
-        })
-      ];
+        };
+      in
+      {
+        # Dev tools package for non-NixOS systems
+        packages.dev-tools = pkgs.buildEnv {
+          name = "dev-tools";
+          paths = myLib.basePackages pkgs;
+          pathsToLink = [
+            "/bin"
+            "/share/man"
+            "/share/info"
+          ];
+          ignoreCollisions = true;
+        };
+      }
+    )
+    // {
+      # NixOS system configuration
+      nixosConfigurations.aura = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs;
+          myLib = myLib;
+        };
+        modules = [
+          ./hosts/aura/configuration.nix
+
+          # Add unstable overlay
+          (
+            { config, pkgs, ... }:
+            {
+              nixpkgs.overlays = [
+                (final: prev: {
+                  unstable = import nixpkgs-unstable {
+                    system = prev.system;
+                    config.allowUnfree = true;
+                  };
+                  # Short alias for unstable packages
+                  u = final.unstable;
+                })
+              ];
+            }
+          )
+        ];
+      };
+
+      # Darwin system configuration
+      darwinConfigurations.atlas = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin"; # Change to x86_64-darwin for Intel Macs
+        specialArgs = {
+          inherit inputs;
+          myLib = myLib;
+        };
+        modules = [
+          ./hosts/atlas/configuration.nix
+
+          # Add unstable overlay
+          (
+            { config, pkgs, ... }:
+            {
+              nixpkgs.overlays = [
+                (final: prev: {
+                  unstable = import nixpkgs-unstable {
+                    system = prev.system;
+                    config.allowUnfree = true;
+                  };
+                  # Short alias for unstable packages
+                  u = final.unstable;
+                })
+              ];
+            }
+          )
+        ];
+      };
     };
-  };
 }

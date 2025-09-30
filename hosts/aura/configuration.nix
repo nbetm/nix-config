@@ -1,8 +1,14 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running 'nixos-help').
 
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 
 {
   imports = [
@@ -11,14 +17,20 @@
   ];
 
   # Enable the Flakes feature and the accompanying new nix command-line tool
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # KVM kernel modules
-  boot.kernelModules = ["kvm-amd" "kvm-intel"];
+  boot.kernelModules = [
+    "kvm-amd"
+    "kvm-intel"
+  ];
 
   networking.hostName = "aura"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -31,10 +43,18 @@
   networking.networkmanager.enable = true;
 
   # Trust libvirt bridge interfaces for VM networking (required for Vagrant DHCP)
-  networking.firewall.trustedInterfaces = [ "virbr0" "virbr1" "virbr2" ];
+  networking.firewall.trustedInterfaces = [
+    "virbr0"
+    "virbr1"
+    "virbr2"
+  ];
 
   # Don't let NetworkManager manage libvirt bridges (prevents conflicts)
-  networking.networkmanager.unmanaged = [ "virbr0" "virbr1" "virbr2" ];
+  networking.networkmanager.unmanaged = [
+    "virbr0"
+    "virbr1"
+    "virbr2"
+  ];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -117,7 +137,14 @@
   users.users.nbetm = {
     isNormalUser = true;
     description = "Nelson Monserrate";
-    extraGroups = [ "networkmanager" "wheel" "qemu-libvirtd" "docker" "libvirtd" "kvm" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "qemu-libvirtd"
+      "docker"
+      "libvirtd"
+      "kvm"
+    ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICR+Am/2drHgOPkf0pzogA8SRcNhJsdVMDEvfDIrOauO nbetm@localhost"
@@ -154,75 +181,14 @@
   # Add ~/.local/bin to PATH
   environment.localBinInPath = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    (vagrant.override { withLibvirt = true; })
-    awscli2
-    bat
-    btop
-    delta
-    direnv
-    gh
-    git
-    gitui
-    gnumake
-    htop
-    ipcalc
-    jq
-    just
-    libvirt
-    virt-manager
-    neofetch
-    nixd
-    packer
-    parallel
-    qemu_kvm
-    ripgrep
-    silver-searcher
-    starship
-    stow
-    tmux
-    tmux-xpanes
-    tokei
-    tree
-    vim
-    wget
-    yazi
-    yaziPlugins.lazygit
-    yq
-    zoxide
-    wl-clipboard
-    # Use most recent versions from unstable
-    unstable.bash-language-server
-    unstable.python313
-    unstable.claude-code
-    unstable.docker
-    unstable.docker-language-server
-    unstable.fzf
-    unstable.ghostty
-    unstable.google-cloud-sdk
-    unstable.google-cloud-sdk-gce
-    unstable.helix
-    unstable.jinja-lsp
-    unstable.kdePackages.krohnkite
-    unstable.kitty
-    unstable.lazygit
-    unstable.marksman
-    unstable.prettier
-    unstable.pyright
-    unstable.ruff
-    unstable.sesh
-    unstable.shellcheck
-    unstable.taplo
-    unstable.terraform-ls
-    unstable.tflint
-    unstable.uv
-    unstable.vivaldi
-    unstable.vscode-json-languageserver
-    unstable.yaml-language-server
-    unstable.zed-editor
-  ];
+  # Shared packages for consistent development environment across all systems
+  environment.systemPackages =
+    myLib.basePackages pkgs
+    ++ myLib.desktopPackages pkgs
+    ++ [
+      # Additional NixOS system packages
+      pkgs.gnumake # Keep make on stable for system builds
+    ];
 
   # Disable uv python downloads
   environment.variables.UV_PYTHON_DOWNLOADS = "never";
@@ -272,7 +238,7 @@
         swtpm.enable = true;
         ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
-      onBoot = "start";        # Auto-start networks on boot
+      onBoot = "start"; # Auto-start networks on boot
       onShutdown = "shutdown"; # Proper shutdown handling
     };
 
@@ -323,7 +289,6 @@
     };
   };
 
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -333,4 +298,3 @@
   system.stateVersion = "25.05"; # Did you read the comment?
 
 }
-
