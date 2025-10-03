@@ -15,7 +15,16 @@ pkgs: with pkgs; [
   u.kitty
   u.kdePackages.krohnkite
   klassy # KDE window decoration and application style
-  enpass
+  (pkgs.symlinkJoin {
+    name = "enpass-hidpi";
+    paths = [ enpass ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm $out/share/applications/enpass.desktop
+      substitute ${enpass}/share/applications/enpass.desktop $out/share/applications/enpass.desktop \
+        --replace-fail 'Exec=${enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 QT_SCALE_FACTOR=1.15 QT_SCREEN_SCALE_FACTORS=1.15 ${enpass}/bin/Enpass'
+    '';
+  })
   pass-wayland
   qtpass
   maestral
