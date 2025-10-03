@@ -20,6 +20,8 @@ pkgs: with pkgs; [
   qtpass
   maestral
   maestral-gui
+  vesktop
+  signal-desktop
   wl-clipboard # Wayland clipboard (Linux-only)
   vim # Keep basic vim on stable for system recovery
 ]
