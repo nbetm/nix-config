@@ -296,6 +296,22 @@
     };
   };
 
+  # Maestral Dropbox sync service
+  systemd.user.services.maestral = {
+    description = "Maestral Dropbox sync";
+    wantedBy = [ "default.target" ];
+    after = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "notify";
+      NotifyAccess = "exec";
+      ExecStart = "${pkgs.maestral}/bin/maestral start -f";
+      ExecStop = "${pkgs.maestral}/bin/maestral stop";
+      WatchdogSec = "30s";
+      Restart = "on-failure";
+      RestartSec = "3s";
+    };
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave

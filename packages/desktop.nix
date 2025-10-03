@@ -7,12 +7,19 @@ pkgs: with pkgs; [
   (vagrant.override { withLibvirt = true; }) # Vagrant with libvirt support
 
   # Desktop Applications (Linux-only)
-  u.vivaldi
+  (u.vivaldi.override {
+    commandLineArgs = "--force-device-scale-factor=1.25";
+  })
   u.zed-editor
   u.ghostty
   u.kitty
   u.kdePackages.krohnkite
   klassy # KDE window decoration and application style
+  enpass
+  pass-wayland
+  qtpass
+  maestral
+  maestral-gui
   wl-clipboard # Wayland clipboard (Linux-only)
   vim # Keep basic vim on stable for system recovery
 ]
