@@ -15,6 +15,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # xremap for keyboard remapping
+    xremap-flake.url = "github:xremap/nix-flake";
+
     # home-manager
     # home-manager = {
     #   url = "github:nix-community/home-manager/release-25.05";
@@ -35,6 +38,7 @@
       nixpkgs-unstable,
       flake-utils,
       nix-darwin,
+      xremap-flake,
       ...
     }@inputs:
     let
@@ -88,6 +92,7 @@
         };
         modules = [
           ./hosts/aura/configuration.nix
+          xremap-flake.nixosModules.default
 
           # Add unstable overlay
           (

@@ -1,0 +1,90 @@
+# xremap configuration for Mac-style keyboard shortcuts on Linux
+# Based on keybindings-override.txt notes
+
+modmap:
+  - name: Global modifiers
+    remap:
+      # No global modifier remapping needed - we use Super (Meta) key directly
+
+keymap:
+  # Terminal exceptions - preserve Ctrl+C for interrupt
+  - name: Terminal shortcuts
+    application:
+      only: [kitty, ghostty, konsole, alacritty, foot, wezterm]
+    remap:
+      # Copy/Paste with Super key (terminals use Ctrl+Shift)
+      Super-c: C-Shift-c
+      Super-v: C-Shift-v
+      Super-x: C-Shift-x
+      Super-a: C-Shift-a
+      # New tab/window
+      Super-t: C-Shift-t
+      Super-n: C-Shift-n
+      Super-w: C-Shift-w
+      Super-q: C-Shift-q
+      # Find
+      Super-f: C-Shift-f
+      # Clear
+      Super-k: C-Shift-k
+
+  # Global Mac-style shortcuts (all other apps)
+  - name: Mac-style editing shortcuts
+    application:
+      not: [kitty, ghostty, konsole, alacritty, foot, wezterm]
+    remap:
+      # Edit operations
+      Super-c: C-c       # Copy
+      Super-x: C-x       # Cut
+      Super-v: C-v       # Paste
+      Super-a: C-a       # Select all
+      Super-z: C-z       # Undo
+      Super-Shift-z: C-Shift-z  # Redo
+      Super-f: C-f       # Find
+      Super-g: C-g       # Find next (some apps)
+      Super-Shift-g: C-Shift-g  # Find previous
+
+      # File operations
+      Super-n: C-n       # New
+      Super-o: C-o       # Open
+      Super-s: C-s       # Save
+      Super-Shift-s: C-Shift-s  # Save as
+      Super-p: C-p       # Print
+      Super-w: C-w       # Close window/tab
+      Super-q: C-q       # Quit
+      Super-Shift-n: C-Shift-n  # New folder
+
+      # Navigation
+      Super-Left: Home   # Beginning of line
+      Super-Right: End   # End of line
+      Alt-Left: C-Left   # Word backward
+      Alt-Right: C-Right # Word forward
+      Alt-Backspace: C-Backspace  # Delete word backward
+      Alt-Delete: C-Delete        # Delete word forward
+
+      # Tab navigation (browsers, editors)
+      Super-t: C-t       # New tab
+      Super-Shift-t: C-Shift-t  # Reopen closed tab
+      Super-KEY_1: Alt-KEY_1    # Go to tab 1
+      Super-KEY_2: Alt-KEY_2    # Go to tab 2
+      Super-KEY_3: Alt-KEY_3    # Go to tab 3
+      Super-KEY_4: Alt-KEY_4    # Go to tab 4
+      Super-KEY_5: Alt-KEY_5    # Go to tab 5
+      Super-KEY_6: Alt-KEY_6    # Go to tab 6
+      Super-KEY_7: Alt-KEY_7    # Go to tab 7
+      Super-KEY_8: Alt-KEY_8    # Go to tab 8
+      Super-KEY_9: Alt-KEY_9    # Go to tab 9
+
+      # Window/Application switching (handled by KDE but good to have)
+      Super-Tab: Alt-Tab         # App switcher
+      Super-Shift-Tab: Alt-Shift-Tab  # Reverse app switcher
+      Super-Grave: Alt-Grave     # Same app window switcher (`)
+
+      # Screenshots (KDE Spectacle compatible)
+      Super-Shift-KEY_3: Shift-Print     # Capture entire desktop
+      Super-Shift-KEY_4: Super-Shift-Print  # Capture rectangular region
+      Super-Shift-KEY_5: Super-Shift-s      # Launch Spectacle
+
+      # Misc
+      Super-Comma: C-Shift-Comma  # Preferences/Settings
+      Super-r: C-r               # Reload/Refresh
+      Super-Shift-r: C-Shift-r   # Hard reload

@@ -144,6 +144,8 @@
       "docker"
       "libvirtd"
       "kvm"
+      "input" # Required for xremap to access keyboard devices
+      "uinput" # Required for xremap to create virtual keyboard
     ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
@@ -224,6 +226,17 @@
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
     };
+  };
+
+  # Enable uinput for xremap
+  hardware.uinput.enable = true;
+
+  # xremap for Mac-style keyboard shortcuts
+  services.xremap = {
+    withKDE = true;
+    serviceMode = "user";
+    userName = "nbetm";
+    yamlConfig = builtins.readFile ../../config/xremap.yml;
   };
 
   # Virtualisation stuff I want enabled

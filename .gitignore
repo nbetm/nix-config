@@ -3,4 +3,13 @@ result
 result-*
 
 # Ignore automatically generated direnv output
-.direnv
+.envrc
+.direnv/
+
+# Generic
+.notes/
+.idea/
+
+# Claude
+.claude/settings.local.json
+CLAUDE.md
