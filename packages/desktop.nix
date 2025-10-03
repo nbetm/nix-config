@@ -12,6 +12,7 @@ pkgs: with pkgs; [
   u.ghostty
   u.kitty
   u.kdePackages.krohnkite
+  klassy # KDE window decoration and application style
   wl-clipboard # Wayland clipboard (Linux-only)
   vim # Keep basic vim on stable for system recovery
 ]

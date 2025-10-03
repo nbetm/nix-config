@@ -101,6 +101,8 @@
                   };
                   # Short alias for unstable packages
                   u = final.unstable;
+                  # Custom packages
+                  klassy = prev.callPackage ./pkgs/klassy { };
                 })
               ];
             }
@@ -130,6 +132,8 @@
                   };
                   # Short alias for unstable packages
                   u = final.unstable;
+                  # Custom packages
+                  klassy = prev.callPackage ./pkgs/klassy { };
                 })
               ];
             }
