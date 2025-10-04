@@ -200,8 +200,8 @@
     # HiDPI scaling for Qt/KDE apps
     PLASMA_USE_QT_SCALING = "1";
     # HiDPI scaling for GTK apps (matches KDE's scaling)
-    GDK_SCALE = "1";
-    GDK_DPI_SCALE = "1.25";
+    # GDK_SCALE = "1";
+    # GDK_DPI_SCALE = "1.25";
     # Electron apps (Slack, Discord, etc)
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };

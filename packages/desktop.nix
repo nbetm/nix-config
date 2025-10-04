@@ -7,9 +7,7 @@ pkgs: with pkgs; [
   (vagrant.override { withLibvirt = true; }) # Vagrant with libvirt support
 
   # Desktop Applications (Linux-only)
-  (u.vivaldi.override {
-    commandLineArgs = "--force-device-scale-factor=1.25";
-  })
+  u.vivaldi
   u.zed-editor
   u.ghostty
   u.kitty
@@ -38,10 +36,8 @@ pkgs: with pkgs; [
     postBuild = ''
       wrapProgram $out/bin/zoom \
         --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
-        --set QT_SCALE_FACTOR 1.25 \
-        --set QT_SCREEN_SCALE_FACTORS 1.25 \
-        --set GDK_SCALE 1 \
-        --set GDK_DPI_SCALE 1.25
+        --set QT_SCALE_FACTOR 1.15 \
+        --set QT_SCREEN_SCALE_FACTORS 1.15 \
     '';
   })
   wl-clipboard # Wayland clipboard (Linux-only)
