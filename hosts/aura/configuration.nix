@@ -44,6 +44,8 @@
 
   # Trust libvirt bridge interfaces for VM networking (required for Vagrant DHCP)
   networking.firewall.trustedInterfaces = [
+    "enp1s0"
+    "wlp2s0"
     "virbr0"
     "virbr1"
     "virbr2"
@@ -296,19 +298,13 @@
     };
   };
 
-  # Maestral Dropbox sync service
-  systemd.user.services.maestral = {
-    description = "Maestral Dropbox sync";
-    wantedBy = [ "default.target" ];
-    after = [ "network-online.target" ];
+  # Dropbox sync service
+  systemd.user.services.dropbox = {
+    description = "Dropbox";
+    wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
-      Type = "notify";
-      NotifyAccess = "exec";
-      ExecStart = "${pkgs.maestral}/bin/maestral start -f";
-      ExecStop = "${pkgs.maestral}/bin/maestral stop";
-      WatchdogSec = "30s";
+      ExecStart = "${lib.getBin pkgs.dropbox}/bin/dropbox";
       Restart = "on-failure";
-      RestartSec = "3s";
     };
   };
 

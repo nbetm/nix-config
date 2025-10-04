@@ -25,8 +25,7 @@ pkgs: with pkgs; [
   })
   pass-wayland
   qtpass
-  maestral
-  maestral-gui
+  dropbox
   vesktop
   signal-desktop
   (pkgs.symlinkJoin {
