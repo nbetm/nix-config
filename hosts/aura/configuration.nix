@@ -42,6 +42,15 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # Use nftables
+  networking.nftables.enable = true;
+
   # Trust libvirt bridge interfaces for VM networking (required for Vagrant DHCP)
   networking.firewall.trustedInterfaces = [
     "enp1s0"
@@ -57,15 +66,6 @@
     "virbr1"
     "virbr2"
   ];
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Use nftables
-  networking.nftables.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
@@ -87,7 +87,7 @@
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
+  # services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
@@ -109,10 +109,6 @@
     packages = with pkgs; [
       # icon fonts
       material-design-icons
-
-      # nerd fonts
-      # https://github.com/NixOS/nixpkgs/blob/nixos-unstable-small/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
-      nerd-fonts.symbols-only # symbols icon only
     ];
   };
 
@@ -140,12 +136,12 @@
     isNormalUser = true;
     description = "Nelson Monserrate";
     extraGroups = [
-      "networkmanager"
-      "wheel"
-      "qemu-libvirtd"
       "docker"
-      "libvirtd"
       "kvm"
+      "libvirtd"
+      "networkmanager"
+      "qemu-libvirtd"
+      "wheel"
     ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
@@ -153,7 +149,7 @@
     ];
     # packages = with pkgs; [
     #   kdePackages.kate
-    #  thunderbird
+    #   thunderbird
     # ];
   };
 
@@ -171,10 +167,6 @@
 
   # Install firefox
   programs.firefox.enable = true;
-
-  # Install neovim
-  programs.neovim.enable = true;
-  programs.neovim.defaultEditor = true;
 
   # Set the default editor to vim
   environment.variables.EDITOR = "hx";
@@ -199,11 +191,14 @@
   environment.variables = {
     LIBVIRT_DEFAULT_URI = "qemu:///system";
     VAGRANT_DEFAULT_PROVIDER = "libvirt";
-    # HiDPI scaling for Qt/KDE apps
-    PLASMA_USE_QT_SCALING = "1";
-    # HiDPI scaling for GTK apps (matches KDE's scaling)
-    # GDK_SCALE = "1";
-    # GDK_DPI_SCALE = "1.25";
+  };
+
+  # HiDPI Overrides
+  environment.variables = {
+    # Override Qt6 rounding policy (default: PassThrough)
+    # https://doc.qt.io/qt-6/highdpi.html#environment-variable-reference
+    QT_SCALE_FACTOR_ROUNDING_POLICY = "Round";
+
     # Electron apps (Slack, Discord, etc)
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };
@@ -216,9 +211,7 @@
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
+  # Enable the OpenSSH daemon
   services.openssh = {
     enable = true;
     settings = {
@@ -228,7 +221,7 @@
     };
   };
 
-  # Virtualisation stuff I want enabled
+  # Virtualisation stuff
   virtualisation = {
     docker = {
       enable = true;

@@ -1,15 +1,13 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
   # Development Tools
-  git
-  u.bash-language-server
+  git 
   u.claude-code
   u.helix
   u.neovim
   u.python313
-  u.ruff
-  u.uv
-
+  u.vim
+  
   # CLI Tools
   u.bat
   u.btop
@@ -35,6 +33,7 @@ pkgs: with pkgs; [
   u.zoxide
 
   # Language Servers & Formatters
+  u.bash-language-server
   u.jinja-lsp
   u.marksman
   u.nixd
@@ -42,25 +41,28 @@ pkgs: with pkgs; [
   u.nixfmt-tree
   u.prettier
   u.pyright
+  u.ruff
   u.shellcheck
   u.taplo
   u.terraform-ls
   u.tflint
+  u.uv
   u.vscode-json-languageserver
   u.yaml-language-server
 
   # Cloud & Infrastructure
   awscli2
   docker_28
-  nomad
-  packer
-  terraform
   u.docker-language-server
   u.google-cloud-sdk
   u.google-cloud-sdk-gce
   u.lazydocker
+  u.nomad
+  u.packer
+  u.terraform
 
   # System Tools
+  u.dnsutils
   u.htop
   u.ipcalc
   u.neofetch
