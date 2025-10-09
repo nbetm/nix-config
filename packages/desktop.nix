@@ -12,15 +12,15 @@ pkgs: with pkgs; [
   u.ghostty
   u.kitty
   u.kdePackages.krohnkite
-  klassy # KDE window decoration and application style
+  klassy
   (pkgs.symlinkJoin {
     name = "enpass-hidpi";
-    paths = [ enpass ];
+    paths = [ u.enpass ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       rm $out/share/applications/enpass.desktop
       substitute ${enpass}/share/applications/enpass.desktop $out/share/applications/enpass.desktop \
-        --replace-fail 'Exec=${enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 QT_SCALE_FACTOR=1.15 QT_SCREEN_SCALE_FACTORS=1.15 ${enpass}/bin/Enpass'
+        --replace-fail 'Exec=${enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=0 QT_SCALE_FACTOR=1.1 QT_SCREEN_SCALE_FACTORS=1.1 ${enpass}/bin/Enpass'
     '';
   })
   pass-wayland
@@ -34,11 +34,11 @@ pkgs: with pkgs; [
     buildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/zoom \
-        --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
-        --set QT_SCALE_FACTOR 1.15 \
-        --set QT_SCREEN_SCALE_FACTORS 1.15 \
+        --set QT_AUTO_SCREEN_SCALE_FACTOR 0 \
+        --set QT_SCALE_FACTOR 1.2 \
+        --set QT_SCREEN_SCALE_FACTORS 1.2 \
     '';
   })
-  wl-clipboard # Wayland clipboard (Linux-only)
-  vim # Keep basic vim on stable for system recovery
+  wl-clipboard
+  vim
 ]
