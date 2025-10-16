@@ -42,6 +42,15 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # Use nftables
+  networking.nftables.enable = true;
+
   # Trust libvirt bridge interfaces for VM networking (required for Vagrant DHCP)
   networking.firewall.trustedInterfaces = [
     "enp1s0"
@@ -57,15 +66,6 @@
     "virbr1"
     "virbr2"
   ];
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Use nftables
-  networking.nftables.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
@@ -86,12 +86,11 @@
   };
 
   # Enable the X11 windowing system.
-  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  # Enable the GNOME Desktop Environment.
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -102,6 +101,9 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+  # GNOME App Indicator
+  services.udev.packages = [ pkgs.gnome-settings-daemon ];
+
   # Fonts
   fonts = {
     fontDir.enable = true;
@@ -109,10 +111,6 @@
     packages = with pkgs; [
       # icon fonts
       material-design-icons
-
-      # nerd fonts
-      # https://github.com/NixOS/nixpkgs/blob/nixos-unstable-small/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
-      nerd-fonts.symbols-only # symbols icon only
     ];
   };
 
@@ -151,10 +149,9 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICR+Am/2drHgOPkf0pzogA8SRcNhJsdVMDEvfDIrOauO nbetm@localhost"
     ];
-    # packages = with pkgs; [
-    #   kdePackages.kate
-    #  thunderbird
-    # ];
+    packages = [
+      #  thunderbird
+    ];
   };
 
   # Whether users of the wheel group must provide a password to run commands via sudo
@@ -171,10 +168,6 @@
 
   # Install firefox
   programs.firefox.enable = true;
-
-  # Install neovim
-  programs.neovim.enable = true;
-  programs.neovim.defaultEditor = true;
 
   # Set the default editor to vim
   environment.variables.EDITOR = "hx";
@@ -203,15 +196,12 @@
 
   # HiDPI Overrides
   environment.variables = {
-    # HiDPI scaling for Qt/KDE apps
-    PLASMA_USE_QT_SCALING = "1";
-
-    # GTK apps
-    GDK_SCALE = "1";
-    GDK_DPI_SCALE = "1.35";
-
     # Electron apps (Slack, Discord, etc)
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
+
+    # GTK apps - only uncomment if Firefox/GTK apps look too large
+    # GDK_DPI_SCALE = "1.5";
+    # GDK_DPI_SCALE = "0.67"; # 1/1.5 = 0.67 for 150% scaling
   };
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -312,6 +302,42 @@
       ExecStart = "${lib.getBin pkgs.dropbox}/bin/dropbox";
       Restart = "on-failure";
     };
+  };
+
+  # GNOME Tweaks
+  programs.dconf.enable = true;
+  programs.dconf.profiles.user.databases = [
+    {
+      # lockAll = true; # prevents overriding
+      settings = {
+        "org/gnome/desktop/interface" = {
+          accent-color = "blue";
+          text-scaling-factor = "1.50";
+        };
+        "org/gnome/desktop/input-sources" = {
+          xkb-options = [ "ctrl:nocaps" ];
+        };
+        "org/gnome/shell" = {
+          enabled-extensions = [
+            pkgs.gnomeExtensions.appindicator.extensionUuid
+          ];
+        };
+        "org/gnome/mutter" = {
+          experimental-features = [
+            # "scale-monitor-framebuffer" # Enables fractional scaling (125% 150% 175%)
+            "variable-refresh-rate" # Enables Variable Refresh Rate (VRR) on compatible displays
+            "xwayland-native-scaling" # Scales Xwayland applications to look crisp on HiDPI screens
+          ];
+        };
+      };
+    }
+  ];
+
+  # GNOME Qt Integration
+  qt = {
+    enable = true;
+    platformTheme = "gnome";
+    style = "adwaita-dark";
   };
 
   # This value determines the NixOS release from which the default

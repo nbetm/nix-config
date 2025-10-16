@@ -52,15 +52,16 @@ pkgs: with pkgs; [
   # Cloud & Infrastructure
   awscli2
   docker_28
-  nomad
-  packer
-  terraform
+  u.nomad
+  u.packer
+  u.terraform
   u.docker-language-server
   u.google-cloud-sdk
   u.google-cloud-sdk-gce
   u.lazydocker
 
   # System Tools
+  u.dnsutils
   u.htop
   u.ipcalc
   u.neofetch

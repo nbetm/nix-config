@@ -7,27 +7,22 @@ pkgs: with pkgs; [
   (vagrant.override { withLibvirt = true; }) # Vagrant with libvirt support
 
   # Desktop Applications (Linux-only)
-  u.vivaldi
-  u.zed-editor
+  dropbox
+  enpass
+  gnome-tweaks
+  gnomeExtensions.appindicator
+  kooha
+  # nordic
+  pass-wayland
+  signal-desktop
+  vesktop
+  vim
+  vivaldi
+  wl-clipboard
   u.ghostty
   u.kitty
-  u.kdePackages.krohnkite
-  klassy
-  (pkgs.symlinkJoin {
-    name = "enpass-hidpi";
-    paths = [ u.enpass ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      rm $out/share/applications/enpass.desktop
-      substitute ${enpass}/share/applications/enpass.desktop $out/share/applications/enpass.desktop \
-        --replace-fail 'Exec=${enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=0 QT_SCALE_FACTOR=1.1 QT_SCREEN_SCALE_FACTORS=1.1 ${enpass}/bin/Enpass'
-    '';
-  })
-  pass-wayland
-  qtpass
-  dropbox
-  vesktop
-  signal-desktop
+  u.zed-editor
+  # u.zoom-us
   (pkgs.symlinkJoin {
     name = "zoom-us-hidpi";
     paths = [ u.zoom-us ];
@@ -39,6 +34,4 @@ pkgs: with pkgs; [
         --set QT_SCREEN_SCALE_FACTORS 1.2 \
     '';
   })
-  wl-clipboard
-  vim
 ]
