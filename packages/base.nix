@@ -1,13 +1,13 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
   # Development Tools
-  git 
+  git
   u.claude-code
   u.helix
   u.neovim
   u.python313
   u.vim
-  
+
   # CLI Tools
   u.bat
   u.btop
@@ -22,6 +22,7 @@ pkgs: with pkgs; [
   u.ripgrep
   u.sesh
   u.silver-searcher
+  u.single-file-cli
   u.starship
   u.stow
   u.tmux
@@ -33,6 +34,8 @@ pkgs: with pkgs; [
   u.zoxide
 
   # Language Servers & Formatters
+  ansible-language-server
+  u.ansible-lint
   u.bash-language-server
   u.jinja-lsp
   u.marksman
@@ -49,6 +52,8 @@ pkgs: with pkgs; [
   u.uv
   u.vscode-json-languageserver
   u.yaml-language-server
+  u.yamlfmt
+  u.yamllint
 
   # Cloud & Infrastructure
   awscli2
