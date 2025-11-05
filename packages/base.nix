@@ -2,6 +2,7 @@
 pkgs: with pkgs; [
   # Development Tools
   git
+  gcc
   u.claude-code
   u.helix
   u.neovim
@@ -46,6 +47,7 @@ pkgs: with pkgs; [
   u.pyright
   u.ruff
   u.shellcheck
+  u.shfmt
   u.taplo
   u.terraform-ls
   u.tflint
@@ -58,7 +60,8 @@ pkgs: with pkgs; [
   # Cloud & Infrastructure
   awscli2
   docker_28
-  u.docker-language-server
+  docker-compose-language-service
+  docker-language-server
   u.google-cloud-sdk
   u.google-cloud-sdk-gce
   u.lazydocker
