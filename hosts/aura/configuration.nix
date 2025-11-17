@@ -168,6 +168,9 @@
   # Install firefox
   programs.firefox.enable = true;
 
+  # Install direnv
+  programs.direnv.enable = true;
+
   # Set the default editor to vim
   environment.variables.EDITOR = "hx";
   environment.variables.VISUAL = "hx";

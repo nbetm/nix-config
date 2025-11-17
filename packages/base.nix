@@ -9,7 +9,8 @@ pkgs: with pkgs; [
   u.python313
   u.vim
 
-  # CLI Tools
+  # CLI/TUI Tools
+  zellij
   u.bat
   u.btop
   u.delta

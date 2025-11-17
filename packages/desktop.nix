@@ -15,6 +15,7 @@ pkgs: with pkgs; [
   wl-clipboard
   # u.enpass
   u.ghostty
+  u.kdePackages.karousel
   u.kitty
   u.spotify
   u.vivaldi
