@@ -2,8 +2,8 @@
   description = "Multi-system NixOS configuration and development tools";
 
   inputs = {
-    # NixOS official package source, using the nixos-25.05 branch here
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    # NixOS official package source, using the nixos-25.11 branch here
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Flake utilities for multi-system support
@@ -17,7 +17,7 @@
 
     # home-manager
     # home-manager = {
-    #   url = "github:nix-community/home-manager/release-25.05";
+    #   url = "github:nix-community/home-manager/release-25.11";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 

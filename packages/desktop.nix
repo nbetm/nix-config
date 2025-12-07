@@ -13,11 +13,10 @@ pkgs: with pkgs; [
   signal-desktop
   vesktop
   wl-clipboard
-  # u.enpass
   u.ghostty
   u.kdePackages.karousel
   u.kitty
-  u.spotify
+  spotify
   u.vivaldi
   u.zed-editor
 
