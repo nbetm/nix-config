@@ -8,17 +8,23 @@ pkgs: with pkgs; [
 
   # Desktop Applications (Linux-only)
   dropbox
-  pass-wayland
-  qtpass
   signal-desktop
+  spotify
   vesktop
   wl-clipboard
   u.ghostty
   u.kdePackages.karousel
   u.kitty
-  spotify
   u.vivaldi
   u.zed-editor
+
+  # Password management (pass with extensions)
+  (pass-wayland.withExtensions (exts: [
+    exts.pass-audit
+    exts.pass-import
+    exts.pass-otp
+    exts.pass-update
+  ]))
 
   # Hacks
   (pkgs.symlinkJoin {
