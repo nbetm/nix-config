@@ -10,11 +10,12 @@ pkgs: with pkgs; [
   u.claude-code
 
   # CLI/TUI Tools
-  zellij
+  asciinema_3
   bat
   btop
   delta
   direnv
+  doitlive
   fzf
   gh
   gitui
@@ -33,6 +34,7 @@ pkgs: with pkgs; [
   tree
   yazi
   yq
+  zellij
   zoxide
 
   # Language Servers & Formatters
