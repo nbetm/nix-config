@@ -55,7 +55,7 @@
           overlays = [
             (final: prev: {
               unstable = import nixpkgs-unstable {
-                system = prev.system;
+                system = prev.stdenv.hostPlatform.system;
                 config.allowUnfree = true;
               };
               # Short alias for unstable packages
@@ -96,7 +96,7 @@
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = import nixpkgs-unstable {
-                    system = prev.system;
+                    system = prev.stdenv.hostPlatform.system;
                     config.allowUnfree = true;
                   };
                   # Short alias for unstable packages
@@ -127,7 +127,7 @@
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = import nixpkgs-unstable {
-                    system = prev.system;
+                    system = prev.stdenv.hostPlatform.system;
                     config.allowUnfree = true;
                   };
                   # Short alias for unstable packages

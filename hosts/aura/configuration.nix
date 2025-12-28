@@ -134,7 +134,7 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.nbetm = {
     isNormalUser = true;
     description = "Nelson Monserrate";
@@ -146,7 +146,7 @@
       "qemu-libvirtd"
       "wheel"
     ];
-    shell = pkgs.zsh;
+    shell = pkgs.bash;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICR+Am/2drHgOPkf0pzogA8SRcNhJsdVMDEvfDIrOauO nbetm@localhost"
     ];
@@ -165,7 +165,13 @@
   # SSH Agent
   programs.ssh.startAgent = true;
 
-  # Install zsh
+  # Install bash (with completion support)
+  programs.bash = {
+    enable = true;
+    completion.enable = true;
+  };
+
+  # Install zsh (available as fallback)
   programs.zsh.enable = true;
 
   # Install firefox

@@ -11,7 +11,9 @@ pkgs: with pkgs; [
 
   # CLI/TUI Tools
   asciinema_3
+  bash-completion
   bat
+  blesh
   btop
   delta
   direnv
