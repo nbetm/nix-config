@@ -8,12 +8,13 @@ pkgs: with pkgs; [
 
   # Desktop Applications (Linux-only)
   dropbox
+  kdePackages.karousel
+  kdePackages.partitionmanager
   signal-desktop
   spotify
   vesktop
   wl-clipboard
   u.ghostty
-  u.kdePackages.karousel
   u.kitty
   u.vivaldi
   u.zed-editor
