@@ -28,6 +28,7 @@ pkgs: with pkgs; [
   sesh
   silver-searcher
   single-file-cli
+  spotdl
   starship
   stow
   tmux
