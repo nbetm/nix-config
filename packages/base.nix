@@ -18,12 +18,15 @@ pkgs: with pkgs; [
   delta
   direnv
   doitlive
+  ffmpeg
   fzf
   gh
   gitui
   jq
   just
   lazygit
+  pandoc
+  python313Packages.weasyprint
   ripgrep
   sesh
   silver-searcher
@@ -36,6 +39,7 @@ pkgs: with pkgs; [
   tokei
   tree
   yazi
+  yt-dlp
   yq
   zellij
   zoxide
