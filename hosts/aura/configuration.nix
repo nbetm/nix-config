@@ -146,7 +146,7 @@
       "qemu-libvirtd"
       "wheel"
     ];
-    shell = pkgs.bash;
+    shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICR+Am/2drHgOPkf0pzogA8SRcNhJsdVMDEvfDIrOauO nbetm@localhost"
     ];
@@ -165,13 +165,13 @@
   # SSH Agent
   programs.ssh.startAgent = true;
 
-  # Install bash (with completion support)
+  # Install bash
   programs.bash = {
     enable = true;
     completion.enable = true;
   };
 
-  # Install zsh (available as fallback)
+  # Install zsh
   programs.zsh.enable = true;
 
   # Install firefox
