@@ -61,11 +61,6 @@
         ghostty = inputs.ghostty.packages.${prev.stdenv.hostPlatform.system}.default;
         claude-code = inputs.claude-code.packages.${prev.stdenv.hostPlatform.system}.default;
       };
-
-      # Linux-specific overlay
-      linuxOverlay = final: prev: {
-        klassy = prev.callPackage ./pkgs/klassy { };
-      };
     in
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -109,12 +104,7 @@
         };
         modules = [
           ./hosts/aura/configuration.nix
-          {
-            nixpkgs.overlays = [
-              sharedOverlay
-              linuxOverlay
-            ];
-          }
+          { nixpkgs.overlays = [ sharedOverlay ]; }
         ];
       };
 

@@ -9,6 +9,7 @@ pkgs: with pkgs; [
   # Desktop Applications (Linux-only)
   dropbox
   kdePackages.karousel
+  u.klassy
   kdePackages.partitionmanager
   signal-desktop
   spotify
