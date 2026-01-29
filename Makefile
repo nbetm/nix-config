@@ -9,7 +9,10 @@ OS_DISTRO ?= $(shell \
 help: ## Show help for each of the Makefile recipes
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-# === System-specific commands ===
+# ------------------------------------------------------------------------------
+# System-specific commands
+# ------------------------------------------------------------------------------
+
 deploy: ## Apply system configuration changes (NixOS/Darwin only)
 ifeq ($(OS_DISTRO),nixos)
 	nixos-rebuild switch --flake . --use-remote-sudo
@@ -30,7 +33,11 @@ else
 	@exit 1
 endif
 
-# === Universal commands ===
+
+# ------------------------------------------------------------------------------
+# Universal commands
+# ------------------------------------------------------------------------------
+
 install: ## Install packages (deploy on NixOS/Darwin, profile add elsewhere)
 ifeq ($(OS_DISTRO),nixos)
 	$(MAKE) deploy
@@ -58,9 +65,15 @@ else
 	nix profile history
 endif
 
-# === Flake management ===
+# ------------------------------------------------------------------------------
+# Flake management
+# ------------------------------------------------------------------------------
+
 check: ## Check flake configuration syntax and validity
 	nix flake check
+
+format: ## Format all files with treefmt
+	nix fmt
 
 update: ## Update all flake inputs
 	nix flake update
@@ -71,7 +84,10 @@ upp: ## Update specific flake input (usage: make upp i=nixpkgs-unstable)
 repl: ## Start Nix REPL with nixpkgs
 	nix repl -f flake:nixpkgs
 
-# === System maintenance ===
+# ------------------------------------------------------------------------------
+# System maintenance
+# ------------------------------------------------------------------------------
+
 history: ## View system generation or profile history
 ifeq ($(OS_DISTRO),nixos)
 	nix profile history --profile /nix/var/nix/profiles/system

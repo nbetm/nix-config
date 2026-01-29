@@ -92,6 +92,9 @@
           ];
           ignoreCollisions = true;
         };
+
+        # Formatter for `nix fmt`
+        formatter = pkgs.nixfmt-tree;
       }
     )
     // {
