@@ -83,6 +83,7 @@ pkgs: with pkgs; [
   htop
   ipcalc
   neofetch
+  nvd
   parallel
   wget
   xdg-utils
