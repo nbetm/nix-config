@@ -19,6 +19,10 @@ format: ## Format all nix files
 check: ## Check flake syntax and run flake checks
 	nix flake check
 
+ci: ## Run CI checks (format + flake check)
+	nix fmt -- --ci
+	nix flake check
+
 repl: ## Start Nix REPL with this flake loaded
 	nix repl --expr 'builtins.getFlake (toString ./.)'
 

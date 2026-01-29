@@ -1,5 +1,6 @@
 # nix-config
 
+![CI](https://img.shields.io/github/actions/workflow/status/nbetm/nix-config/ci.yml)
 ![GitHub last commit](https://img.shields.io/github/last-commit/nbetm/nix-config)
 ![Monthly Commit Activity](https://img.shields.io/github/commit-activity/m/nbetm/nix-config)
 
