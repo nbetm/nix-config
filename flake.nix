@@ -21,8 +21,8 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
-    # ghostty terminal - official maintainer flake
-    # ghostty.url = "github:ghostty-org/ghostty";
+    # ghostty terminal - official maintainer flake (tip version)
+    ghostty.url = "github:ghostty-org/ghostty";
 
     # helix editor - official maintainer flake
     # helix.url = "github:helix-editor/helix/master";
@@ -101,6 +101,8 @@
                   };
                   # Short alias for unstable packages
                   u = final.unstable;
+                  # Flake packages (tip versions)
+                  ghostty = inputs.ghostty.packages.${prev.stdenv.hostPlatform.system}.default;
                   # Custom packages
                   klassy = prev.callPackage ./pkgs/klassy { };
                 })

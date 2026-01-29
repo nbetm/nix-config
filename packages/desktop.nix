@@ -14,7 +14,7 @@ pkgs: with pkgs; [
   spotify
   vesktop
   wl-clipboard
-  u.ghostty
+  ghostty
   u.kitty
   u.vivaldi
   u.zed-editor
