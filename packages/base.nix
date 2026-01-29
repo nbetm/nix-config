@@ -7,7 +7,7 @@ pkgs: with pkgs; [
   neovim
   python313
   vim
-  u.claude-code
+  claude-code
 
   # CLI/TUI Tools
   asciinema_3

@@ -24,6 +24,9 @@
     # ghostty terminal - official maintainer flake (tip version)
     ghostty.url = "github:ghostty-org/ghostty";
 
+    # claude-code - hourly updated nix package
+    claude-code.url = "github:sadjow/claude-code-nix";
+
     # helix editor - official maintainer flake
     # helix.url = "github:helix-editor/helix/master";
   };
@@ -44,6 +47,24 @@
         basePackages = import ./packages/base.nix;
         desktopPackages = import ./packages/desktop.nix;
         darwinPackages = import ./packages/darwin.nix;
+      };
+
+      # Shared overlay - cross-platform packages
+      sharedOverlay = final: prev: {
+        unstable = import nixpkgs-unstable {
+          system = prev.stdenv.hostPlatform.system;
+          config.allowUnfree = true;
+        };
+        # Short alias for unstable packages
+        u = final.unstable;
+        # Flake packages (tip versions)
+        ghostty = inputs.ghostty.packages.${prev.stdenv.hostPlatform.system}.default;
+        claude-code = inputs.claude-code.packages.${prev.stdenv.hostPlatform.system}.default;
+      };
+
+      # Linux-specific overlay
+      linuxOverlay = final: prev: {
+        klassy = prev.callPackage ./pkgs/klassy { };
       };
     in
     flake-utils.lib.eachDefaultSystem (
@@ -88,27 +109,12 @@
         };
         modules = [
           ./hosts/aura/configuration.nix
-
-          # Add unstable overlay
-          (
-            { config, pkgs, ... }:
-            {
-              nixpkgs.overlays = [
-                (final: prev: {
-                  unstable = import nixpkgs-unstable {
-                    system = prev.stdenv.hostPlatform.system;
-                    config.allowUnfree = true;
-                  };
-                  # Short alias for unstable packages
-                  u = final.unstable;
-                  # Flake packages (tip versions)
-                  ghostty = inputs.ghostty.packages.${prev.stdenv.hostPlatform.system}.default;
-                  # Custom packages
-                  klassy = prev.callPackage ./pkgs/klassy { };
-                })
-              ];
-            }
-          )
+          {
+            nixpkgs.overlays = [
+              sharedOverlay
+              linuxOverlay
+            ];
+          }
         ];
       };
 
@@ -121,25 +127,7 @@
         };
         modules = [
           ./hosts/atlas/configuration.nix
-
-          # Add unstable overlay
-          (
-            { config, pkgs, ... }:
-            {
-              nixpkgs.overlays = [
-                (final: prev: {
-                  unstable = import nixpkgs-unstable {
-                    system = prev.stdenv.hostPlatform.system;
-                    config.allowUnfree = true;
-                  };
-                  # Short alias for unstable packages
-                  u = final.unstable;
-                  # Custom packages
-                  klassy = prev.callPackage ./pkgs/klassy { };
-                })
-              ];
-            }
-          )
+          { nixpkgs.overlays = [ sharedOverlay ]; }
         ];
       };
     };
