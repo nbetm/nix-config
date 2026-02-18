@@ -13,7 +13,6 @@ pkgs: with pkgs; [
   asciinema_3
   bash-completion
   bat
-  blesh
   btop
   delta
   direnv
