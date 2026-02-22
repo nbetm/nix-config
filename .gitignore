@@ -6,9 +6,8 @@ result-*
 .envrc
 .direnv/
 
-# Generic
+# Notes and plans
 .notes/
-.idea/
 
 # Claude
 .claude/settings.local.json
