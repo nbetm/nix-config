@@ -7,7 +7,6 @@ pkgs: with pkgs; [
   (vagrant.override { withLibvirt = true; }) # Vagrant with libvirt support
 
   # Desktop Applications (Linux-only)
-  dropbox
   u.klassy
   kdePackages.partitionmanager
   signal-desktop

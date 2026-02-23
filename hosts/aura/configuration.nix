@@ -309,10 +309,13 @@
   # Dropbox sync service
   systemd.user.services.dropbox = {
     description = "Dropbox";
+    after = [ "graphical-session.target" ];
     wantedBy = [ "graphical-session.target" ];
     serviceConfig = {
       ExecStart = "${lib.getBin pkgs.dropbox}/bin/dropbox";
+      ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
       Restart = "on-failure";
+      Nice = 10;
     };
   };
 
