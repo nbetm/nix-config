@@ -54,14 +54,16 @@
   # Trust libvirt bridge interfaces for VM networking (required for Vagrant DHCP)
   networking.firewall.trustedInterfaces = [
     "enp1s0"
-    "wlp2s0"
+    "incusbr0"
     "virbr0"
     "virbr1"
     "virbr2"
+    "wlp2s0"
   ];
 
   # Don't let NetworkManager manage libvirt bridges (prevents conflicts)
   networking.networkmanager.unmanaged = [
+    "incusbr0"
     "virbr0"
     "virbr1"
     "virbr2"
@@ -140,6 +142,7 @@
     description = "Nelson Monserrate";
     extraGroups = [
       "docker"
+      "incus-admin"
       "input"
       "kvm"
       "libvirtd"
