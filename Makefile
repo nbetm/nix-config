@@ -26,8 +26,11 @@ ci: ## Run CI checks (format + flake check)
 repl: ## Start Nix REPL with this flake loaded
 	nix repl --expr 'builtins.getFlake (toString ./.)'
 
-search: ## Search nixpkgs for a package (usage: make search q=firefox)
-	nix search nixpkgs $(q)
+search: ## Search nixpkgs for a package (usage: make search <query>)
+	@nix search nixpkgs $(filter-out $@,$(MAKECMDGOALS)) 2>/dev/null
+
+%:
+	@:
 
 # ------------------------------------------------------------------------------
 # Building & Testing
