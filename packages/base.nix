@@ -13,7 +13,7 @@ pkgs: with pkgs; [
   asciinema_3
   bash-completion
   bat
-  btop
+  u.btop
   delta
   direnv
   doitlive

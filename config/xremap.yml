@@ -1,0 +1,107 @@
+---
+# macOS-style keybindings for KDE Plasma (Linux)
+
+keymap:
+  # ---------------------------------------------------------------------------
+  # Terminal-specific
+  # ---------------------------------------------------------------------------
+  # Super+key → Ctrl+Shift+key (preserves Ctrl+C as SIGINT)
+  # Unmapped Super+key combos pass through to terminal app
+  # (undo/redo, text nav, splits, font size handled by Ghostty/kitty)
+  - name: Terminal shortcuts
+    application:
+      only: [ghostty, kitty, konsole, alacritty, foot, wezterm]
+    remap:
+      Super-c: C-Shift-c # Copy
+      Super-v: C-Shift-v # Paste
+      Super-x: C-Shift-x # Cut
+      Super-a: C-Shift-a # Select all
+      Super-t: C-Shift-t # New tab
+      Super-n: C-Shift-n # New window
+      Super-w: C-Shift-w # Close tab
+      Super-f: C-Shift-f # Find
+      Super-k: C-Shift-k # Clear
+
+  # ---------------------------------------------------------------------------
+  # Non-terminal apps
+  # ---------------------------------------------------------------------------
+  - name: Non-Terminal shortcuts
+    application:
+      not: [ghostty, kitty, konsole, alacritty, foot, wezterm]
+    remap:
+      # Basic editing (Super → Ctrl)
+      Super-c: C-c
+      Super-x: C-x
+      Super-v: C-v
+      Super-a: C-a
+      Super-z: C-z
+      Super-Shift-z: C-Shift-z # Redo
+      Super-f: C-f
+      Super-g: C-g # Find next
+      Super-Shift-g: C-Shift-g # Find previous
+
+      # File operations
+      Super-n: C-n
+      Super-o: C-o
+      Super-s: C-s
+      Super-Shift-s: C-Shift-s # Save as
+      Super-p: C-p
+      Super-w: C-w # Close tab/window
+      Super-q: C-q # Quit
+      Super-Shift-n: C-Shift-n # New folder / private window
+      Super-r: C-r # Reload
+      Super-Shift-r: C-Shift-r # Hard reload
+      Super-t: C-t # New tab
+      Super-Shift-t: C-Shift-t # Reopen closed tab
+      Super-l: C-l # Address bar (browsers)
+
+      # Text navigation (Cmd+Arrow → Home/End)
+      Super-Left: Home
+      Super-Right: End
+      Super-Up: C-Home
+      Super-Down: C-End
+      Super-Backspace: C-Backspace
+
+      # Text selection (Cmd+Shift+Arrow → Shift+Home/End)
+      Super-Shift-Left: Shift-Home
+      Super-Shift-Right: Shift-End
+      Super-Shift-Up: C-Shift-Home
+      Super-Shift-Down: C-Shift-End
+
+      # Word navigation (Option+Arrow → Ctrl+Arrow)
+      Alt-Left: C-Left
+      Alt-Right: C-Right
+      Alt-Backspace: C-Backspace
+      Alt-Delete: C-Delete
+      Alt-Shift-Left: C-Shift-Left
+      Alt-Shift-Right: C-Shift-Right
+
+      # Browser navigation
+      Super-LeftBrace: Alt-Left # Cmd+[ → browser back
+      Super-RightBrace: Alt-Right # Cmd+] → browser forward
+
+      # App switching
+      Super-Tab: Alt-Tab
+      Super-Shift-Tab: Alt-Shift-Tab
+      Super-Grave: Alt-Grave # Cmd+` → same-app windows
+
+  # ---------------------------------------------------------------------------
+  # Global
+  # ---------------------------------------------------------------------------
+  - name: Global
+    remap:
+      # KRunner
+      Super-Space: Alt-Space
+
+      # Tab switching (Cmd+1-9 → Alt+1-9)
+      Super-Shift-LeftBrace: C-pageup
+      Super-Shift-RightBrace: C-pagedown
+      Super-KEY_1: Alt-KEY_1
+      Super-KEY_2: Alt-KEY_2
+      Super-KEY_3: Alt-KEY_3
+      Super-KEY_4: Alt-KEY_4
+      Super-KEY_5: Alt-KEY_5
+      Super-KEY_6: Alt-KEY_6
+      Super-KEY_7: Alt-KEY_7
+      Super-KEY_8: Alt-KEY_8
+      Super-KEY_9: Alt-KEY_9

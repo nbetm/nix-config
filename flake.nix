@@ -27,6 +27,9 @@
     # claude-code - hourly updated nix package
     claude-code.url = "github:sadjow/claude-code-nix";
 
+    # xremap - key remapper for macOS-style shortcuts
+    xremap-flake.url = "github:xremap/nix-flake";
+
     # helix editor - official maintainer flake
     # helix.url = "github:helix-editor/helix/master";
   };
@@ -107,6 +110,7 @@
         };
         modules = [
           ./hosts/aura/configuration.nix
+          inputs.xremap-flake.nixosModules.default
           { nixpkgs.overlays = [ sharedOverlay ]; }
         ];
       };

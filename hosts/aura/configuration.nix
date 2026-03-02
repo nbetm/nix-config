@@ -140,10 +140,12 @@
     description = "Nelson Monserrate";
     extraGroups = [
       "docker"
+      "input"
       "kvm"
       "libvirtd"
       "networkmanager"
       "qemu-libvirtd"
+      "uinput"
       "wheel"
     ];
     shell = pkgs.zsh;
@@ -319,9 +321,31 @@
     };
   };
 
+  # Enable uinput for key remapping
+  hardware.uinput.enable = true;
+
+  # xremap - macOS-style keyboard shortcuts
+  # See: .notes/keybindings/2026-02-22-macos-keybindings-design.md
+  services.xremap = {
+    enable = true;
+    withKDE = true;
+    serviceMode = "user";
+    userName = "nbetm";
+    yamlConfig = builtins.readFile ../../config/xremap.yml;
+  };
+
+  # Harden xremap user service
+  systemd.user.services.xremap.serviceConfig = {
+    NoNewPrivileges = true;
+    MemoryDenyWriteExecute = true;
+    RestrictRealtime = true;
+    LockPersonality = true;
+    RestrictAddressFamilies = [ "AF_UNIX" ];
+  };
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # on your system were taken. It’s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
