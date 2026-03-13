@@ -111,6 +111,19 @@
         ];
       };
 
+      # Andromeda - Headless NixOS VM (aarch64-linux)
+      nixosConfigurations.andromeda = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        specialArgs = {
+          inherit inputs;
+          myLib = myLib;
+        };
+        modules = [
+          ./hosts/andromeda/configuration.nix
+          { nixpkgs.overlays = [ sharedOverlay ]; }
+        ];
+      };
+
       # Darwin system configuration
       darwinConfigurations.atlas = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin"; # Change to x86_64-darwin for Intel Macs
