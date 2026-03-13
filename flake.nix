@@ -21,9 +21,6 @@
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
 
-    # ghostty terminal - official maintainer flake (tip version)
-    ghostty.url = "github:ghostty-org/ghostty";
-
     # claude-code - hourly updated nix package
     claude-code.url = "github:sadjow/claude-code-nix";
 
@@ -61,7 +58,6 @@
         # Short alias for unstable packages
         u = final.unstable;
         # Flake packages (tip versions)
-        ghostty = inputs.ghostty.packages.${prev.stdenv.hostPlatform.system}.default;
         claude-code = inputs.claude-code.packages.${prev.stdenv.hostPlatform.system}.default;
       };
     in
