@@ -143,6 +143,8 @@
   # ---------------------------------------------------------------------------
   # Virtualisation
   # ---------------------------------------------------------------------------
+  virtualisation.vmware.guest.enable = true;
+
   virtualisation = {
     docker = {
       enable = true;
