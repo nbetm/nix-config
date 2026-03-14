@@ -31,6 +31,13 @@
 
   networking.networkmanager.enable = true;
 
+  # Static DNS — Fusion's NAT DNS proxy returns malformed responses on macOS Sequoia
+  networking.nameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+  ];
+  networking.networkmanager.dns = "none"; # don't let NM overwrite resolv.conf
+
   networking.nftables.enable = true;
 
   # Trust virtualization bridge interfaces
