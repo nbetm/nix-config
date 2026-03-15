@@ -9,6 +9,7 @@ keymap:
   # Unmapped Super+key combos pass through to terminal app
   # (undo/redo, text nav, splits, font size handled by Ghostty/kitty)
   - name: Terminal shortcuts
+    exact_match: true
     application:
       only: [ghostty, kitty, konsole, alacritty, foot, wezterm]
     remap:
@@ -21,11 +22,34 @@ keymap:
       Super-w: C-Shift-w # Close tab
       Super-f: C-Shift-f # Find
       Super-k: C-Shift-k # Clear
+      Super-q: C-Shift-q # Quit
+
+  # ---------------------------------------------------------------------------
+  # App-specific overrides (must come before Non-Terminal)
+  # ---------------------------------------------------------------------------
+  - name: Dolphin shortcuts
+    exact_match: true
+    application:
+      only: [dolphin]
+    remap:
+      Super-Backspace: Delete # Move to trash
+
+  - name: Firefox shortcuts
+    exact_match: true
+    application:
+      only: [firefox]
+    remap:
+      Super-j: C-Shift-y # Downloads
+      Super-Shift-a: C-Shift-a # Add-ons / extensions
+      Super-Shift-h: C-h # History
+      Super-y: C-Shift-h # History (alt)
+      Super-Shift-o: C-Shift-o # Bookmarks manager
 
   # ---------------------------------------------------------------------------
   # Non-terminal apps
   # ---------------------------------------------------------------------------
   - name: Non-Terminal shortcuts
+    exact_match: true
     application:
       not: [ghostty, kitty, konsole, alacritty, foot, wezterm]
     remap:
@@ -37,8 +61,14 @@ keymap:
       Super-z: C-z
       Super-Shift-z: C-Shift-z # Redo
       Super-f: C-f
+      Super-k: C-k # Insert link / search bar
       Super-g: C-g # Find next
       Super-Shift-g: C-Shift-g # Find previous
+
+      # Zoom
+      Super-Equal: C-Equal # Zoom in
+      Super-Minus: C-Minus # Zoom out
+      Super-KEY_0: C-KEY_0 # Reset zoom
 
       # File operations
       Super-n: C-n
@@ -54,6 +84,13 @@ keymap:
       Super-t: C-t # New tab
       Super-Shift-t: C-Shift-t # Reopen closed tab
       Super-l: C-l # Address bar (browsers)
+      Super-Comma: C-Shift-Comma # Configure application
+      Super-b: C-b # Bold
+      Super-i: C-i # Italic
+      Super-d: C-d # Bookmark page
+      Super-Shift-d: C-Shift-d # Bookmark all tabs
+      Super-Shift-p: C-Shift-p # Private / incognito window
+      Super-Shift-Backspace: C-Shift-Delete # Clear history
 
       # Text navigation (Cmd+Arrow → Home/End)
       Super-Left: Home
@@ -80,18 +117,14 @@ keymap:
       Super-LeftBrace: Alt-Left # Cmd+[ → browser back
       Super-RightBrace: Alt-Right # Cmd+] → browser forward
 
-      # App switching
-      Super-Tab: Alt-Tab
-      Super-Shift-Tab: Alt-Shift-Tab
-      Super-Grave: Alt-Grave # Cmd+` → same-app windows
-
   # ---------------------------------------------------------------------------
   # Global
   # ---------------------------------------------------------------------------
   - name: Global
+    exact_match: true
     remap:
-      # KRunner
-      Super-Space: Alt-Space
+      # Window management
+      Super-Shift-w: Alt-F4 # Close window
 
       # Tab switching (Cmd+1-9 → Alt+1-9)
       Super-Shift-LeftBrace: C-pageup
