@@ -11,7 +11,7 @@
 
     # nix-darwin for macOS system management
     nix-darwin = {
-      url = "github:LnL7/nix-darwin";
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -61,41 +61,47 @@
         claude-code = inputs.claude-code.packages.${prev.stdenv.hostPlatform.system}.default;
       };
     in
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-          overlays = [
-            (final: prev: {
-              unstable = import nixpkgs-unstable {
-                system = prev.stdenv.hostPlatform.system;
-                config.allowUnfree = true;
-              };
-              # Short alias for unstable packages
-              u = final.unstable;
-            })
-          ];
-        };
-      in
-      {
-        # Dev tools package for non-NixOS systems
-        packages.dev-tools = pkgs.buildEnv {
-          name = "dev-tools";
-          paths = myLib.basePackages pkgs;
-          pathsToLink = [
-            "/bin"
-            "/share/man"
-            "/share/info"
-          ];
-          ignoreCollisions = true;
-        };
+    flake-utils.lib.eachSystem
+      [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ]
+      (
+        system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            overlays = [
+              (final: prev: {
+                unstable = import nixpkgs-unstable {
+                  system = prev.stdenv.hostPlatform.system;
+                  config.allowUnfree = true;
+                };
+                # Short alias for unstable packages
+                u = final.unstable;
+              })
+            ];
+          };
+        in
+        {
+          # Dev tools package for non-NixOS systems
+          packages.dev-tools = pkgs.buildEnv {
+            name = "dev-tools";
+            paths = myLib.basePackages pkgs;
+            pathsToLink = [
+              "/bin"
+              "/share/man"
+              "/share/info"
+            ];
+            ignoreCollisions = true;
+          };
 
-        # Formatter for `nix fmt`
-        formatter = pkgs.nixfmt-tree;
-      }
-    )
+          # Formatter for `nix fmt`
+          formatter = pkgs.nixfmt-tree;
+        }
+      )
     // {
       # NixOS system configuration
       nixosConfigurations.aura = nixpkgs.lib.nixosSystem {
