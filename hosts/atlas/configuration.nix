@@ -43,6 +43,9 @@
   #   # Add macOS services here
   # };
 
+  # Match the GID used by the Nix installer (new default is 350)
+  ids.gids.nixbld = 350;
+
   # Used for backwards compatibility
   system.stateVersion = 4;
 }

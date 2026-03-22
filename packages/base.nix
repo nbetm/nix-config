@@ -71,7 +71,6 @@ pkgs: with pkgs; [
   docker-compose-language-service
   docker-language-server
   google-cloud-sdk
-  google-cloud-sdk-gce
   lazydocker
   nomad
   packer

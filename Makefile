@@ -40,7 +40,7 @@ build: ## Build system configuration without switching (NixOS/Darwin only)
 ifeq ($(OS_DISTRO),nixos)
 	nixos-rebuild build --flake .
 else ifeq ($(OS_DISTRO),darwin)
-	darwin-rebuild build --flake .#atlas
+	/run/current-system/sw/bin/darwin-rebuild build --flake .
 else
 	@echo "Build not supported on $(OS_DISTRO)."
 	@exit 1
@@ -62,7 +62,7 @@ deploy: ## Apply system configuration changes (NixOS/Darwin only)
 ifeq ($(OS_DISTRO),nixos)
 	nixos-rebuild switch --flake . --sudo
 else ifeq ($(OS_DISTRO),darwin)
-	darwin-rebuild switch --flake .#atlas
+	sudo /run/current-system/sw/bin/darwin-rebuild switch --flake .
 else
 	@echo "Deploy not supported on $(OS_DISTRO). Use 'make install' instead."
 	@exit 1
@@ -72,7 +72,7 @@ debug: ## Deploy with verbose output and trace for troubleshooting
 ifeq ($(OS_DISTRO),nixos)
 	nixos-rebuild switch --flake . --sudo --show-trace --verbose
 else ifeq ($(OS_DISTRO),darwin)
-	darwin-rebuild switch --flake .#atlas --show-trace --verbose
+	sudo /run/current-system/sw/bin/darwin-rebuild switch --flake . --show-trace --verbose
 else
 	@echo "Debug deploy not supported on $(OS_DISTRO)."
 	@exit 1
@@ -91,7 +91,7 @@ rollback: ## Rollback to previous system generation (NixOS/Darwin only)
 ifeq ($(OS_DISTRO),nixos)
 	sudo nixos-rebuild switch --rollback
 else ifeq ($(OS_DISTRO),darwin)
-	darwin-rebuild switch --rollback
+	sudo /run/current-system/sw/bin/darwin-rebuild switch --rollback
 else
 	@echo "Rollback not supported on $(OS_DISTRO). Use 'nix profile rollback' manually."
 	@exit 1
@@ -124,7 +124,7 @@ generations: ## List system generations (NixOS/Darwin) or profile history
 ifeq ($(OS_DISTRO),nixos)
 	sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
 else ifeq ($(OS_DISTRO),darwin)
-	darwin-rebuild --list-generations
+	/run/current-system/sw/bin/darwin-rebuild --list-generations
 else
 	nix profile history
 endif
