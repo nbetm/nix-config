@@ -8,40 +8,35 @@
 }:
 
 {
-  # Enable experimental features
+  # Nix settings
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
 
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  # Required for user-scoped options (gnupg agent, etc.)
+  system.primaryUser = "nbetm";
 
   # System packages
   environment.systemPackages = myLib.basePackages pkgs ++ myLib.darwinPackages pkgs;
 
-  # Homebrew integration (optional)
-  # homebrew = {
-  #   enable = true;
-  #   brews = [
-  #     # Add macOS-specific brews here
-  #   ];
-  #   casks = [
-  #     # Add macOS applications here
-  #   ];
-  # };
+  # Shell programs
+  programs.zsh.enable = true;
+  programs.bash = {
+    enable = true;
+    completion.enable = true;
+  };
+  programs.direnv.enable = true;
+  programs.gnupg.agent.enable = true;
 
-  # System defaults (optional)
-  # system.defaults = {
-  #   dock.autohide = true;
-  #   finder.AppleShowAllExtensions = true;
-  #   # Add more macOS system defaults here
-  # };
-
-  # Services (optional)
-  # services = {
-  #   # Add macOS services here
-  # };
+  # Environment
+  environment.variables = {
+    EDITOR = "hx";
+    VISUAL = "hx";
+    UV_PYTHON_DOWNLOADS = "never";
+  };
 
   # Match the GID used by the Nix installer (new default is 350)
   ids.gids.nixbld = 350;
