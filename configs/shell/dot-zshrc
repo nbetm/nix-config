@@ -39,7 +39,7 @@ setopt INTERACTIVE_COMMENTS     # Enable interactive comments
 # ------------------------------------------------------------------------------
 
 install-zsh-plugins() {
-    [[ "$DISTRO" == "darwin" || "$DISTRO" == "nixos" ]] && return 0
+    [[ "$OS_DISTRO" =~ ^(nixos|darwin)$ ]] && return 0
     local plugin_dir="${HOME}/.zsh/plugins"
     local plugins=(
         "zsh-users/zsh-autosuggestions"
@@ -57,7 +57,7 @@ install-zsh-plugins() {
 }
 
 update-zsh-plugins() {
-    [[ "$DISTRO" == "darwin" || "$DISTRO" == "nixos" ]] && return 0
+    [[ "$OS_DISTRO" =~ ^(nixos|darwin)$ ]] && return 0
     local plugin_dir="${HOME}/.zsh/plugins"
     if [[ ! -d "$plugin_dir" ]]; then
         echo "No plugins directory found at $plugin_dir"
