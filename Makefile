@@ -13,18 +13,53 @@ help: ## Show help for each of the Makefile recipes
 # Development
 # ------------------------------------------------------------------------------
 
+# Shell dotfile targets
+BASH_DOTFILES := configs/shell/dot-bashrc configs/shell/dot-bash_profile configs/shell/dot-blerc
+SH_SCRIPTS := $(shell git ls-files 'configs/*.sh')
+BIN_SCRIPTS := $(shell git ls-files 'configs/*/dot-local/bin/*' | xargs grep -l '^\#!/.*bash' 2>/dev/null)
+ALL_SHELL := $(BASH_DOTFILES) $(SH_SCRIPTS) $(BIN_SCRIPTS)
+SHFMT_FLAGS := -i 4 -ci
+
+# Colors
+BLUE := \033[0;34m
+GREEN := \033[0;32m
+RED := \033[0;31m
+NC := \033[0m
+
+define header
+	@printf "$(BLUE)-------------------------------------------------------------------------------$(NC)\n"
+	@printf "$(BLUE)$(1)$(NC)\n"
+	@printf "$(BLUE)-------------------------------------------------------------------------------$(NC)\n"
+endef
+
+define run_check
+	$(call header,$(1))
+	@$(2) && printf "$(GREEN)✓ $(1)$(NC)\n" || (printf "$(RED)✗ $(1)$(NC)\n"; exit 1)
+endef
+
+ci: ## Run CI checks (format + flake check + shell lint)
+	$(call run_check,nix fmt,nix fmt -- --ci)
+	$(call run_check,nix flake check,nix flake check)
+	$(call run_check,shellcheck,shellcheck $(ALL_SHELL))
+	$(call run_check,shfmt,shfmt $(SHFMT_FLAGS) --diff $(ALL_SHELL))
+
 format: ## Format all nix files
-	nix fmt
+	@nix fmt
 
 check: ## Check flake syntax and run flake checks
-	nix flake check
+	@nix flake check
 
-ci: ## Run CI checks (format + flake check)
-	nix fmt -- --ci
-	nix flake check
+shellcheck: ## Lint shell scripts
+	@shellcheck $(ALL_SHELL)
+
+shellformat: ## Check shell script formatting
+	@shfmt $(SHFMT_FLAGS) --diff $(ALL_SHELL)
+
+shellformat-fix: ## Auto-format shell scripts
+	@shfmt $(SHFMT_FLAGS) --write $(ALL_SHELL)
 
 repl: ## Start Nix REPL with this flake loaded
-	nix repl --expr 'builtins.getFlake (toString ./.)'
+	@nix repl --expr 'builtins.getFlake (toString ./.)'
 
 search: ## Search nixpkgs for a package (usage: make search <query>)
 	@nix search nixpkgs $(filter-out $@,$(MAKECMDGOALS)) 2>/dev/null
@@ -124,7 +159,7 @@ generations: ## List system generations (NixOS/Darwin) or profile history
 ifeq ($(OS_DISTRO),nixos)
 	sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
 else ifeq ($(OS_DISTRO),darwin)
-	/run/current-system/sw/bin/darwin-rebuild --list-generations
+	sudo /run/current-system/sw/bin/darwin-rebuild --list-generations
 else
 	nix profile history
 endif

@@ -1,0 +1,34 @@
+# Lazygit UI Config
+# https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#default
+gui:
+  authorColors:
+    "Nelson R Monserrate": "#88c0d0"
+    "*": "#88c0d0"
+  branchColorPatterns:
+    "^.+$": "#b48ead"
+  theme:
+    activeBorderColor:
+      - "#88c0d0"
+    inactiveBorderColor:
+      - "#3b4252"
+    searchingActiveBorderColor:
+      - "#ebcb8b"
+      - bold
+    optionsTextColor:
+      - "#b8c5d1"
+    selectedLineBgColor:
+      - "#3b4252"
+    inactiveViewSelectedLineBgColor:
+      - "#2e3440"
+    cherryPickedCommitFgColor:
+      - "#212732"
+    cherryPickedCommitBgColor:
+      - "#d08770"
+    markedBaseCommitFgColor:
+      - "#212732"
+    markedBaseCommitBgColor:
+      - "#ebcb8b"
+    unstagedChangesColor:
+      - "#ebcb8b"
+    defaultFgColor:
+      - "#b8c5d1"

@@ -1,0 +1,31 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# swap vim files
+*~
+
+# log files
+log/
+logs/
+*.log
+*.log.*
+
+# editors
+.vscode/
+.zed/
+
+# generic
+.idea/
+.notes/
+
+# direnv
+.envrc
+.direnv/
+
+# terraform
+*tfplan*
+
+# claude
+.claude/settings.local.json
+.worktrees/

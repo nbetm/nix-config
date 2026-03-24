@@ -1,0 +1,70 @@
+# vim: set ft=sh :
+# Shared environment variables for bash and zsh
+# Sourced by: bash_profile, zshenv
+
+# XDG Base Directories
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_BIN_HOME="${HOME}/.local/bin"
+export XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_CACHE_HOME="${HOME}/.cache"
+
+# Platform Detection
+OS_NAME=$(uname -s) # Darwin, Linux
+OS_ARCH=$(uname -m) # x86_64, arm64
+export OS_NAME OS_ARCH
+
+if [[ "$OS_NAME" == "Linux" ]]; then
+    OS_DISTRO=$(grep '^ID=' /etc/os-release 2>/dev/null | cut -d'=' -f2 | tr -d '"'\' | tr '[:upper:]' '[:lower:]' || echo "unknown")
+elif [[ "$OS_NAME" == "Darwin" ]]; then
+    OS_DISTRO="darwin"
+else
+    OS_DISTRO=
+fi
+export OS_DISTRO
+
+# Editor
+export EDITOR="hx"
+export VISUAL="hx"
+export PAGER="less"
+
+# Locale
+export LANG=en_US.UTF-8
+
+# Less
+export LESS="-F -i -M -R -S -w -X"
+
+# FZF Color Scheme | Nord Deep
+export FZF_DEFAULT_OPTS='
+    --color=fg:#b8c5d1,fg+:#b8c5d1,bg:#212732,bg+:#3b4252
+    --color=hl:#88c0d0,hl+:#88c0d0,info:#798094,marker:#b48ead
+    --color=prompt:#a3be8c,spinner:#ebcb8b,pointer:#88c0d0,header:#81a1c1
+    --color=border:#3b4252,label:#b8c5d1,query:#b8c5d1
+    --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="❱ "
+    --marker="❱" --pointer="❱" --separator="─" --scrollbar="│"'
+
+# AWS
+export AWS_SDK_LOAD_CONFIG=true
+export AWS_PAGER=""
+
+# Cheat
+export CHEAT_USE_FZF=true
+
+# Google Cloud SDK
+export CLOUDSDK_PYTHON="${HOME}/.local/bin/python3.12"
+
+# Man pager with bat
+export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
+
+# Libvirt
+export LIBVIRT_DEFAULT_URI=qemu:///system
+
+# Truecolor
+export COLORTERM=truecolor
+
+# PDSH
+export PDSH_RCMD_TYPE=ssh
+
+# Docker Rootless (Linux only)
+if [[ "$OS_NAME" == "Linux" ]]; then
+    export DOCKER_HOST=unix:///run/user/1000/docker.sock
+fi

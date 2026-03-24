@@ -1,0 +1,4 @@
+--target=$HOME
+--dir=configs
+--dotfiles
+--ignore='.DS_Store'

@@ -1,29 +1,31 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
   # Development Tools
-  git
+  claude-code
   gcc
+  git
   helix
   neovim
   python313
   vim
-  claude-code
 
   # CLI/TUI Tools
   asciinema_3
   bash-completion
   bat
-  u.btop
+  btop
   delta
   direnv
   doitlive
   ffmpeg
+  fd
   fzf
   gh
-  gitui
+  glow
   jq
   just
   lazygit
+  ncdu
   pandoc
   python313Packages.weasyprint
   ripgrep
@@ -38,14 +40,19 @@ pkgs: with pkgs; [
   tokei
   tree
   yazi
-  yt-dlp
   yq
+  yt-dlp
   zellij
   zoxide
+
+  # Zsh plugins
+  zsh-autosuggestions
+  zsh-fast-syntax-highlighting
 
   # Language Servers & Formatters
   ansible-lint
   bash-language-server
+  lua-language-server
   jinja-lsp
   marksman
   nixd
@@ -56,6 +63,7 @@ pkgs: with pkgs; [
   ruff
   shellcheck
   shfmt
+  stylua
   taplo
   terraform-ls
   tflint
@@ -67,22 +75,29 @@ pkgs: with pkgs; [
 
   # Cloud & Infrastructure
   awscli2
-  docker_28
   docker-compose-language-service
   docker-language-server
+  docker_28
   google-cloud-sdk
   lazydocker
   nomad
   packer
   terraform
 
+  # Fonts
+  nerd-fonts.symbols-only
+
   # System Tools
   dnsutils
+  graphviz
+  fastfetch
+  gnumake
   htop
+  imagemagick
   ipcalc
-  neofetch
   nvd
   parallel
+  watch
   wget
   xdg-utils
 ]

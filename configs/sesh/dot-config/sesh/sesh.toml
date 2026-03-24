@@ -1,0 +1,61 @@
+blacklist = ["scratch"]
+
+[default_session]
+disable_startup_command = true
+
+[[session]]
+name = "Downloads"
+path = "~/Downloads"
+startup_command = "yazi"
+
+[[session]]
+name = "dotfiles"
+path = "~/code/personal/dotfiles"
+
+[[session]]
+name = "nix-config"
+path = "~/code/personal/nix-config"
+
+[[session]]
+name = "claude-config"
+path = "~/code/personal/claude-config"
+
+[[session]]
+name = "px-cli"
+path = "~/code/px/cli"
+
+[[session]]
+name = "px-cli1"
+path = "~/code/px/cli1"
+
+[[session]]
+name = "px-cli2"
+path = "~/code/px/cli2"
+
+[[session]]
+name = "px-dashx"
+path = "~/code/px/dashx"
+
+[[session]]
+name = "px-dashx1"
+path = "~/code/px/dashx1"
+
+[[session]]
+name = "px-dashx2"
+path = "~/code/px/dashx2"
+
+[[session]]
+name = "px-webx"
+path = "~/code/px/webx"
+
+[[session]]
+name = "px-iac"
+path = "~/code/px/iac"
+
+[[session]]
+name = "px-iac1"
+path = "~/code/px/iac1"
+
+[[session]]
+name = "px-iac2"
+path = "~/code/px/iac2"

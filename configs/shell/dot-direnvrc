@@ -1,0 +1,59 @@
+# vim: set ft=sh :
+# shellcheck disable=SC2148
+# Use pyenv-virtualenv to manage different versions of python and virtualenvs
+#
+# Add this to your .envrc to automatically switch to the correct Python version:
+#
+#   pyversion=$(head .python-version)
+#   pvenv=myproject
+#   use python ${pyversion}
+#   layout virtualenv ${pyversion} ${pvenv}
+#   layout activate ${pvenv}
+
+use_python() {
+    if [ -n "$(which pyenv)" ]; then
+        local pyversion=$1
+
+        # Check if the specified Python version is installed
+        if ! pyenv versions --bare --skip-envs --skip-aliases | grep -q "^${pyversion}$"; then
+            pyenv install "${pyversion}"
+        fi
+    fi
+}
+
+layout_virtualenv() {
+    local pyversion=$1
+    local pvenv=$2
+
+    if [ -n "$(which pyenv virtualenv)" ]; then
+        # Check if the virtual environment already exists
+        if ! pyenv virtualenvs --bare --skip-aliases | grep -q "${pyversion}/envs/${pvenv}"; then
+            pyenv virtualenv --force --quiet "${pyversion}" "${pvenv}"
+        fi
+    fi
+}
+
+layout_activate() {
+    if [ -n "$(which pyenv)" ]; then
+        export PYENV_VERSION="${pvenv}"
+        export PYENV_VIRTUAL_ENV="$HOME/.pyenv/versions/${pyversion}/envs/${pvenv}"
+        export VIRTUAL_ENV="$HOME/.pyenv/versions/${pyversion}/envs/${pvenv}"
+    fi
+}
+
+# Python environment management using uv (https://github.com/astral-sh/uv)
+layout_uv() {
+    if [[ -d ".venv" ]]; then
+        VIRTUAL_ENV="$(pwd)/.venv"
+    fi
+
+    if [[ -z $VIRTUAL_ENV || ! -d $VIRTUAL_ENV ]]; then
+        log_status "No virtual environment exists. Executing \`uv venv\` to create one."
+        uv venv
+        VIRTUAL_ENV="$(pwd)/.venv"
+    fi
+
+    PATH_add "$VIRTUAL_ENV/bin"
+    export UV_ACTIVE=1 # or VENV_ACTIVE=1
+    export VIRTUAL_ENV
+}

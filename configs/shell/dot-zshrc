@@ -1,0 +1,246 @@
+# vim: set ft=zsh :
+# shellcheck disable=all
+
+# ------------------------------------------------------------------------------
+# Options
+# ------------------------------------------------------------------------------
+# https://zsh.sourceforge.io/Doc/Release/Options.html
+
+# Navigation
+setopt AUTO_CD                  # Go to folder path without using cd
+setopt AUTO_PUSHD               # Push the old directory onto the stack on cd
+setopt PUSHD_IGNORE_DUPS        # Do not store duplicates in the stack
+setopt PUSHD_SILENT             # Do not print the directory stack after pushd or popd
+setopt CORRECT                  # Spelling correction
+setopt CDABLE_VARS              # Change directory to a path stored in a variable
+setopt EXTENDED_GLOB            # Use extended globbing syntax
+
+# History
+setopt EXTENDED_HISTORY         # Write the history file in the ':start:elapsed;command' format
+setopt HIST_EXPIRE_DUPS_FIRST   # Expire a duplicate event first when trimming history
+setopt HIST_FIND_NO_DUPS        # Do not display duplicates of a line previously found
+setopt HIST_IGNORE_ALL_DUPS     # Delete an old recorded event if a new event is a duplicate
+setopt HIST_IGNORE_DUPS         # Do not record an event that was just recorded again
+setopt HIST_IGNORE_SPACE        # Do not record an event starting with a space
+setopt HIST_SAVE_NO_DUPS        # Do not write a duplicate event to the history file
+setopt HIST_VERIFY              # Do not execute immediately upon history expansion
+setopt SHARE_HISTORY            # Share history between all sessions
+
+# Completion
+setopt MENU_COMPLETE            # Automatically highlight first element of completion menu
+setopt AUTO_LIST                # Automatically list choices on ambiguous completion
+setopt COMPLETE_IN_WORD         # Complete from both ends of a word
+
+# Misc
+setopt INTERACTIVE_COMMENTS     # Enable interactive comments
+
+# ------------------------------------------------------------------------------
+# Plugins
+# ------------------------------------------------------------------------------
+
+install-zsh-plugins() {
+    [[ "$DISTRO" == "darwin" || "$DISTRO" == "nixos" ]] && return 0
+    local plugin_dir="${HOME}/.zsh/plugins"
+    local plugins=(
+        "zsh-users/zsh-autosuggestions"
+        "zdharma-continuum/fast-syntax-highlighting"
+    )
+
+    mkdir -p "$plugin_dir"
+    for repo in $plugins; do
+        local name=${repo##*/}
+        if [[ ! -d "$plugin_dir/$name" ]]; then
+            echo "Installing $name..."
+            git clone --quiet --depth=1 "https://github.com/$repo" "$plugin_dir/$name"
+        fi
+    done
+}
+
+update-zsh-plugins() {
+    [[ "$DISTRO" == "darwin" || "$DISTRO" == "nixos" ]] && return 0
+    local plugin_dir="${HOME}/.zsh/plugins"
+    if [[ ! -d "$plugin_dir" ]]; then
+        echo "No plugins directory found at $plugin_dir"
+        return 1
+    fi
+
+    for plugin in "$plugin_dir"/*/; do
+        if [[ -d "$plugin/.git" ]]; then
+            echo "Updating $(basename "$plugin")..."
+            git -C "$plugin" pull
+        fi
+    done
+}
+
+# Auto-install on first run (skipped on nix-managed systems via $DISTRO guard)
+[[ ! -d "${HOME}/.zsh/plugins" ]] || [[ -z "$(ls -A "${HOME}/.zsh/plugins" 2>/dev/null)" ]] && install-zsh-plugins
+
+# zsh-autosuggestions
+source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#798094"
+
+# fast-syntax-highlighting (Nord Deep colors)
+source ~/.zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+typeset -A FAST_HIGHLIGHT_STYLES
+FAST_HIGHLIGHT_STYLES[comment]="fg=#798094"
+FAST_HIGHLIGHT_STYLES[unknown-token]="fg=red"
+FAST_HIGHLIGHT_STYLES[bracket-level-1]="fg=#8fbcbb"
+FAST_HIGHLIGHT_STYLES[bracket-level-2]="fg=#88c0d0"
+FAST_HIGHLIGHT_STYLES[bracket-level-3]="fg=#81a1c1"
+FAST_HIGHLIGHT_STYLES[bracket-level-4]="fg=#5e81ac"
+
+# ------------------------------------------------------------------------------
+# Keybindings
+# ------------------------------------------------------------------------------
+
+bindkey -e
+export KEYTIMEOUT=1
+
+# Edit command in $EDITOR
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
+
+# Word navigation (path-aware)
+# https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
+my-backward-delete-word() {
+    local WORDCHARS=${WORDCHARS/\//}
+    WORDCHARS=${WORDCHARS/:/}
+    WORDCHARS=${WORDCHARS/./}
+    WORDCHARS=${WORDCHARS/-/}
+    zle backward-delete-word
+}
+zle -N my-backward-delete-word
+bindkey "^W" my-backward-delete-word
+bindkey "^[^?" my-backward-delete-word  # option+delete
+
+my-backward-word() {
+    local WORDCHARS=${WORDCHARS/\//}
+    WORDCHARS=${WORDCHARS/:/}
+    WORDCHARS=${WORDCHARS/./}
+    WORDCHARS=${WORDCHARS/-/}
+    zle backward-word
+}
+zle -N my-backward-word
+bindkey "^[b" my-backward-word
+
+my-forward-word() {
+    local WORDCHARS=${WORDCHARS/\//}
+    WORDCHARS=${WORDCHARS/:/}
+    WORDCHARS=${WORDCHARS/./}
+    WORDCHARS=${WORDCHARS/-/}
+    zle forward-word
+}
+zle -N my-forward-word
+bindkey "^[f" my-forward-word
+
+bindkey "^[o" accept-line-and-down-history
+bindkey '\e[H' beginning-of-line  # Home
+bindkey '\e[F' end-of-line        # End
+
+# Sesh - tmux session picker
+sesh-sessions() {
+    sesh-picker
+    zle reset-prompt >/dev/null 2>&1 || true
+}
+zle -N sesh-sessions
+bindkey "^O" sesh-sessions
+
+# ------------------------------------------------------------------------------
+# Completion Setup
+# ------------------------------------------------------------------------------
+# Order matters: fpath → zmodload → compinit → zstyles
+
+# fpath
+typeset -U fpath
+fpath=("${HOME}/.zsh/completions" $fpath)
+
+# Modules (before compinit)
+zmodload zsh/complist
+zmodload zsh/system
+
+# Initialize completion
+autoload -U compaudit compinit; compinit
+autoload -U +X bashcompinit; bashcompinit
+
+# zstyles
+# https://zsh.sourceforge.io/Doc/Release/Zsh-Modules.html#The-zsh_002fzutil-Module
+zstyle ":completion:*" completer _extensions _complete _approximate
+zstyle ":completion:*" complete true
+zstyle ":completion:*" complete-options true
+zstyle ":completion:*" file-sort modification
+zstyle ":completion:*" group-name ""
+zstyle ":completion:*" verbose yes
+
+zstyle ":completion:*:*:cd:*" tag-order local-directories directory-stack path-directories
+zstyle ":completion:*:*:*:*:default" list-colors ${(s.:.)LS_COLORS}
+zstyle ":completion:*:*:*:*:*" menu select
+zstyle ":completion:*:matches" group "yes"
+zstyle ":completion:*:options" description "yes"
+zstyle ":completion:*:options" auto-description "%d"
+zstyle ":completion:*:corrections" format "%F{green}-- %d (errors: %e) --%f"
+zstyle ":completion:*:descriptions" format "%F{yellow}-- %d --%f"
+zstyle ":completion:*:messages" format "%F{purple} -- %d --%f"
+zstyle ":completion:*:warnings" format "%F{red}-- no matches found --%f"
+zstyle ":completion:*:default" list-prompt "%S%M matches%s"
+zstyle ":completion:*" format "%F{yellow}-- %d --%f"
+zstyle ":completion:*" matcher-list "" "m:{[:lower:][:upper:]}={[:upper:][:lower:]}" "+l:|?=** r:|?=**"
+zstyle -e ":completion:*:(ssh|scp|sftp|rsh|rsync):hosts" hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
+
+# Alias expansion widget
+zle -C alias-expension complete-word _generic
+zstyle ":completion:alias-expension:*" completer _expand_alias
+
+# ------------------------------------------------------------------------------
+# Tool Integrations
+# ------------------------------------------------------------------------------
+
+# FZF
+source <(fzf --zsh)
+
+# Direnv
+if command -v direnv &>/dev/null; then
+    eval "$(direnv hook zsh)"
+fi
+
+# Starship prompt
+if command -v starship &>/dev/null; then
+    eval "$(starship init zsh)"
+fi
+
+# Zoxide
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init zsh)"
+fi
+
+# Tool completions (bash-style)
+complete -o nospace -C terraform terraform
+complete -o nospace -C nomad nomad
+complete -o nospace -C packer packer
+complete -C aws_completer aws
+
+# Python tools
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
+eval "$(ruff generate-shell-completion zsh)"
+
+# SkyPilot
+if [[ -f "${HOME}/.sky/.sky-complete.zsh" ]]; then
+    source "${HOME}/.sky/.sky-complete.zsh"
+fi
+
+# ------------------------------------------------------------------------------
+# Aliases
+# ------------------------------------------------------------------------------
+
+alias history="history -i"
+
+# ------------------------------------------------------------------------------
+# Shared Shell Config
+# ------------------------------------------------------------------------------
+
+if [[ -d "${XDG_DATA_HOME}/shell" ]]; then
+    for item in "${XDG_DATA_HOME}"/shell/*.{sh,zsh}(N); do
+        [[ -s $item ]] && source $item
+    done
+fi

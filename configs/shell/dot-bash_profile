@@ -1,0 +1,67 @@
+# vim: set ft=sh :
+# shellcheck shell=bash disable=SC1091
+
+# Guard against re-sourcing
+[[ -n "$_BASH_PROFILE_SOURCED" ]] && return
+_BASH_PROFILE_SOURCED=1
+
+# ------------------------------------------------------------------------------
+# Shared Environment Variables
+# ------------------------------------------------------------------------------
+
+# shellcheck source=dot-local/share/shell/env
+[[ -f "${HOME}/.local/share/shell/env" ]] && source "${HOME}/.local/share/shell/env"
+
+# ------------------------------------------------------------------------------
+# Bash-specific Environment
+# ------------------------------------------------------------------------------
+
+# History
+export HISTFILE="${HOME}/.bash_history"
+export HISTSIZE=10000
+export HISTFILESIZE=10000
+export HISTCONTROL=ignoreboth:erasedups
+export HISTIGNORE="ls:ll:cd:pwd:exit:clear:history"
+
+# ------------------------------------------------------------------------------
+# PATH Configuration
+# ------------------------------------------------------------------------------
+
+if [[ $OS_NAME == "Darwin" ]]; then
+    # Restore nix PATH priority (macOS path_helper reorders it in /etc/profile)
+    if [[ -d /run/current-system/sw/bin ]]; then
+        PATH="$XDG_BIN_HOME:$HOME/.nix-profile/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
+    fi
+
+elif [[ $OS_NAME == "Linux" ]]; then
+    if [[ "$OS_DISTRO" != "nixos" ]]; then
+        # Debian/Ubuntu: Manual package installations
+        path_prepend=(
+            "$XDG_BIN_HOME"
+            "${XDG_DATA_HOME}/google-cloud-sdk/bin"
+            "${HOME}/.fzf/bin"
+            "/usr/libexec/docker/cli-plugins"
+        )
+
+        for p in "${path_prepend[@]}"; do
+            [[ -d "$p" && ":$PATH:" != *":$p:"* ]] && PATH="$p:$PATH"
+        done
+        unset path_prepend p
+    fi
+fi
+
+# Deduplicate PATH (keeps first occurrence)
+PATH="$(printf '%s\n' "${PATH//:/$'\n'}" | awk '!seen[$0]++' | paste -sd: -)"
+export PATH
+
+# LS_COLORS
+if [[ -f "${HOME}/.dir_colors" ]]; then
+    eval "$(dircolors -b "${HOME}/.dir_colors")"
+fi
+
+# ------------------------------------------------------------------------------
+# Source bashrc for interactive shell setup
+# ------------------------------------------------------------------------------
+
+# shellcheck source=dot-bashrc
+[[ -f "${HOME}/.bashrc" ]] && source "${HOME}/.bashrc"

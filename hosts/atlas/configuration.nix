@@ -1,4 +1,4 @@
-# Darwin configuration for atlas (macOS)
+# Atlas - macOS (aarch64-darwin), nix-darwin
 {
   config,
   pkgs,
@@ -8,39 +8,22 @@
 }:
 
 {
-  # Nix settings
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
-  nixpkgs.config.allowUnfree = true;
+  imports = [ ../shared/common.nix ];
 
   # Required for user-scoped options (gnupg agent, etc.)
   system.primaryUser = "nbetm";
 
-  # System packages
-  environment.systemPackages = myLib.basePackages pkgs ++ myLib.darwinPackages pkgs;
+  # User home path — required for home-manager to derive homeDirectory
+  users.users.nbetm.home = "/Users/nbetm";
 
-  # Shell programs
-  programs.zsh.enable = true;
-  programs.bash = {
-    enable = true;
-    completion.enable = true;
-  };
-  programs.direnv.enable = true;
+  # GPG agent
   programs.gnupg.agent.enable = true;
 
-  # Environment
-  environment.variables = {
-    EDITOR = "hx";
-    VISUAL = "hx";
-    UV_PYTHON_DOWNLOADS = "never";
-  };
+  # Packages
+  environment.systemPackages = myLib.basePackages pkgs ++ myLib.darwinPackages pkgs;
 
   # Match the GID used by the Nix installer (new default is 350)
   ids.gids.nixbld = 350;
 
-  # Used for backwards compatibility
   system.stateVersion = 4;
 }

@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""
+tmux-fzf-url: Open URLs from tmux pane with fzf
+Python translation of junegunn's Ruby version
+https://github.com/junegunn/tmux-fzf-url/blob/master/fzf-url.rb
+"""
+
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+
+def find_executable(*commands: str) -> str | None:
+    """Find the first available command"""
+    for cmd in commands:
+        cmd_name = cmd.split()[0]
+        if shutil.which(cmd_name):
+            return cmd
+    return None
+
+
+def can_open_urls() -> bool:
+    """Check if we can open URLs in a browser."""
+    ssh_vars = ("SSH_CLIENT", "SSH_TTY", "SSH_CONNECTION")
+    if any(os.environ.get(var) for var in ssh_vars):
+        return False
+    return find_executable("open", "xdg-open") is not None
+
+
+def tmux_message(message: str) -> None:
+    """Display message in tmux"""
+    try:
+        subprocess.run(["tmux", "display-message", message], check=False)
+    except FileNotFoundError:
+        print(f"tmux-fzf-url: {message}", file=sys.stderr)
+
+
+def get_tmux_content() -> str:
+    """Get tmux pane content with full history"""
+    try:
+        result = subprocess.run(
+            ["tmux", "capture-pane", "-J", "-p", "-S", "-99999"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        tmux_message("Failed to capture tmux pane content")
+        sys.exit(1)
+
+
+def extract_urls(text: str) -> list[str]:
+    """Extract unique URLs from text, preserving most recent"""
+    all_urls = []
+
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        # Standard URLs (http/https/ftp/file)
+        standard_urls = re.findall(
+            r"(?:https?|ftp|file)://[-a-zA-Z0-9@:%_+.~#?&/=]+[-a-zA-Z0-9@%_+.~#?&/=!]+",
+            line,
+        )
+        all_urls.extend(standard_urls)
+
+        # www domains (prepend http://)
+        www_domains = re.findall(
+            r"(?:^|[^:/])www\.[a-zA-Z](?:-?[a-zA-Z0-9])*\.[a-zA-Z]{2,}(?:/\S*)?", line
+        )
+        all_urls.extend(f"http://{domain.lstrip()}" for domain in www_domains)
+
+        # IP addresses with optional ports and paths
+        ip_addresses = re.findall(
+            r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::[0-9]{1,5})?(?:/\S*)?", line
+        )
+        all_urls.extend(f"http://{ip}" for ip in ip_addresses)
+
+        # Git SSH URLs (convert to https)
+        git_urls = re.findall(
+            r"(?:ssh://)?git@([^:/\s]+)[:/]([^/\s]+/[^/\s]+?)(?:\.git)?(?:\s|$)", line
+        )
+        for host, repo in git_urls:
+            all_urls.append(f"https://{host}/{repo}")
+
+    # Deduplicate while preserving order (most recent first)
+    seen = set()
+    unique_urls = []
+    for url in reversed(all_urls):
+        if url not in seen:
+            seen.add(url)
+            unique_urls.append(url)
+
+    return unique_urls
+
+
+def get_fzf_dimensions(urls: list[str], header: str) -> str:
+    """Calculate optimal fzf popup dimensions"""
+    try:
+        result = subprocess.run(
+            ["tmux", "display-message", "-p", "#{client_width} #{client_height}"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        max_width, max_height = map(int, result.stdout.strip().split())
+    except (subprocess.CalledProcessError, ValueError):
+        max_width, max_height = 120, 30
+
+    content_width = max(len(url) for url in [*urls, header]) + 10
+    content_height = len(urls) + 7
+
+    width = min(content_width, max_width)
+    height = min(content_height, max_height)
+
+    return f"{width},{height}"
+
+
+def run_fzf(urls: list[str], can_open: bool) -> list[str]:
+    """Run fzf to select URLs"""
+    if can_open:
+        header = "Enter: open | ctrl-y: copy"
+    else:
+        header = "Enter: copy | ctrl-y: copy"
+    size = get_fzf_dimensions(urls, header)
+
+    cmd = [
+        "fzf",
+        "--tmux",
+        size,
+        "--multi",
+        "--no-margin",
+        "--no-padding",
+        "--wrap",
+        "--bind",
+        "ctrl-p:up,ctrl-n:down",
+        "--expect",
+        "ctrl-y",
+        "--style",
+        "default",
+        "--header",
+        header,
+        "--header-border",
+        "top",
+        "--highlight-line",
+        "--header-first",
+        "--info",
+        "inline-right",
+        "--padding",
+        "1,1,0,1",
+        "--border-label",
+        " URLs ",
+    ]
+
+    try:
+        result = subprocess.run(
+            cmd, input="\n".join(urls), capture_output=True, text=True, check=False
+        )
+        return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    except FileNotFoundError:
+        tmux_message("fzf not found")
+        sys.exit(1)
+
+
+def copy_to_clipboard(text: str) -> None:
+    """Copy text to clipboard"""
+    try:
+        copier = ["tmux", "set-buffer", "-w", text]
+        subprocess.run(copier, text=True, capture_output=True, check=True)
+        tmux_message("Copied to clipboard")
+    except subprocess.CalledProcessError:
+        tmux_message("Failed to copy to clipboard")
+
+
+def open_urls(urls: list[str]) -> None:
+    """Open URLs in default browser. Only called when opener exists."""
+    opener = find_executable("open", "xdg-open")
+    assert opener is not None  # Guaranteed by can_open_urls() check
+    opened_count = sum(
+        1
+        for url in urls
+        if subprocess.run([opener, url], capture_output=True, check=False).returncode
+        == 0
+    )
+    tmux_message(
+        f"Opened {opened_count} URL(s)" if opened_count else "Failed to open URLs"
+    )
+
+
+def main() -> None:
+    # Get URLs from tmux
+    content = get_tmux_content()
+    urls = extract_urls(content)
+
+    if not urls:
+        tmux_message("No URLs found")
+        return
+
+    can_open = can_open_urls()
+    selected = run_fzf(urls, can_open)
+    if not selected:
+        return
+
+    # Handle fzf output
+    if selected[0] == "ctrl-y":
+        # ctrl-y always copies
+        if len(selected) > 1:
+            copy_to_clipboard("\n".join(selected[1:]))
+        else:
+            tmux_message("No URLs selected for copying")
+    elif can_open:
+        # Enter opens when local with opener
+        open_urls(selected)
+    else:
+        # Enter copies when SSH or no opener
+        copy_to_clipboard("\n".join(selected))
+
+
+if __name__ == "__main__":
+    main()

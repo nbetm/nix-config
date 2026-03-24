@@ -1,0 +1,43 @@
+# vim: set ft=zsh :
+# shellcheck disable=all
+
+# Guard against re-sourcing
+[[ -n "$_ZPROFILE_SOURCED" ]] && return
+typeset -g _ZPROFILE_SOURCED=1
+
+# PATH Configuration
+if [[ $OS_NAME == "Darwin" ]]; then
+    typeset -U path
+    path=(
+        "$XDG_BIN_HOME"
+        $path
+    )
+
+elif [[ $OS_NAME = "Linux" ]]; then
+    # Debian/Ubuntu: Manual package installations
+    if [[ ! "$OS_DISTRO" == "nixos" ]]; then
+        typeset -U path
+        path=(
+            "$XDG_BIN_HOME"
+            "${XDG_DATA_HOME}/google-cloud-sdk/bin"
+            "${HOME}/.fzf/bin"
+            "/usr/libexec/docker/cli-plugins"
+            $path
+        )
+    fi
+
+    # FZF shell integration path (distro-specific)
+    if [[ "$OS_DISTRO" == "nixos" ]]; then
+        if [[ -n "${commands[fzf - share]}" ]]; then
+            source "$(fzf-share)/key-bindings.zsh"
+            source "$(fzf-share)/completion.zsh"
+        fi
+    else
+        export FZF_SHELL_DIR="${HOME}/.fzf/shell"
+    fi
+fi
+
+# LS_COLORS
+if [[ -f "${HOME}/.dir_colors" ]]; then
+    eval "$(dircolors -b "${HOME}/.dir_colors")"
+fi

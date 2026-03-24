@@ -1,0 +1,4 @@
+--target=$HOME
+--dotfiles
+--ignore='.DS_Store'
+--ignore='xremap'

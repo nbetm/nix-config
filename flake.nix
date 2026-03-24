@@ -16,10 +16,10 @@
     };
 
     # home-manager
-    # home-manager = {
-    #   url = "github:nix-community/home-manager/release-25.11";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # claude-code - hourly updated nix package
     claude-code.url = "github:sadjow/claude-code-nix";
@@ -44,9 +44,9 @@
       # Modular package management system
       myLib = {
         # Import package lists from separate files
-        basePackages = import ./packages/base.nix;
-        desktopPackages = import ./packages/desktop.nix;
-        darwinPackages = import ./packages/darwin.nix;
+        basePackages = import ./hosts/shared/packages-base.nix;
+        linuxDesktopPackages = import ./hosts/shared/packages-linux-desktop.nix;
+        darwinPackages = import ./hosts/shared/packages-darwin.nix;
       };
 
       # Shared overlay - cross-platform packages
@@ -113,7 +113,13 @@
         modules = [
           ./hosts/aura/configuration.nix
           inputs.xremap-flake.nixosModules.default
-          { nixpkgs.overlays = [ sharedOverlay ]; }
+          inputs.home-manager.nixosModules.home-manager
+          {
+            nixpkgs.overlays = [ sharedOverlay ];
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.nbetm = import ./hosts/shared/home-desktop.nix;
+          }
         ];
       };
 
@@ -126,7 +132,17 @@
         };
         modules = [
           ./hosts/andromeda/configuration.nix
-          { nixpkgs.overlays = [ sharedOverlay ]; }
+          inputs.home-manager.nixosModules.home-manager
+          {
+            nixpkgs.overlays = [ sharedOverlay ];
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.nbetm = {
+              imports = [ ./hosts/shared/home-base.nix ];
+              home.username = "nbetm";
+              home.homeDirectory = "/home/nbetm";
+            };
+          }
         ];
       };
 
@@ -139,7 +155,13 @@
         };
         modules = [
           ./hosts/atlas/configuration.nix
-          { nixpkgs.overlays = [ sharedOverlay ]; }
+          inputs.home-manager.darwinModules.home-manager
+          {
+            nixpkgs.overlays = [ sharedOverlay ];
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.nbetm = import ./hosts/shared/home-darwin.nix;
+          }
         ];
       };
     };

@@ -1,0 +1,120 @@
+# vim: set ft=sh :
+# shellcheck shell=bash disable=SC1091
+
+# Exit if not interactive
+[[ $- != *i* ]] && return
+
+# ------------------------------------------------------------------------------
+# ble.sh - Bash Line Editor (attach early)
+# ------------------------------------------------------------------------------
+
+if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" ]]; then
+    source "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" --attach=none
+fi
+
+# ------------------------------------------------------------------------------
+# Shell Options
+# ------------------------------------------------------------------------------
+
+# Navigation
+shopt -s autocd      # cd into directory by typing its name
+shopt -s cdspell     # Autocorrect typos in cd
+shopt -s dirspell    # Autocorrect directory names during completion
+shopt -s cdable_vars # cd into variable values
+
+# Globbing
+shopt -s extglob    # Extended pattern matching
+shopt -s globstar   # ** matches all files and directories recursively
+shopt -s nocaseglob # Case-insensitive globbing
+shopt -s dotglob    # Include hidden files in glob
+
+# History
+shopt -s histappend # Append to history instead of overwriting
+shopt -s cmdhist    # Save multi-line commands as single entry
+
+# Misc
+shopt -s checkwinsize            # Update LINES and COLUMNS after each command
+shopt -s no_empty_cmd_completion # Don't complete on empty line
+
+# ------------------------------------------------------------------------------
+# Tool Initialization
+# ------------------------------------------------------------------------------
+
+# FZF (ble.sh loads its own fzf integration via blesh-contrib)
+if [[ -z "${BLE_VERSION:-}" ]] && command -v fzf &>/dev/null; then
+    eval "$(fzf --bash)"
+fi
+
+# Direnv
+if command -v direnv &>/dev/null; then
+    eval "$(direnv hook bash)"
+fi
+
+# Starship prompt
+if command -v starship &>/dev/null; then
+    eval "$(starship init bash)"
+fi
+
+# ------------------------------------------------------------------------------
+# Bash Completion
+# ------------------------------------------------------------------------------
+
+# nix-darwin/NixOS handle bash completion via programs.bash.completion.enable
+if [[ ! -d /run/current-system ]] && [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    source /usr/share/bash-completion/bash_completion
+fi
+
+# AWS (not in bash-completion, uses built-in completer)
+command -v aws_completer &>/dev/null && complete -C aws_completer aws
+
+# ------------------------------------------------------------------------------
+# Shared Shell Config
+# ------------------------------------------------------------------------------
+
+if [[ -d "${XDG_DATA_HOME}/shell" ]]; then
+    for file in "${XDG_DATA_HOME}"/shell/*.sh; do
+        # shellcheck disable=SC1090
+        [[ -f "$file" ]] && source "$file"
+    done
+fi
+
+# ------------------------------------------------------------------------------
+# Alias Completions
+# ------------------------------------------------------------------------------
+# Completions don't auto-inherit when aliasing commands.
+# Eagerly load completions for frequently-used aliases.
+
+alias c="cd"
+
+_completion_loader git 2>/dev/null
+_completion_loader sudo 2>/dev/null
+_completion_loader tmux 2>/dev/null
+
+# git (alias g in git.sh)
+if declare -F __git_complete &>/dev/null; then
+    __git_complete g __git_main
+fi
+
+# sudo (alias s in core.sh)
+declare -F _sudo &>/dev/null && complete -F _sudo s
+
+# tmux (alias t in tools.sh)
+declare -F _tmux &>/dev/null && complete -F _tmux t
+
+# cd (alias c above)
+complete -o nospace -F _cd c
+
+# ------------------------------------------------------------------------------
+# Zoxide (must be near the end per zoxide docs)
+# ------------------------------------------------------------------------------
+
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash)"
+fi
+
+# ------------------------------------------------------------------------------
+# ble.sh - Attach (must be at the end)
+# ------------------------------------------------------------------------------
+
+# shellcheck disable=SC2154
+[[ ! ${BLE_VERSION-} ]] || ble-attach
