@@ -45,11 +45,6 @@ if [[ -z "${BLE_VERSION:-}" ]] && command -v fzf &>/dev/null; then
     eval "$(fzf --bash)"
 fi
 
-# Direnv
-if command -v direnv &>/dev/null; then
-    eval "$(direnv hook bash)"
-fi
-
 # Starship prompt
 if command -v starship &>/dev/null; then
     eval "$(starship init bash)"

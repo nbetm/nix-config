@@ -59,6 +59,8 @@
         u = final.unstable;
         # Flake packages (tip versions)
         claude-code = inputs.claude-code.packages.${prev.stdenv.hostPlatform.system}.default;
+        # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
+        direnv = final.unstable.direnv;
       };
     in
     flake-utils.lib.eachSystem

@@ -15,7 +15,6 @@ pkgs: with pkgs; [
   bat
   btop
   delta
-  direnv
   doitlive
   ffmpeg
   fd
