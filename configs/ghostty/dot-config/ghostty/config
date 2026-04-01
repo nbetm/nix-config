@@ -29,7 +29,7 @@ clipboard-paste-protection = true
 # -----------------------------------------------------------------------------
 
 # Insert new line
-keybind = shift+enter=text:\n
+keybind = shift+enter=text:\x1b\r
 
 # Jump to beginning and end of line
 # Note: Use Home|End instead of ctrl-a(\x01)|ctrl-e(\x05)
