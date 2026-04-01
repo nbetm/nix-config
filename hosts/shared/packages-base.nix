@@ -58,17 +58,17 @@ pkgs: with pkgs; [
   nixfmt-rfc-style
   nixfmt-tree
   prettier
-  pyright
-  ruff
-  shellcheck
-  shfmt
-  stylua
+  u.pyright
+  u.ruff
+  u.shellcheck
+  u.shfmt
+  u.stylua
   taplo
   terraform-ls
   tflint
-  uv
+  u.uv
   vscode-json-languageserver
-  yaml-language-server
+  u.yaml-language-server
   yamlfmt
   yamllint
 
