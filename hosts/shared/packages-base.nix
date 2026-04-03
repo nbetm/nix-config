@@ -76,8 +76,10 @@ pkgs: with pkgs; [
   awscli2
   docker-compose-language-service
   docker-language-server
-  docker_28
+  docker-buildx
+  docker_29
   google-cloud-sdk
+  hadolint
   lazydocker
   nomad
   packer
