@@ -146,3 +146,58 @@ indent = { tab-width = 2, unit = "  " }
 [[language]]
 name = "git-config"
 indent = { tab-width = 2, unit = "  " }
+
+# Docker
+[[language]]
+name = "dockerfile"
+scope = "source.dockerfile"
+injection-regex = "docker|dockerfile"
+roots = ["Dockerfile", "Containerfile"]
+file-types = [
+  "Dockerfile",
+  { glob = "Dockerfile" },
+  { glob = "Dockerfile.*" },
+  "dockerfile",
+  { glob = "dockerfile" },
+  { glob = "dockerfile.*" },
+  "Containerfile",
+  { glob = "Containerfile" },
+  { glob = "Containerfile.*" },
+  "containerfile",
+  { glob = "containerfile" },
+  { glob = "containerfile.*" },
+]
+comment-token = "#"
+indent = { tab-width = 4, unit = "    " }
+auto-format = true
+formatter = { command = "dockerfmt", args = ["-n", "-i", "4"] }
+language-servers = ["docker-language-server"]
+
+[[grammar]]
+name = "dockerfile"
+source = { git = "https://github.com/camdencheek/tree-sitter-dockerfile", rev = "087daa20438a6cc01fa5e6fe6906d77c869d19fe" }
+
+[[language]]
+name = "docker-compose"
+language-id = "dockercompose"
+scope = "source.yaml.docker-compose"
+roots = [
+  "docker-compose.yaml",
+  "docker-compose.yml",
+  "compose.yaml",
+  "compose.yml",
+]
+language-servers = ["docker-language-server"]
+file-types = [
+  { glob = "docker-compose.yaml" },
+  { glob = "docker-compose.yml" },
+  { glob = "compose.yaml" },
+  { glob = "compose.yml" },
+]
+comment-token = "#"
+indent = { tab-width = 2, unit = "  " }
+grammar = "yaml"
+
+[language-server.docker-language-server]
+command = "docker-language-server"
+args = ["start", "--stdio"]
