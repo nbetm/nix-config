@@ -17,6 +17,10 @@ pkgs: with pkgs; [
   less
   rsync
 
+  # Docker (via Colima on macOS)
+  u.colima
+  u.docker-client
+
   # GUI apps
   u.kitty
 ]

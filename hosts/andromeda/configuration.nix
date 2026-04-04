@@ -35,7 +35,7 @@
   ];
 
   # Packages
-  environment.systemPackages = myLib.basePackages pkgs;
+  environment.systemPackages = myLib.basePackages pkgs ++ myLib.linuxPackages pkgs;
 
   # VMware guest support (andromeda runs as a Fusion VM)
   virtualisation.vmware.guest.enable = true;

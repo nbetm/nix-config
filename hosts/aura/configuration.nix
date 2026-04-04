@@ -77,7 +77,8 @@
   programs.firefox.enable = true;
 
   # Packages
-  environment.systemPackages = myLib.basePackages pkgs ++ myLib.linuxDesktopPackages pkgs;
+  environment.systemPackages =
+    myLib.basePackages pkgs ++ myLib.linuxPackages pkgs ++ myLib.linuxDesktopPackages pkgs;
 
   # HiDPI Overrides
   environment.variables = {

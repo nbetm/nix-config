@@ -8,6 +8,7 @@ pkgs: with pkgs; [
   u.kitty
   u.vivaldi
   wl-clipboard
+  xdg-utils
 
   # Password management (pass with extensions)
   (pass-wayland.withExtensions (exts: [

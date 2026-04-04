@@ -2,7 +2,6 @@
 pkgs: with pkgs; [
   # Development Tools
   claude-code
-  gcc
   git
   helix
   neovim
@@ -51,8 +50,11 @@ pkgs: with pkgs; [
   # Language Servers & Formatters
   ansible-lint
   bash-language-server
-  lua-language-server
+  docker-language-server
+  dockerfmt
+  hadolint
   jinja-lsp
+  lua-language-server
   marksman
   nixd
   nixfmt-rfc-style
@@ -74,12 +76,8 @@ pkgs: with pkgs; [
 
   # Cloud & Infrastructure
   awscli2
-  docker-compose-language-service
-  docker-language-server
   docker-buildx
-  docker_29
   google-cloud-sdk
-  hadolint
   lazydocker
   nomad
   packer
@@ -96,9 +94,7 @@ pkgs: with pkgs; [
   htop
   imagemagick
   ipcalc
-  nvd
   parallel
   watch
   wget
-  xdg-utils
 ]

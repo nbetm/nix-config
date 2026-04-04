@@ -45,6 +45,7 @@
       myLib = {
         # Import package lists from separate files
         basePackages = import ./hosts/shared/packages-base.nix;
+        linuxPackages = import ./hosts/shared/packages-linux.nix;
         linuxDesktopPackages = import ./hosts/shared/packages-linux-desktop.nix;
         darwinPackages = import ./hosts/shared/packages-darwin.nix;
       };
