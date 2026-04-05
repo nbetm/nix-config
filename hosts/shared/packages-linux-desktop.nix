@@ -10,6 +10,9 @@ pkgs: with pkgs; [
   wl-clipboard
   xdg-utils
 
+  # Icons
+  papirus-icon-theme
+
   # Password management (pass with extensions)
   (pass-wayland.withExtensions (exts: [
     exts.pass-audit
