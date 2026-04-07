@@ -12,6 +12,7 @@
     ./hardware-configuration.nix
     ../shared/nixos-common.nix
     ../shared/virtualization.nix
+    ../shared/tailscale.nix
   ];
 
   # KVM kernel modules
@@ -27,6 +28,16 @@
     "enp1s0"
     "wlp2s0"
   ];
+
+  # Tailscale: bastion + subnet router for the home LAN.
+  myConfig.tailscale = {
+    enable = true;
+    advertiseRoutes = [ "192.168.1.0/24" ];
+    lanInterfaces = [
+      "enp1s0"
+      "wlp2s0"
+    ];
+  };
 
   # User groups (base groups come from nixos-common.nix, these are aura-specific)
   users.users.nbetm.extraGroups = [
