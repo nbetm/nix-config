@@ -6,6 +6,11 @@ pkgs: with pkgs; [
   # Docker Engine (macOS uses colima instead)
   docker_29
 
+  # Hashistack
+  nomad
+  packer
+  terraform
+
   # System Tools
   nvd
 ]

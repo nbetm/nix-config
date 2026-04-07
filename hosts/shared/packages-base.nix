@@ -10,18 +10,22 @@ pkgs: with pkgs; [
 
   # CLI/TUI Tools
   asciinema_3
+  awscli2
   bash-completion
   bat
   btop
   delta
+  docker-buildx
   doitlive
-  ffmpeg
   fd
+  ffmpeg
   fzf
   gh
   glow
+  google-cloud-sdk
   jq
   just
+  lazydocker
   lazygit
   ncdu
   pandoc
@@ -73,15 +77,6 @@ pkgs: with pkgs; [
   u.yaml-language-server
   yamlfmt
   yamllint
-
-  # Cloud & Infrastructure
-  awscli2
-  docker-buildx
-  google-cloud-sdk
-  lazydocker
-  nomad
-  packer
-  terraform
 
   # Fonts
   nerd-fonts.symbols-only
