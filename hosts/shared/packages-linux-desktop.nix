@@ -24,12 +24,12 @@ pkgs: with pkgs; [
   # Hacks
   (pkgs.symlinkJoin {
     name = "enpass-hidpi";
-    paths = [ enpass ];
+    paths = [ u.enpass ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       rm $out/share/applications/enpass.desktop
-      substitute ${enpass}/share/applications/enpass.desktop $out/share/applications/enpass.desktop \
-        --replace-fail 'Exec=${enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 ${enpass}/bin/Enpass'
+      substitute ${u.enpass}/share/applications/enpass.desktop $out/share/applications/enpass.desktop \
+        --replace-fail 'Exec=${u.enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 ${u.enpass}/bin/Enpass'
     '';
   })
   (pkgs.symlinkJoin {

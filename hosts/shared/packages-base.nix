@@ -4,7 +4,7 @@ pkgs: with pkgs; [
   claude-code
   git
   helix
-  neovim
+  u.neovim
   python313
   vim
 
