@@ -15,6 +15,7 @@
     "virbr0"
     "virbr1"
     "virbr2"
+    "docker0"
   ];
 
   # Don't let NetworkManager manage virt bridges (prevents conflicts)
@@ -25,21 +26,20 @@
     "virbr2"
   ];
 
-  environment.systemPackages = with pkgs; [ libvirt ];
-
   environment.variables.LIBVIRT_DEFAULT_URI = "qemu:///system";
 
   virtualisation = {
     docker = {
       enable = true;
-      rootless = {
-        enable = true;
-        setSocketVariable = true;
+      package = pkgs.docker_29;
+      daemon.settings = {
+        userns-remap = "nbetm:nbetm";
       };
     };
 
     libvirtd = {
       enable = true;
+      package = pkgs.libvirt;
       qemu = {
         package = pkgs.qemu_kvm;
         runAsRoot = false;

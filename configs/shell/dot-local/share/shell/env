@@ -63,8 +63,3 @@ export COLORTERM=truecolor
 
 # PDSH
 export PDSH_RCMD_TYPE=ssh
-
-# Docker Rootless (Linux only)
-if [[ "$OS_NAME" == "Linux" ]]; then
-    export DOCKER_HOST=unix:///run/user/1000/docker.sock
-fi

@@ -27,12 +27,38 @@
   };
 
   # User
+  users.groups.nbetm = {
+    gid = 1000;
+  };
+
   users.users.nbetm = {
     isNormalUser = true;
     description = "Nelson Monserrate";
+    group = "nbetm";
+    extraGroups = [ "users" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICR+Am/2drHgOPkf0pzogA8SRcNhJsdVMDEvfDIrOauO nbetm@localhost"
+    ];
+    subUidRanges = [
+      {
+        startUid = 1000;
+        count = 1;
+      }
+      {
+        startUid = 100001;
+        count = 65534;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 1000;
+        count = 1;
+      }
+      {
+        startGid = 100001;
+        count = 65534;
+      }
     ];
   };
 
