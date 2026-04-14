@@ -1,17 +1,20 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
-  # Development Tools
+  # Editors
   claude-code
-  git
   helix
   u.neovim
-  python313
   vim
+
+  # Shell
+  bash-completion
+  starship
+  zsh-autosuggestions
+  zsh-fast-syntax-highlighting
 
   # CLI/TUI Tools
   asciinema_3
   awscli2
-  bash-completion
   bat
   btop
   delta
@@ -21,6 +24,7 @@ pkgs: with pkgs; [
   ffmpeg
   fzf
   gh
+  git
   glow
   google-cloud-sdk
   jq
@@ -29,13 +33,11 @@ pkgs: with pkgs; [
   lazygit
   ncdu
   pandoc
-  python313Packages.weasyprint
   ripgrep
   sesh
   silver-searcher
   single-file-cli
   spotdl
-  starship
   stow
   tmux
   tmux-xpanes
@@ -47,34 +49,50 @@ pkgs: with pkgs; [
   zellij
   zoxide
 
-  # Zsh plugins
-  zsh-autosuggestions
-  zsh-fast-syntax-highlighting
-
-  # Language Servers & Formatters
+  # Ansible
   ansible-lint
+  jinja-lsp
+
+  # Bash
   bash-language-server
+  shellcheck
+  shfmt
+
+  # Docker
   docker-language-server
   dockerfmt
   hadolint
-  jinja-lsp
+
+  # JSON
+  vscode-json-languageserver
+
+  # Lua
   lua-language-server
+  luajit
+  selene
+  stylua
+
+  # Markdown
   marksman
+  prettier
+
+  # Nix
   nixd
   nixfmt-rfc-style
   nixfmt-tree
-  prettier
+
+  # Python
+  python313
+  python313Packages.weasyprint
   u.pyright
   u.ruff
-  u.shellcheck
-  u.shfmt
-  u.stylua
-  taplo
-  terraform-ls
-  tflint
   u.uv
-  vscode-json-languageserver
-  u.yaml-language-server
+
+  # TOML
+  taplo
+
+  # YAML
+  yaml-language-server
   yamlfmt
   yamllint
 
@@ -83,9 +101,9 @@ pkgs: with pkgs; [
 
   # System Tools
   dnsutils
-  graphviz
   fastfetch
   gnumake
+  graphviz
   htop
   imagemagick
   ipcalc
