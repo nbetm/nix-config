@@ -2,6 +2,15 @@
 pkgs: with pkgs; [
   # Development Tools
   gcc
+  go
+
+  # Go tooling
+  delve
+  gofumpt
+  golangci-lint
+  golangci-lint-langserver
+  gopls
+  gotools
 
   # Hashistack
   nomad
