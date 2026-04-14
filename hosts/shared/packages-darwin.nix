@@ -7,8 +7,8 @@ pkgs: with pkgs; [
   gnugrep
   gnused
   gnutar
-  which # GNU which
-  indent # GNU indent
+  which
+  indent
 
   # Newer versions than macOS ships
   curl

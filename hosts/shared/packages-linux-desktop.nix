@@ -1,27 +1,34 @@
 # Linux Desktop packages - GUI applications and desktop-specific tools
 pkgs: with pkgs; [
-  # Desktop Applications (Linux-only)
-  kdePackages.partitionmanager
-  signal-desktop
-  spotify
+  # Terminals
   u.ghostty
   u.kitty
+
+  # Browsers
   u.vivaldi
-  wl-clipboard
-  xdg-utils
 
-  # Icons
-  papirus-icon-theme
+  # Communication
+  signal-desktop
+  (pkgs.symlinkJoin {
+    name = "zoom-us-hidpi";
+    paths = [ u.zoom-us ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/zoom \
+        --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
+    '';
+  })
 
-  # Password management (pass with extensions)
+  # Media
+  spotify
+
+  # Password management
   (pass-wayland.withExtensions (exts: [
     exts.pass-audit
     exts.pass-import
     exts.pass-otp
     exts.pass-update
   ]))
-
-  # Hacks
   (pkgs.symlinkJoin {
     name = "enpass-hidpi";
     paths = [ u.enpass ];
@@ -32,13 +39,12 @@ pkgs: with pkgs; [
         --replace-fail 'Exec=${u.enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 ${u.enpass}/bin/Enpass'
     '';
   })
-  (pkgs.symlinkJoin {
-    name = "zoom-us-hidpi";
-    paths = [ u.zoom-us ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/zoom \
-        --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
-    '';
-  })
+
+  # System
+  kdePackages.partitionmanager
+  wl-clipboard
+  xdg-utils
+
+  # Icons
+  papirus-icon-theme
 ]
