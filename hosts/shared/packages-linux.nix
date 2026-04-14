@@ -7,6 +7,12 @@ pkgs: with pkgs; [
   rustc
   zig
 
+  # C tooling
+  clang-tools
+  cmake
+  gdb
+  pkg-config
+
   # Go tooling
   delve
   gofumpt
