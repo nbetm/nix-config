@@ -3,6 +3,7 @@ pkgs: with pkgs; [
   # Development Tools
   gcc
   go
+  rustc
   zig
 
   # Go tooling
@@ -12,6 +13,12 @@ pkgs: with pkgs; [
   golangci-lint-langserver
   gopls
   gotools
+
+  # Rust tooling
+  cargo
+  clippy
+  rust-analyzer
+  rustfmt
 
   # Zig tooling
   lldb
