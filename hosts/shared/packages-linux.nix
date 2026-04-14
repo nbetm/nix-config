@@ -1,6 +1,7 @@
 # Linux packages - CLI tools for all Linux hosts (NixOS)
 pkgs: with pkgs; [
   # Development Tools
+  elixir
   gcc
   go
   luajit
@@ -12,6 +13,9 @@ pkgs: with pkgs; [
   cmake
   gdb
   pkg-config
+
+  # Elixir tooling
+  elixir-ls
 
   # Go tooling
   delve
