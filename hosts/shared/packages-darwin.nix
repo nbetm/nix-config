@@ -22,5 +22,6 @@ pkgs: with pkgs; [
   u.docker-client
 
   # GUI apps
+  flameshot
   u.kitty
 ]

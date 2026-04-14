@@ -41,6 +41,7 @@ pkgs: with pkgs; [
   })
 
   # System
+  flameshot
   kdePackages.partitionmanager
   wl-clipboard
   xdg-utils
