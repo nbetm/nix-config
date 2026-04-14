@@ -3,6 +3,7 @@ pkgs: with pkgs; [
   # Development Tools
   gcc
   go
+  luajit
   rustc
   zig
 
@@ -19,6 +20,11 @@ pkgs: with pkgs; [
   clippy
   rust-analyzer
   rustfmt
+
+  # Lua tooling
+  lua-language-server
+  selene
+  stylua
 
   # Zig tooling
   lldb
