@@ -3,6 +3,7 @@ pkgs: with pkgs; [
   # Development Tools
   gcc
   go
+  zig
 
   # Go tooling
   delve
@@ -11,6 +12,10 @@ pkgs: with pkgs; [
   golangci-lint-langserver
   gopls
   gotools
+
+  # Zig tooling
+  lldb
+  zls
 
   # Hashistack
   nomad
