@@ -24,6 +24,7 @@ pkgs: with pkgs; [
   ffmpeg
   fzf
   gh
+  u.gh-dash
   git
   glow
   google-cloud-sdk
