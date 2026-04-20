@@ -73,7 +73,7 @@ pkgs: with pkgs; [
   stylua
 
   # Markdown
-  marksman
+  markdown-oxide
   prettier
 
   # Nix
