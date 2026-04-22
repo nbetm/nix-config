@@ -110,7 +110,7 @@ args = []
 # Markdown
 [[language]]
 name = "markdown"
-language-servers = ["markdown-oxide"]
+language-servers = ["marksman"]
 auto-format = true
 rulers = [120]
 formatter = { command = "prettier", args = [
@@ -120,8 +120,9 @@ formatter = { command = "prettier", args = [
   "preserve",
 ] }
 
-[language-server.markdown-oxide]
-command = "markdown-oxide"
+[language-server.marksman]
+command = "marksman"
+args = ["server"]
 
 [[language]]
 name = "ini"
