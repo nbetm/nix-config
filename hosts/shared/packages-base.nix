@@ -47,7 +47,7 @@ pkgs: with pkgs; [
   yazi
   yq
   yt-dlp
-  zellij
+  u.zellij
   zoxide
 
   # Ansible
