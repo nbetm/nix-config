@@ -113,12 +113,7 @@ name = "markdown"
 language-servers = ["marksman"]
 auto-format = true
 rulers = [120]
-formatter = { command = "prettier", args = [
-  "--parser",
-  "markdown",
-  "--prose-wrap",
-  "preserve",
-] }
+formatter = { command = "mdformat", args = ["-"] }
 
 [language-server.marksman]
 command = "marksman"

@@ -76,6 +76,9 @@ pkgs: with pkgs; [
   # Markdown
   marksman
   prettier
+  u.python313Packages.mdformat
+  u.python313Packages.mdformat-frontmatter
+  u.python313Packages.mdformat-gfm
 
   # Nix
   nixd

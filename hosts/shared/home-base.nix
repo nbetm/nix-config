@@ -17,6 +17,7 @@
     ".direnvrc".source = ../../configs/shell/dot-direnvrc;
     ".gitconfig".source = ../../configs/git/dot-gitconfig;
     ".gitignore".source = ../../configs/git/dot-gitignore;
+    ".mdformat.toml".source = ../../configs/mdformat/dot-mdformat.toml;
 
     # Shell scripts and bins
     ".local/bin/ytdl".source = ../../configs/shell/dot-local/bin/ytdl;
