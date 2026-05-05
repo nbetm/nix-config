@@ -44,6 +44,7 @@ pkgs: with pkgs; [
   tmux-xpanes
   tokei
   tree
+  tree-sitter
   yazi
   yq
   yt-dlp
@@ -52,6 +53,7 @@ pkgs: with pkgs; [
 
   # Ansible
   ansible-lint
+  u.ansible-language-server
   jinja-lsp
 
   # Bash
