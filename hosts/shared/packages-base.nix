@@ -44,7 +44,7 @@ pkgs: with pkgs; [
   tmux-xpanes
   tokei
   tree
-  tree-sitter
+  u.tree-sitter
   yazi
   yq
   yt-dlp
