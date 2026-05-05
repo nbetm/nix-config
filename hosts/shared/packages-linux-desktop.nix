@@ -5,7 +5,8 @@ pkgs: with pkgs; [
   u.kitty
 
   # Browsers
-  u.vivaldi
+  vivaldi
+  vivaldi-ffmpeg-codecs
 
   # Communication
   signal-desktop
