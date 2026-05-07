@@ -37,7 +37,7 @@ shopt -s checkwinsize            # Update LINES and COLUMNS after each command
 shopt -s no_empty_cmd_completion # Don't complete on empty line
 
 # ------------------------------------------------------------------------------
-# Tool Initialization
+# Tool Integrations
 # ------------------------------------------------------------------------------
 
 # FZF (ble.sh loads its own fzf integration via blesh-contrib)
@@ -48,6 +48,11 @@ fi
 # Starship prompt
 if command -v starship &>/dev/null; then
     eval "$(starship init bash)"
+fi
+
+# LS_COLORS
+if [[ -f "${HOME}/.dir_colors" ]]; then
+    eval "$(dircolors -b "${HOME}/.dir_colors")"
 fi
 
 # ------------------------------------------------------------------------------

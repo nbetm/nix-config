@@ -36,8 +36,3 @@ elif [[ $OS_NAME = "Linux" ]]; then
         export FZF_SHELL_DIR="${HOME}/.fzf/shell"
     fi
 fi
-
-# LS_COLORS
-if [[ -f "${HOME}/.dir_colors" ]]; then
-    eval "$(dircolors -b "${HOME}/.dir_colors")"
-fi

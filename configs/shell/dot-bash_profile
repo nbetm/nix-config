@@ -54,10 +54,6 @@ fi
 PATH="$(printf '%s\n' "${PATH//:/$'\n'}" | awk '!seen[$0]++' | paste -sd: -)"
 export PATH
 
-# LS_COLORS
-if [[ -f "${HOME}/.dir_colors" ]]; then
-    eval "$(dircolors -b "${HOME}/.dir_colors")"
-fi
 
 # ------------------------------------------------------------------------------
 # Source bashrc for interactive shell setup

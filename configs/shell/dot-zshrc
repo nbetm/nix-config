@@ -208,6 +208,11 @@ if command -v zoxide &>/dev/null; then
     eval "$(zoxide init zsh)"
 fi
 
+# LS_COLORS
+if [[ -f "${HOME}/.dir_colors" ]]; then
+    eval "$(dircolors -b "${HOME}/.dir_colors")"
+fi
+
 # Tool completions (bash-style)
 complete -o nospace -C terraform terraform
 complete -o nospace -C nomad nomad
