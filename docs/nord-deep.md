@@ -2,25 +2,17 @@
 
 > An arctic, north-bluish color palette taken to deeper depths.
 
-Nord Deep takes the original [Nord] palette deeper while keeping its relationships and pastel aesthetic intact.
-Better contrast for accessibility, clearer UI hierarchy, more flexible theming.
-
-## Philosophy
-
-**Why deeper?** Modern screens benefit from more contrast without losing Nord's calm, muted character.
-Nord Deep keeps what makes Nord work and adds:
-
-- **Better accessibility:** improved contrast ratios for readability
-- **Clearer hierarchy:** more distinct levels for complex UI layouts
-- **Enhanced focus:** deeper background reduces visual noise
+Nord, but deeper.
+Polar Night and Snow Storm get reworked: deeper darks, more contrast, clearer hierarchy.
+Frost and Aurora stay exactly as they were, so the syntax aesthetic you came to Nord for is untouched.
 
 ## Color Palettes
 
-Four palettes, each with its own role.
+Four palettes, four roles.
 
 ### Polar Night
 
-_Foundation colors for UI structure_
+The dark layers: backgrounds, chrome, structural depth.
 
 | Color | Name | Hex | Usage |
 | -- | -- | -- | -- |
@@ -31,7 +23,7 @@ _Foundation colors for UI structure_
 
 ### Snow Storm
 
-_Text hierarchy from subtle to prominent_
+Text, from quiet to loud.
 
 | Color | Name | Hex | Usage |
 | -- | -- | -- | -- |
@@ -41,9 +33,7 @@ _Text hierarchy from subtle to prominent_
 
 ### Frost
 
-_Structural syntax highlighting colors_
-
-The Frost palette is **unchanged from original [Nord]** to keep the syntax aesthetic intact.
+Structural syntax. Untouched from original [Nord] to keep the aesthetic intact.
 
 | Color | Name | Hex | Usage |
 | -- | -- | -- | -- |
@@ -54,9 +44,7 @@ The Frost palette is **unchanged from original [Nord]** to keep the syntax aesth
 
 ### Aurora
 
-_Semantic syntax highlighting colors_
-
-The Aurora palette is **unchanged from original [Nord]** for the same reason.
+Semantic syntax. Also untouched from original [Nord], same reason.
 
 | Color | Name | Hex | Usage |
 | -- | -- | -- | -- |
@@ -68,27 +56,27 @@ The Aurora palette is **unchanged from original [Nord]** for the same reason.
 
 ## Design Language
 
-The colorscheme isn't just a palette: it encodes a small design vocabulary across UI surfaces.
-New highlight groups should slot into one of these patterns rather than picking colors ad-hoc.
+The colorscheme isn't just a palette: it encodes a small design vocabulary.
+New highlight groups should slot into one of these patterns instead of picking colors ad-hoc.
 
 ### Two-Tier Float Elevation
 
-Floating / overlay windows split into two tiers based on the user's relationship to them:
+Floating windows split into two tiers based on the user's relationship to them.
 
-- **Sunken** (`bg = base`): workspace surfaces you actively operate in.
-  Filter / search popups, file-tree popups, key-hint popups.
-  You navigate, search, decide inside these.
-  Body, border, and title all paint on `base` so they read as extensions of the editor.
-- **Raised** (`bg = surface`): transient feedback you didn't summon.
-  Notifications, hover popups, completion popups, command-line peek, diagnostic float.
-  The slight elevation signals "this came in" without shouting.
+Sunken (`bg = base`) for surfaces you actively operate in: filter popups, file-tree popups, key-hint popups.
+You navigate, search, decide inside these.
+Body, border, and title all paint on `base` so they read as extensions of the editor.
+
+Raised (`bg = surface`) for transient feedback you didn't summon: notifications, hover popups, completion popups, command-line peek, diagnostic float.
+The slight elevation signals "this came in" without shouting.
 
 The cue is subtle (~13 RGB units between the two tiers) but unmistakable once your eye learns it.
 Body, border, and title for any given surface should flip together to avoid a visible seam at the frame.
 
 ### Semantic Color Channels (popups)
 
-Within popups, color carries meaning. Each channel has one role:
+Within popups, color carries meaning.
+Each channel has one role:
 
 | Channel | Color | Role |
 | -- | -- | -- |
@@ -102,13 +90,11 @@ Within popups, color carries meaning. Each channel has one role:
 
 ### Three-Tier Row State
 
-Rows in list surfaces (filter popups, completion popups) have a brightness hierarchy mapping to user intent:
+Rows in list surfaces have a brightness hierarchy keyed to user intent.
 
-- **Marked** (`bg = subtle`, brightest): items the user queued for action.
-  Pull the eye most.
-- **Current** (`bg = elevated`, softer): passive cursor position.
-  Less emphasis since the user already knows where the cursor is.
-- **Default** (no bg): ambient.
+Marked rows (`bg = subtle`, brightest) are items the user queued for action: they pull the eye most.
+Current (`bg = elevated`, softer) is the passive cursor position: less emphasis, since the user already knows where the cursor is.
+Default has no bg.
 
 Marked > Current is deliberate.
 Marked items represent *intent*; the cursor is just position.
@@ -128,7 +114,8 @@ Severity should be a signal, not a default.
 ### Focus Signaled by Fade
 
 When multiple panes are visible (e.g., a multi-pane file explorer), the focused pane's title stays at baseline; *un*focused titles fade to `dim`.
-Active stays put. The user's eye anchor doesn't move.
+Active stays put.
+The user's eye anchor doesn't move.
 Inactive recedes.
 
 ### Structural Chrome Recedes
@@ -138,11 +125,13 @@ They never compete with content.
 
 ### Transparency and Layering
 
-- Subtle highlights: use transparency like `#2e344080` (50% opacity) for active lines, wrap guides, indent guides.
-- Fallback: blended result `#282e39` when transparency unavailable.
-- Or use intermediate Polar Night colors (`surface`, `elevated`) for a middle ground.
+For subtle highlights (active lines, wrap guides, indent guides), use transparency like `#2e344080` (50% opacity).
+When transparency isn't available, the blended result `#282e39` is the fallback.
+For a middle ground, use one of the intermediate Polar Night colors (`surface`, `elevated`).
 
-## Terminal setup
+## Terminal Setup
+
+The minimum to get Nord Deep into your terminal:
 
 ```ini
 background = #212732
