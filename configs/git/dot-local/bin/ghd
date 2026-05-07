@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Wrap gh-dash so when I run it in a repo directory, it will
+# automatically inject the current working dir into repoPaths.
+#
+# Set options:
+#   e: Stop script if command fails
+#   u: Stop script if unset variable is referenced
+#   x: Debug, print commands as they are executed
+#   f: Disable file name generation (globbing).
+#   o pipefail: If any command in a pipeline fails it all fails
+#
+set -euo pipefail
+
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+REPO_PATH=$(git rev-parse --show-toplevel 2>/dev/null)
+
+if [[ -n "$REPO" ]] && [[ -n "$REPO_PATH" ]]; then
+    export REPO REPO_PATH
+    gh-dash --config <(
+        yq eval '.repoPaths.[env(REPO)] = env(REPO_PATH)' ~/.config/gh-dash/config.yml
+    )
+else
+    gh-dash
+fi

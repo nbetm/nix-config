@@ -35,6 +35,9 @@
       ../../configs/tmux/dot-local/bin/tmux-cleanup-float-session;
     ".local/bin/tmux-open-url".source = ../../configs/tmux/dot-local/bin/tmux-open-url;
 
+    # GH-Dash
+    ".local/bin/ghd".source = ../../configs/git/dot-local/bin/ghd;
+
     # ZSH completions (manual — not provided by nix packages)
     ".zsh/completions" = {
       source = ../../configs/shell/dot-zsh/completions;
@@ -63,6 +66,7 @@
       recursive = true;
     };
     "lazygit".source = ../../configs/git/dot-config/lazygit;
+    "gh-dash".source = ../../configs/git/dot-config/gh-dash;
     "md2pdf.css".source = ../../configs/shell/dot-config/md2pdf.css;
     "ncdu".source = ../../configs/ncdu/dot-config/ncdu;
     "sesh".source = ../../configs/sesh/dot-config/sesh;
