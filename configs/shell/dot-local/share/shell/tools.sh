@@ -6,20 +6,7 @@
 # SSH
 # ------------------------------------------------------------------------------
 
-ssh() {
-    # Always override TERM for SSH - remote servers often don't have
-    # modern terminfo entries
-
-    if [[ -n "$KITTY_PID" ]]; then
-        # Kitty kitten handles terminfo deployment automatically
-        kitty +kitten ssh "$@"
-    else
-        # Fallback - use widely compatible TERM
-        TERM=xterm-256color command ssh "$@"
-    fi
-}
-
-alias gssh="TERM=xterm-ghostty command ssh"
+alias s="ssh"
 alias ssha="ssh-add -l"
 alias sshar="ssh-add -D && ssh-add ~/.ssh/id_ed25519-nbetm ~/.ssh/id_ed25519-nbetm-gh"
 alias sshaD="ssh-add -D"
