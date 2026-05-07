@@ -135,8 +135,10 @@ zle -N my-forward-word
 bindkey "^[f" my-forward-word
 
 bindkey "^[o" accept-line-and-down-history
-bindkey '\e[H' beginning-of-line  # Home
-bindkey '\e[F' end-of-line        # End
+bindkey '\e[H' beginning-of-line  # Home (CUP form, sent by ghostty outside tmux)
+bindkey '\e[F' end-of-line        # End  (CUP form, sent by ghostty outside tmux)
+bindkey '\e[1~' beginning-of-line # Home (VT220 form, what tmux re-emits)
+bindkey '\e[4~' end-of-line       # End  (VT220 form, what tmux re-emits)
 
 # Sesh - tmux session picker
 sesh-sessions() {
