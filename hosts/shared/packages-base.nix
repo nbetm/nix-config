@@ -46,7 +46,7 @@ pkgs: with pkgs; [
   tree
   u.tree-sitter
   yazi
-  yq
+  yq-go
   yt-dlp
   u.zellij
   zoxide
