@@ -5,7 +5,12 @@ pkgs: with pkgs; [
   u.kitty
 
   # Browsers
-  vivaldi
+  # Vivaldi: kwallet6 for browser-internal secrets; Qt wrap for Plasma 6 stability
+  ((vivaldi.override { commandLineArgs = "--password-store=kwallet6"; }).overrideAttrs (oldAttrs: {
+    dontWrapQtApps = false;
+    dontPatchELF = true;
+    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ pkgs.kdePackages.wrapQtAppsHook ];
+  }))
   vivaldi-ffmpeg-codecs
 
   # Communication

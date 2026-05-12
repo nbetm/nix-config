@@ -69,8 +69,11 @@
   # Fonts
   fonts = {
     fontDir.enable = true;
+    # Firefox needs embedded bitmaps to render Noto Color Emoji
+    fontconfig.useEmbeddedBitmaps = true;
     packages = with pkgs; [
       material-design-icons
+      noto-fonts-color-emoji
     ];
   };
 
@@ -85,7 +88,22 @@
   };
 
   # Firefox
-  programs.firefox.enable = true;
+  programs.firefox = {
+    enable = true;
+    nativeMessagingHosts.packages = [ pkgs.kdePackages.plasma-browser-integration ];
+    preferences = {
+      "widget.use-xdg-desktop-portal.file-picker" = 1;
+    };
+    policies = {
+      DisableTelemetry = true;
+      DisableFirefoxStudies = true;
+      DisablePocket = true;
+      DisableFormHistory = true;
+      EnableTrackingProtection = true;
+      DontCheckDefaultBrowser = true;
+      OfferToSaveLogins = false;
+    };
+  };
 
   # Packages
   environment.systemPackages =
