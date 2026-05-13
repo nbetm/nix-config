@@ -17,38 +17,38 @@ theme[main_bg]="#212732"
 theme[main_fg]="#b8c5d1"
 
 # Title color for boxes
-theme[title]="#81a1c1"
+theme[title]="#88c0d0"
 
 # Higlight color for keyboard shortcuts
-theme[hi_fg]="#88c0d0"
+theme[hi_fg]="#81a1c1"
 
 # Background color of selected item in processes box
 theme[selected_bg]="#3b4252"
 
 # Foreground color of selected item in processes box
-theme[selected_fg]="#d4dce6"
+theme[selected_fg]="#b8c5d1"
 
 # Color of inactive/disabled text
-theme[inactive_fg]="#434c5e"
+theme[inactive_fg]="#798094"
 
 # Misc colors for processes box including mini cpu graphs, details memory graph
 # and details status text
 theme[proc_misc]="#8fbcbb"
 
 # Cpu box outline color
-theme[cpu_box]="#3b4252"
+theme[cpu_box]="#434c5e"
 
 # Memory/disks box outline color
-theme[mem_box]="#3b4252"
+theme[mem_box]="#434c5e"
 
 # Net up/down box outline color
-theme[net_box]="#3b4252"
+theme[net_box]="#434c5e"
 
 # Processes box outline color
-theme[proc_box]="#3b4252"
+theme[proc_box]="#434c5e"
 
 # Box divider line and small boxes line color
-theme[div_line]="#3b4252"
+theme[div_line]="#434c5e"
 
 # Temperature graph colors
 theme[temp_start]="#ebcb8b"

@@ -17,7 +17,7 @@ count_cut = { fg = "#212732", bg = "#bf616a" }
 count_selected = { fg = "#212732", bg = "#b48ead" }
 
 border_symbol = "│"
-border_style = { fg = "#3b4252" }
+border_style = { fg = "#434c5e" }
 
 [tabs]
 tab_active = { reversed = true }
@@ -49,18 +49,18 @@ perm_exec = { fg = "#b8c5d1" }
 perm_sep = { fg = "#b8c5d1" }
 
 [input]
-border = { fg = "#3b4252" }
+border = { fg = "#434c5e" }
 title = { fg = "#b8c5d1" }
 value = { fg = "#b8c5d1" }
 selected = { reversed = true }
 
 [pick]
-border = { fg = "#3b4252" }
+border = { fg = "#434c5e" }
 active = { fg = "#88c0d0", bold = true }
 inactive = { fg = "#798094" }
 
 [confirm]
-border = { fg = "#3b4252" }
+border = { fg = "#434c5e" }
 title = { fg = "#b8c5d1" }
 content = {}
 list = {}
@@ -68,10 +68,10 @@ btn_yes = { reversed = true }
 btn_no = {}
 
 [cmp]
-border = { fg = "#3b4252" }
+border = { fg = "#434c5e" }
 
 [tasks]
-border = { fg = "#3b4252" }
+border = { fg = "#434c5e" }
 title = { fg = "#b8c5d1" }
 hovered = { fg = "#b48ead", underline = true }
 
@@ -90,7 +90,7 @@ hovered = { reversed = true, bold = true }
 footer = { fg = "#212732", bg = "#b8c5d1" }
 
 [notify]
-title_info = { fg = "#81a1c1" }
+title_info = { fg = "#5e81ac" }
 title_warn = { fg = "#ebcb8b" }
 title_error = { fg = "#bf616a" }
 

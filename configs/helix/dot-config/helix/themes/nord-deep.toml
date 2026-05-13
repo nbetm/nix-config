@@ -67,12 +67,12 @@
 "diff.minus" = "nord-red"
 "diff.plus" = "nord-green"
 
-"markup.heading.1" = "nord-red"
-"markup.heading.2" = "nord-orange"
-"markup.heading.3" = "nord-yellow"
-"markup.heading.4" = "nord-green"
-"markup.heading.5" = "nord-cyan"
-"markup.heading.6" = "nord-blue"
+"markup.heading.1" = { fg = "nord-magenta", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "nord-magenta", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "nord-magenta", modifiers = ["bold"] }
+"markup.heading.4" = { fg = "nord-magenta", modifiers = ["bold"] }
+"markup.heading.5" = { fg = "nord-magenta", modifiers = ["bold"] }
+"markup.heading.6" = { fg = "nord-magenta", modifiers = ["bold"] }
 "markup.bold" = { fg = "nord-text", modifiers = ["bold"] }
 "markup.italic" = { fg = "nord-text", modifiers = ["italic"] }
 "markup.link.label" = { fg = "nord-cyan", modifiers = ["underlined"] }
@@ -80,15 +80,15 @@
 "markup.link.url" = { fg = "nord-cyan", modifiers = ["underlined"] }
 "markup.list" = "nord-text"
 "markup.list.checked" = "nord-green"
-"markup.list.unchecked" = "nord-chrome"
-"markup.quote" = "nord-magenta"
+"markup.list.unchecked" = "nord-dim"
+"markup.quote" = "nord-navy"
 "markup.raw" = "nord-aqua"
 "markup.strikethrough" = { fg = "nord-text", modifiers = ["crossed_out"] }
 
 # UI --------------------------------------------------------------------------
 
 "ui.background" = { fg = "nord-text", bg = "nord-base" }
-"ui.background.separator" = { fg = "nord-text" }
+"ui.background.separator" = { fg = "nord-chrome" }
 
 "ui.linenr" = { fg = "nord-chrome" }
 "ui.linenr.selected" = { fg = "nord-text" }
@@ -98,7 +98,7 @@
 "ui.statusline.insert" = { fg = "nord-base", bg = "nord-cyan" }
 "ui.statusline.normal" = { fg = "nord-base", bg = "nord-text" }
 "ui.statusline.select" = { fg = "nord-base", bg = "nord-aqua" }
-"ui.statusline.separator" = { fg = "nord-text" }
+"ui.statusline.separator" = { fg = "nord-chrome" }
 
 "ui.menu" = { fg = "nord-text", bg = "nord-base" }
 "ui.menu.scroll" = { fg = "nord-chrome" }
@@ -108,7 +108,7 @@
 "ui.popup.info" = { fg = "nord-dim", bg = "nord-base" }
 
 "ui.help" = { fg = "nord-dim", bg = "nord-base" }
-"ui.window" = { fg = "nord-elevated" }
+"ui.window" = { fg = "nord-chrome" }
 
 "ui.bufferline" = { fg = "nord-dim", bg = "nord-surface" }
 "ui.bufferline.active" = { fg = "nord-text", bg = "nord-base" }
@@ -150,7 +150,7 @@
 "ui.selection" = { bg = "nord-elevated" }
 "ui.selection.primary" = { bg = "nord-elevated" }
 
-"ui.highlight" = { bg = "nord-elevated" }
+"ui.highlight" = { fg = "nord-base", bg = "nord-yellow" }
 
 "ui.picker.header" = { fg = "nord-text", modifiers = ["bold"] }
 "ui.picker.header.column" = { fg = "nord-text", modifiers = ["bold"] }

@@ -67,16 +67,16 @@
           <key>bracketsOptions</key>
           <string>underline</string>
           <key>bracketsForeground</key>
-          <string>#88c0d0</string>
+          <string>#d08770</string>
           <key>bracketsContentsOptions</key>
           <string>underline</string>
           <key>bracketsContentsForeground</key>
-          <string>#88c0d0</string>
+          <string>#d08770</string>
           <!-- +- Tags -+ -->
           <key>tagsOptions</key>
           <string>underline</string>
           <key>tagsForeground</key>
-          <string>#88c0d0</string>
+          <string>#d08770</string>
           <!-- +- Shadows -+ -->
           <key>shadow</key>
           <string>#2e3440</string>
@@ -537,7 +537,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#b48ead</string>
+          <string>#5e81ac</string>
         </dict>
       </dict>
       <dict>
@@ -1242,7 +1242,7 @@
         <key>settings</key>
         <dict>
           <key>foreground</key>
-          <string>#8fbcbb</string>
+          <string>#5e81ac</string>
         </dict>
       </dict>
       <dict>
