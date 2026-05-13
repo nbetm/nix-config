@@ -80,7 +80,7 @@
 "markup.link.url" = { fg = "nord-cyan", modifiers = ["underlined"] }
 "markup.list" = "nord-text"
 "markup.list.checked" = "nord-green"
-"markup.list.unchecked" = "nord-subtle"
+"markup.list.unchecked" = "nord-chrome"
 "markup.quote" = "nord-magenta"
 "markup.raw" = "nord-aqua"
 "markup.strikethrough" = { fg = "nord-text", modifiers = ["crossed_out"] }
@@ -90,7 +90,7 @@
 "ui.background" = { fg = "nord-text", bg = "nord-base" }
 "ui.background.separator" = { fg = "nord-text" }
 
-"ui.linenr" = { fg = "nord-subtle" }
+"ui.linenr" = { fg = "nord-chrome" }
 "ui.linenr.selected" = { fg = "nord-text" }
 
 "ui.statusline" = { fg = "nord-text", bg = "nord-elevated" }
@@ -101,7 +101,7 @@
 "ui.statusline.separator" = { fg = "nord-text" }
 
 "ui.menu" = { fg = "nord-text", bg = "nord-base" }
-"ui.menu.scroll" = { fg = "nord-subtle" }
+"ui.menu.scroll" = { fg = "nord-chrome" }
 "ui.menu.selected" = { fg = "nord-cyan", bg = "nord-elevated" }
 
 "ui.popup" = { fg = "nord-dim", bg = "nord-base" }
@@ -156,7 +156,7 @@
 "ui.picker.header.column" = { fg = "nord-text", modifiers = ["bold"] }
 "ui.picker.header.column.active" = { fg = "nord-cyan", modifiers = ["bold"] }
 
-"ui.gutter" = { fg = "nord-subtle" }
+"ui.gutter" = { fg = "nord-chrome" }
 "ui.gutter.selected" = { fg = "nord-text" }
 
 "diagnostic.deprecated" = { fg = "nord-dim", modifiers = ["crossed_out"] }
@@ -175,7 +175,7 @@ hint = { fg = "nord-navy", modifiers = ["italic"] }
 nord-base = "#212732"
 nord-surface = "#2e3440"
 nord-elevated = "#3b4252"
-nord-subtle = "#434c5e"
+nord-chrome = "#434c5e"
 nord-dim = "#798094"
 nord-text = "#b8c5d1"
 nord-bright = "#d4dce6"
