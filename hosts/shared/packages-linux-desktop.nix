@@ -29,6 +29,7 @@ pkgs: with pkgs; [
   spotify
 
   # Password management
+  keepassxc
   (pass-wayland.withExtensions (exts: [
     exts.pass-audit
     exts.pass-import
