@@ -72,6 +72,7 @@
     # Firefox needs embedded bitmaps to render Noto Color Emoji
     fontconfig.useEmbeddedBitmaps = true;
     packages = with pkgs; [
+      adwaita-fonts
       material-design-icons
       noto-fonts-color-emoji
     ];
@@ -116,6 +117,7 @@
   environment.variables = {
     QT_SCALE_FACTOR_ROUNDING_POLICY = "Round";
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
+    FREETYPE_PROPERTIES = "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
   };
 
   # Dropbox sync service
