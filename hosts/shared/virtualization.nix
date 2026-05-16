@@ -79,6 +79,32 @@
             };
             name = "default";
           }
+          {
+            name = "agent-sandbox";
+            description = "Sandbox for Claude Code with nested Docker";
+            config = {
+              "security.nesting" = "true";
+              "security.syscalls.intercept.mknod" = "true";
+              "security.syscalls.intercept.setxattr" = "true";
+              "linux.kernel_modules" = "tun";
+              "raw.idmap" = ''
+                uid 1000 1000
+                gid 1000 1000
+              '';
+            };
+            devices = {
+              eth0 = {
+                name = "eth0";
+                network = "incusbr0";
+                type = "nic";
+              };
+              root = {
+                path = "/";
+                pool = "default";
+                type = "disk";
+              };
+            };
+          }
         ];
         storage_pools = [
           {
