@@ -21,14 +21,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # claude-code - hourly updated nix package
-    claude-code.url = "github:sadjow/claude-code-nix";
-
     # xremap - key remapper for macOS-style shortcuts
     xremap-flake.url = "github:xremap/nix-flake";
-
-    # helix editor - official maintainer flake
-    # helix.url = "github:helix-editor/helix/master";
   };
 
   outputs =
@@ -58,8 +52,6 @@
         };
         # Short alias for unstable packages
         u = final.unstable;
-        # Flake packages (tip versions)
-        claude-code = inputs.claude-code.packages.${prev.stdenv.hostPlatform.system}.default;
         # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
         direnv = final.unstable.direnv;
       };

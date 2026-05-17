@@ -1,7 +1,7 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
   # Editors
-  claude-code
+  u.claude-code
   helix
   u.neovim
   vim
