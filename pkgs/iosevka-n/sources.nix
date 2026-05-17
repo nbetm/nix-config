@@ -1,32 +1,20 @@
 {
-  release = "v33.3.3-0309fae";
-  iosevkaVersion = "v33.3.3";
+  release = "v34.5.0-7c7d548";
+  iosevkaVersion = "v34.5.0";
   buildRepo = "nbetm/iosevka-n";
 
   families = {
     "iosevka-n" = {
       family = "Iosevka N";
-      sha256 = "sha256-cYDbhw27uEx1TeXpUlPrbp+PyQ2puSHjcLySgEKTp+0=";
-    };
-    "iosevka-n-unhinted" = {
-      family = "Iosevka N";
-      sha256 = "sha256-UmmNCn6221w6koC5qYQd1gjuvie2/TcMAf8+KjDZtP0=";
+      sha256 = "sha256-ogVFymH+lIY2R5a2h6SjGJpLF/RMYu7YlGOlAm2AUtQ=";
     };
     "iosevka-n-term" = {
       family = "Iosevka N Term";
-      sha256 = "sha256-vr9bEbjCqdqr1+ZnW+c8r95U1PASz2/RGf88xSFX0ZU=";
-    };
-    "iosevka-n-term-unhinted" = {
-      family = "Iosevka N Term";
-      sha256 = "sha256-/AYz0Ka9wnkAydgb8HSJCA5ya09JFCFlLlejGOKstXE=";
+      sha256 = "sha256-QELeHaVTF3JZ4SkyZC7TbTpSukwcCt7mUAvrVES8X14=";
     };
     "iosevka-n-quasi-proportional" = {
       family = "Iosevka N Quasi-Proportional";
-      sha256 = "sha256-TyJ5ZkY1UNagkwedriZDwbDB0OE6u071M90sjubCccQ=";
-    };
-    "iosevka-n-quasi-proportional-unhinted" = {
-      family = "Iosevka N Quasi-Proportional";
-      sha256 = "sha256-gpH8I4HNuQFTd3yKUwhs7rcVjl1ff/s27LRGRvVRZmk=";
+      sha256 = "sha256-dlP0APWj/DhWf9BT8u5iXJOC5hSQmgf7DxvQvZnjUws=";
     };
   };
 }

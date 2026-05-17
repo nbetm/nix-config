@@ -22,6 +22,13 @@
   # Packages
   environment.systemPackages = myLib.basePackages pkgs ++ myLib.darwinPackages pkgs;
 
+  # Fonts
+  fonts.packages = with pkgs; [
+    iosevka-n
+    iosevka-n-term
+    iosevka-n-quasi-proportional
+  ];
+
   # Match the GID used by the Nix installer (new default is 350)
   ids.gids.nixbld = 350;
 
