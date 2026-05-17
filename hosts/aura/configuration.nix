@@ -75,6 +75,9 @@
       adwaita-fonts
       material-design-icons
       noto-fonts-color-emoji
+      iosevka-n-unhinted
+      iosevka-n-term-unhinted
+      iosevka-n-quasi-proportional-unhinted
     ];
   };
 

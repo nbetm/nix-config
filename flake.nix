@@ -45,16 +45,21 @@
       };
 
       # Shared overlay - cross-platform packages
-      sharedOverlay = final: prev: {
-        unstable = import nixpkgs-unstable {
-          system = prev.stdenv.hostPlatform.system;
-          config.allowUnfree = true;
-        };
-        # Short alias for unstable packages
-        u = final.unstable;
-        # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
-        direnv = final.unstable.direnv;
-      };
+      sharedOverlay =
+        final: prev:
+        {
+          unstable = import nixpkgs-unstable {
+            system = prev.stdenv.hostPlatform.system;
+            config.allowUnfree = true;
+          };
+          # Short alias for unstable packages
+          u = final.unstable;
+          # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
+          direnv = final.unstable.direnv;
+        }
+        // (import ./pkgs/iosevka-n {
+          inherit (prev) lib stdenvNoCC fetchurl;
+        });
     in
     flake-utils.lib.eachSystem
       [
