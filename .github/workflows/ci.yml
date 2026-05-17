@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: DeterminateSystems/nix-installer-action@v3
-      - uses: DeterminateSystems/magic-nix-cache-action@v13
-      - uses: DeterminateSystems/flake-checker-action@v12
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          determinate: false
       - name: Run CI checks
         run: nix shell .#dev-tools --command make ci
