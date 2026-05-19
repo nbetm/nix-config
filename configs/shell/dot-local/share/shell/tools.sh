@@ -1,4 +1,3 @@
-# vim: set ft=sh :
 # shellcheck shell=bash disable=SC1091
 # Tool aliases and functions - SSH, tmux, editors, system utilities
 

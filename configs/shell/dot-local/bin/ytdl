@@ -9,7 +9,7 @@
 #   f: Disable file name generation (globbing).
 #   o pipefail: If any command in a pipeline fails it all fails
 #
-set -ufo pipefail
+set -euo pipefail
 
 INPUT_FILE="${1:-}"
 OUTPUT_DIR="${2:-$HOME/Music/ytdl}"

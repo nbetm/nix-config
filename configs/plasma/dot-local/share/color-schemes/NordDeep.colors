@@ -1,3 +1,5 @@
+# vim: set ft=conf :
+
 [ColorEffects:Disabled]
 Color=33,39,50
 ColorAmount=0
