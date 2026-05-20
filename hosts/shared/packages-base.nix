@@ -29,6 +29,7 @@ pkgs: with pkgs; [
   glow
   google-cloud-sdk
   jq
+  u.jujutsu
   just
   lazydocker
   lazygit
