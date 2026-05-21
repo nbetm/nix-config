@@ -67,6 +67,10 @@
     };
     "lazygit".source = ../../configs/git/dot-config/lazygit;
     "gh-dash".source = ../../configs/git/dot-config/gh-dash;
+    "jj" = {
+      source = ../../configs/jj/dot-config/jj;
+      recursive = true;
+    };
     "md2pdf.css".source = ../../configs/shell/dot-config/md2pdf.css;
     "ncdu".source = ../../configs/ncdu/dot-config/ncdu;
     "sesh".source = ../../configs/sesh/dot-config/sesh;
