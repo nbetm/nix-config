@@ -19,6 +19,7 @@ alias g="git"
 alias gui="gitui"
 alias glz="lazygit"
 alias lzg="lazygit"
+alias j="jj"
 
 # ------------------------------------------------------------------------------
 # Branch (b)
@@ -42,6 +43,14 @@ alias gbsa="git show-branch --all"
 # Commit (c)
 # ------------------------------------------------------------------------------
 
+gco() {
+    if [[ -d .jj ]]; then
+        jj edit "$1"
+    else
+        git checkout "$1"
+    fi
+}
+
 alias gc="git commit --verbose"
 alias gcS="git commit --verbose --gpg-sign"
 alias gca="git commit --verbose --all"
@@ -49,7 +58,6 @@ alias gcaS="git commit --verbose --all --gpg-sign"
 alias gcm="git commit --message"
 alias gcmS="git commit --message --gpg-sign"
 alias gcam="git commit --all --message"
-alias gco="git checkout"
 alias gcO="git checkout --patch"
 alias gcf="git commit --amend --reuse-message HEAD"
 alias gcfS="git commit --amend --reuse-message HEAD --gpg-sign"
@@ -100,7 +108,14 @@ alias gdi='git status --porcelain --short --ignored | sed -n "s/^!! //p"'
 # Fetch (f)
 # ------------------------------------------------------------------------------
 
-alias gf="git fetch"
+gf() {
+    if [[ -d .jj ]]; then
+        jj git fetch
+    else
+        git fetch
+    fi
+}
+
 alias gfa="git fetch --all --prune --tags"
 alias gfc="git clone"
 alias gfcr="git clone --recurse-submodules"
@@ -140,11 +155,18 @@ alias giX="git rm -r --force --cached"
 # Log (l)
 # ------------------------------------------------------------------------------
 
+glg() {
+    if [[ -d .jj ]]; then
+        jj log
+    else
+        git log --topo-order --all --graph --date=local --pretty=format:"$_git_log_oneline_format"
+    fi
+}
+
 alias gl='git log --topo-order --pretty=format:"$_git_log_medium_format"'
 alias gls='git log --topo-order --stat --pretty=format:"$_git_log_medium_format"'
 alias gld='git log --topo-order --stat --patch --full-diff --pretty=format:"$_git_log_medium_format"'
 alias glo='git log --topo-order --pretty=format:"$_git_log_oneline_format"'
-alias glg='git log --topo-order --graph --pretty=format:"$_git_log_oneline_format"'
 alias glb='git log --topo-order --pretty=format:"$_git_log_brief_format"'
 alias glc='git shortlog --summary --numbered'
 alias glS='git log --show-signature'
@@ -163,7 +185,14 @@ alias gmt="git mergetool"
 # Push (p)
 # ------------------------------------------------------------------------------
 
-alias gp="git push"
+gp() {
+    if [[ -d .jj ]]; then
+        jj git push
+    else
+        git push
+    fi
+}
+
 alias gpf="git push --force-with-lease"
 alias gpF="git push --force"
 alias gpa="git push --all"
@@ -224,9 +253,23 @@ alias gtv="git verify-tag"
 # Working Copy (w)
 # ------------------------------------------------------------------------------
 
-alias gws='git status --ignore-submodules=$_git_status_ignore_submodules --short'
+gws() {
+    if [[ -d .jj ]]; then
+        jj st
+    else
+        git status --ignore-submodules=$_git_status_ignore_submodules --short
+    fi
+}
+
+gwd() {
+    if [[ -d .jj ]]; then
+        jj diff
+    else
+        git diff --no-ext-diff
+    fi
+}
+
 alias gwS='git status --ignore-submodules=$_git_status_ignore_submodules'
-alias gwd="git diff --no-ext-diff"
 alias gwD="git diff --no-ext-diff --word-diff"
 alias gwr="git reset --soft"
 alias gwR="git reset --hard"
