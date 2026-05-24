@@ -1,8 +1,7 @@
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
 [mgr]
 cwd = { fg = "#81a1c1" }
-
-hovered = { reversed = true }
-preview_hovered = { underline = true }
 
 find_keyword = { fg = "#d08770", bold = true, italic = true, underline = true }
 find_position = { fg = "#b48ead", bg = "reset", bold = true, italic = true }
@@ -62,7 +61,6 @@ inactive = { fg = "#798094" }
 [confirm]
 border = { fg = "#434c5e" }
 title = { fg = "#b8c5d1" }
-content = {}
 list = {}
 btn_yes = { reversed = true }
 btn_no = {}
@@ -97,64 +95,64 @@ title_error = { fg = "#c97078" }
 [filetype]
 rules = [
   # Compression/Archives
-  { name = "*.{7z,br,bz,bz2,bz3,gz,lz4,lzma,rar,sit,tar,tbz,tbz2,tgz,txz,xz,z,zip,zst,zstd}", fg = "#b48ead", bold = true },
+  { url = "*.{7z,br,bz,bz2,bz3,gz,lz4,lzma,rar,sit,tar,tbz,tbz2,tgz,txz,xz,z,zip,zst,zstd}", fg = "#b48ead", bold = true },
 
   # Packages
-  { name = "*.{apk,deb,dmg,jar,msi,rpm}", fg = "#b48ead", bold = true },
+  { url = "*.{apk,deb,dmg,jar,msi,rpm}", fg = "#b48ead", bold = true },
 
   # Databases
-  { name = "*.{accdb,db,dbf,mdb,sqlite,sqlite3}", fg = "#b48ead", bold = true },
+  { url = "*.{accdb,db,dbf,mdb,sqlite,sqlite3}", fg = "#b48ead", bold = true },
 
   # Encryption/Security
-  { name = "*.{aes,asc,enc,gpg,pgp,p12,pfx,pem,crt,cer,key,pub}", fg = "#b48ead", bold = true },
+  { url = "*.{aes,asc,enc,gpg,pgp,p12,pfx,pem,crt,cer,key,pub}", fg = "#b48ead", bold = true },
 
   # Images
   { mime = "image/*", fg = "#ebcb8b" },
-  { name = "*.{avif,bpm,gif,heic,jpeg,jpg,jxl,png,svg,tif,tiff,webp}", fg = "#ebcb8b" },
+  { url = "*.{avif,bpm,gif,heic,jpeg,jpg,jxl,png,svg,tif,tiff,webp}", fg = "#ebcb8b" },
 
   # Audio
   { mime = "audio/*", fg = "#ebcb8b" },
-  { name = "*.{aac,flac,m4a,mp3,ogg,opus,wav}", fg = "#ebcb8b" },
+  { url = "*.{aac,flac,m4a,mp3,ogg,opus,wav}", fg = "#ebcb8b" },
 
   # Videos
   { mime = "video/*", fg = "#ebcb8b" },
-  { name = "*.{avi,flv,m4v,mkv,mov,mp4,mp4v,mpeg,mpg,webm,wmv}", fg = "#ebcb8b" },
+  { url = "*.{avi,flv,m4v,mkv,mov,mp4,mp4v,mpeg,mpg,webm,wmv}", fg = "#ebcb8b" },
 
   # Documents
-  { name = "*.{doc,docx,dot,dotx,epub,mkd,odg,odp,ods,odt,otg,otp,ots,ott,pdf,ppt,pptx,rst,rtf,tex,xls,xlsx}", fg = "#a3be8c" },
+  { url = "*.{doc,docx,dot,dotx,epub,mkd,odg,odp,ods,odt,otg,otp,ots,ott,pdf,ppt,pptx,rst,rtf,tex,xls,xlsx}", fg = "#a3be8c" },
 
   # Unimportant
-  { name = "*.{bak,dist,ds_store,off,old,orig,backup,log,swo,swp}", fg = "#798094" },
+  { url = "*.{bak,dist,ds_store,off,old,orig,backup,log,swo,swp}", fg = "#798094" },
 
   # Exec
-  { name = "*", is = "exec", fg = "#88c0d0", bold = true },
-  { name = "*.{app,bat,btm,cmd,com,exe,reg}", fg = "#88c0d0", bold = true },
+  { url = "*", is = "exec", fg = "#88c0d0", bold = true },
+  { url = "*.{app,bat,btm,cmd,com,exe,reg}", fg = "#88c0d0", bold = true },
 
   # Orphan
-  { name = "*", is = "orphan", fg = "#c97078" },
+  { url = "*", is = "orphan", fg = "#c97078" },
 
   # Link
-  { name = "*", is = "link", fg = "#88c0d0", italic = true },
+  { url = "*", is = "link", fg = "#88c0d0", italic = true },
 
   # FIFO,SOCK,BLK,CHR
-  { name = "*", is = "fifo", fg = "#88c0d0", bold = true, underline = true },
-  { name = "*", is = "sock", fg = "#88c0d0", bold = true, underline = true },
-  { name = "*", is = "block", fg = "#88c0d0", bold = true, underline = true },
-  { name = "*", is = "char", fg = "#d4dce6", bg = "#81a1c1", bold = true },
+  { url = "*", is = "fifo", fg = "#88c0d0", bold = true, underline = true },
+  { url = "*", is = "sock", fg = "#88c0d0", bold = true, underline = true },
+  { url = "*", is = "block", fg = "#88c0d0", bold = true, underline = true },
+  { url = "*", is = "char", fg = "#d4dce6", bg = "#81a1c1", bold = true },
 
   # Sticky
-  { name = "*", is = "sticky", fg = "#d4dce6", bg = "#81a1c1", bold = true, underline = true },
+  { url = "*", is = "sticky", fg = "#d4dce6", bg = "#81a1c1", bold = true, underline = true },
 
   # Fallback (files and directories)
-  { name = "*", fg = "#b8c5d1" },
-  { name = "*/", fg = "#81a1c1" },
+  { url = "*", fg = "#b8c5d1" },
+  { url = "*/", fg = "#81a1c1" },
 ]
 
 [icon]
 globs = [
-  { name = "**/*.dockerfile", text = "󰡨" },
-  { name = "**/compose.y*ml", text = "󰡨" },
-  { name = "**/.gitlab-ci.y*ml", text = "󰮠" },
+  { url = "**/*.dockerfile", text = "󰡨" },
+  { url = "**/compose.y*ml", text = "󰡨" },
+  { url = "**/.gitlab-ci.y*ml", text = "󰮠" },
 ]
 dirs = [
   { name = ".cache", text = "󰪺" },
