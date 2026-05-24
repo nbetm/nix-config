@@ -22,6 +22,7 @@ pkgs: with pkgs; [
     postBuild = ''
       wrapProgram $out/bin/zoom \
         --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
+        --set QT_SCALE_FACTOR_ROUNDING_POLICY Round
     '';
   })
 
@@ -43,7 +44,7 @@ pkgs: with pkgs; [
     postBuild = ''
       rm $out/share/applications/enpass.desktop
       substitute ${u.enpass}/share/applications/enpass.desktop $out/share/applications/enpass.desktop \
-        --replace-fail 'Exec=${u.enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 ${u.enpass}/bin/Enpass'
+        --replace-fail 'Exec=${u.enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 QT_SCALE_FACTOR_ROUNDING_POLICY=Round ${u.enpass}/bin/Enpass'
     '';
   })
 
