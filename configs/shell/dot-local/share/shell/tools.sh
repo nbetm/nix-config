@@ -15,11 +15,11 @@ alias sshaD="ssh-add -D"
 # ------------------------------------------------------------------------------
 
 alias t="tmux"
-alias tsn="tmux new -As"
-alias tsl="tmux list-sessions"
-alias tsk="tmux kill-session"
-alias tska="tmux kill-session -a"
-alias twr='tmux renamew $(basename "$(pwd)")'
+alias tns="tmux new -As"
+alias tls="tmux list-sessions"
+alias tks="tmux kill-session -t"
+alias tka="tmux kill-session -a"
+alias trw='tmux renamew $(basename "$(pwd)")'
 
 # ------------------------------------------------------------------------------
 # Editors
