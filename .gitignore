@@ -18,6 +18,7 @@ result-*
 
 # Claude
 .claude/settings.local.json
+.superpowers/
 
 # Python
 *$py.class
