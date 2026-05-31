@@ -5,13 +5,30 @@ name = "Nelson R Monserrate"
 email = "nrmonserrate@gmail.com"
 
 [ui]
-pager = ["less", "-FRX"]
-diff-formatter="delta"
+pager = "delta"
+diff-formatter = ":git"
 
-[merge-tools.delta]
-diff-args=["--side-by-side", "$left", "$right", "--width=$width"]
-diff-expected-exit-codes = [0, 1]
+[colors]
+rest = "#798094"
+commit_id = "green"
+timestamp = "blue"
+"working_copy commit_id" = "green"
+"working_copy timestamp" = "blue"
+"diff removed token" = { underline = false }
+"diff added token" = { underline = false }
+
+# [merge-tools.kdiff3]
+# merge-args = ["$base", "$left", "$right", "-o", "$output", "--auto"]
+
+# [merge-tools.meld]
+# merge-args = ["$left", "$base", "$right", "-o", "$output", "--auto-merge"]
+
+[remotes.origin]
+auto-track-bookmarks = "nm/*"
 
 [templates]
 git_push_bookmark = '"nm/" ++ change_id.short()'
+
+[template-aliases]
+'format_short_signature(signature)' = 'signature.name()'
 

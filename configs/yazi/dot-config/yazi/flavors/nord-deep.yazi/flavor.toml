@@ -8,12 +8,12 @@ find_keyword = { fg = "#d08770", bold = true, italic = true, underline = true }
 find_position = { fg = "#b48ead", bg = "reset", bold = true, italic = true }
 
 marker_copied = { fg = "#212732", bg = "#a3be8c" }
-marker_cut = { fg = "#212732", bg = "#bf616a" }
+marker_cut = { fg = "#212732", bg = "#c97078" }
 marker_marked = { fg = "#212732", bg = "#8fbcbb" }
 marker_selected = { fg = "#212732", bg = "#b48ead" }
 
 count_copied = { fg = "#212732", bg = "#a3be8c" }
-count_cut = { fg = "#212732", bg = "#bf616a" }
+count_cut = { fg = "#212732", bg = "#c97078" }
 count_selected = { fg = "#212732", bg = "#b48ead" }
 
 border_symbol = "│"
@@ -21,17 +21,17 @@ border_style = { fg = "#434c5e" }
 
 [tabs]
 tab_active = { reversed = true }
-tab_inactive = { fg = "#b8c5d1" }
+tab_inactive = { fg = "#798094" }
 tab_width = 1
 
 [mode]
 normal_main = { fg = "#212732", bg = "#88c0d0" }
 normal_alt = { fg = "#b8c5d1", bg = "#3b4252" }
 
-select_main = { fg = "#212732", bg = "#8fbcbb" }
+select_main = { fg = "#212732", bg = "#b48ead" }
 select_alt = { fg = "#b8c5d1", bg = "#3b4252" }
 
-unset_main = { fg = "#212732", bg = "#bf616a" }
+unset_main = { fg = "#212732", bg = "#c97078" }
 unset_alt = { fg = "#b8c5d1", bg = "#3b4252" }
 
 [status]
@@ -40,7 +40,7 @@ sep_right = { open = "", close = "" }
 
 progress_label = { fg = "#b8c5d1", bold = true }
 progress_normal = { fg = "#88c0d0", bg = "#434c5e" }
-progress_error = { fg = "#bf616a", bg = "#434c5e" }
+progress_error = { fg = "#c97078", bg = "#434c5e" }
 
 perm_type = { fg = "#b8c5d1" }
 perm_read = { fg = "#b8c5d1" }
@@ -90,9 +90,9 @@ hovered = { reversed = true, bold = true }
 footer = { fg = "#212732", bg = "#b8c5d1" }
 
 [notify]
-title_info = { fg = "#5e81ac" }
+title_info = { fg = "#6c8eb8" }
 title_warn = { fg = "#ebcb8b" }
-title_error = { fg = "#bf616a" }
+title_error = { fg = "#c97078" }
 
 [filetype]
 rules = [
@@ -131,7 +131,7 @@ rules = [
   { name = "*.{app,bat,btm,cmd,com,exe,reg}", fg = "#88c0d0", bold = true },
 
   # Orphan
-  { name = "*", is = "orphan", fg = "#bf616a" },
+  { name = "*", is = "orphan", fg = "#c97078" },
 
   # Link
   { name = "*", is = "link", fg = "#88c0d0", italic = true },

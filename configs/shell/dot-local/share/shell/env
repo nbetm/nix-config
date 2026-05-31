@@ -37,8 +37,8 @@ export LESS="-F -i -M -R -S -w -X"
 export FZF_DEFAULT_OPTS='
     --color=fg:#b8c5d1,fg+:#b8c5d1,bg:#212732,bg+:#3b4252
     --color=hl:#88c0d0,hl+:#88c0d0,info:#798094,marker:#b48ead
-    --color=prompt:#a3be8c,spinner:#ebcb8b,pointer:#88c0d0,header:#81a1c1
-    --color=border:#3b4252,label:#b8c5d1,query:#b8c5d1
+    --color=prompt:#88c0d0,spinner:#ebcb8b,pointer:#88c0d0,header:#81a1c1
+    --color=border:#434c5e,label:#b8c5d1,query:#b8c5d1
     --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="❱ "
     --marker="❱" --pointer="❱" --separator="─" --scrollbar="│"'
 

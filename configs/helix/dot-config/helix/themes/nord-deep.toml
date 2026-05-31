@@ -3,191 +3,227 @@
 
 # Syntax highlighting ---------------------------------------------------------
 
-"attribute" = "nord-text"
+"attribute" = "fg"
 
-"boolean" = "nord-blue"
+"boolean" = "indigo"
 
-"type" = "nord-aqua"
-"type.builtin" = "nord-aqua"
-"type.enum.variant" = "nord-aqua"
-"type.parameter" = "nord-aqua"
+"type" = "aqua"
+"type.builtin" = "aqua"
+"type.enum.variant" = "aqua"
+"type.parameter" = "aqua"
 
-"constructor" = "nord-aqua"
+"constructor" = "aqua"
 
-"constant" = "nord-text"
-"constant.builtin" = "nord-blue"
-"constant.language" = "nord-blue"
-"constant.character" = "nord-yellow"
-"constant.numeric" = "nord-magenta"
+"constant" = "fg"
+"constant.builtin" = "indigo"
+"constant.language" = "indigo"
+"constant.character" = "yellow"
+"constant.numeric" = "magenta"
 
-"string" = "nord-green"
-"string.regexp" = "nord-yellow"
-"string.special" = "nord-green"
-"string.special.url" = "nord-cyan"
+"string" = "green"
+"string.regexp" = "yellow"
+"string.special" = "green"
+"string.special.url" = "cyan"
 
-"comment" = "nord-dim"
+"comment" = { fg = "grey1", modifiers = ["italic"] }
+"comment.error"   = { fg = "red",    modifiers = ["bold"] } # FIXME
+"comment.warning" = { fg = "yellow", modifiers = ["bold"] } # WARN
+"comment.todo"    = { fg = "blue",   modifiers = ["bold"] } # TODO
+"comment.note"    = { fg = "navy",   modifiers = ["bold"] } # NOTE
 
-"variable" = "nord-text"
-"variable.builtin" = "nord-text"
-"variable.other.member" = "nord-aqua"
-"variable.other.member.private" = { fg = "nord-text", modifiers = ["italic"] }
-"variable.parameter" = "nord-text"
+"variable" = "fg"
+"variable.builtin" = "fg"
+"variable.other.member" = "aqua"
+"variable.other.member.private" = { fg = "fg", modifiers = ["italic"] }
+"variable.parameter" = "fg"
 
-"label" = "nord-blue"
+"label" = "blue"
 
-"operator" = "nord-blue"
+"operator" = "blue"
 
-"function" = "nord-cyan"
-"function.builtin" = "nord-cyan"
-"function.macro" = "nord-cyan"
-"function.method" = "nord-cyan"
-"function.method.private" = { fg = "nord-cyan", modifiers = ["italic"] }
-"function.special" = "nord-cyan"
+"function" = "cyan"
+"function.builtin" = "cyan"
+"function.macro" = "cyan"
+"function.method" = "cyan"
+"function.method.private" = { fg = "cyan", modifiers = ["italic"] }
+"function.special" = "cyan"
 
-"tag" = "nord-blue"
-"tag.builtin" = "nord-blue"
+"tag" = "blue"
+"tag.builtin" = "blue"
 
-"punctuation" = "nord-text"
-"punctuation.bracket" = "nord-blue"
-"punctuation.delimiter" = "nord-blue"
-"punctuation.special" = "nord-blue"
+"punctuation" = "fg"
+"punctuation.bracket" = "blue"
+"punctuation.delimiter" = "blue"
+"punctuation.special" = "blue"
 
-"keyword" = "nord-blue"
-"keyword.control" = "nord-blue"
-"keyword.directive" = "nord-blue"
-"keyword.function" = "nord-blue"
-"keyword.operator" = "nord-blue"
-"keyword.storage" = "nord-blue"
+"keyword" = "blue"
+"keyword.control" = "blue"
+"keyword.directive" = "blue"
+"keyword.function" = "blue"
+"keyword.operator" = "blue"
+"keyword.storage" = "blue"
 
-"namespace" = "nord-text"
+"namespace" = "fg"
 
-"special" = "nord-cyan"
+"special" = "cyan"
 
-"diff.delta" = "nord-yellow"
-"diff.minus" = "nord-red"
-"diff.plus" = "nord-green"
+"diff.delta" = "yellow"
+"diff.minus" = "red"
+"diff.plus" = "green"
 
-"markup.heading.1" = { fg = "nord-magenta", modifiers = ["bold"] }
-"markup.heading.2" = { fg = "nord-magenta", modifiers = ["bold"] }
-"markup.heading.3" = { fg = "nord-magenta", modifiers = ["bold"] }
-"markup.heading.4" = { fg = "nord-magenta", modifiers = ["bold"] }
-"markup.heading.5" = { fg = "nord-magenta", modifiers = ["bold"] }
-"markup.heading.6" = { fg = "nord-magenta", modifiers = ["bold"] }
-"markup.bold" = { fg = "nord-text", modifiers = ["bold"] }
-"markup.italic" = { fg = "nord-text", modifiers = ["italic"] }
-"markup.link.label" = { fg = "nord-cyan", modifiers = ["underlined"] }
-"markup.link.text" = "nord-cyan"
-"markup.link.url" = { fg = "nord-cyan", modifiers = ["underlined"] }
-"markup.list" = "nord-text"
-"markup.list.checked" = "nord-green"
-"markup.list.unchecked" = "nord-dim"
-"markup.quote" = "nord-navy"
-"markup.raw" = "nord-aqua"
-"markup.strikethrough" = { fg = "nord-text", modifiers = ["crossed_out"] }
+"markup.heading.1" = { fg = "magenta", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "magenta", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "magenta", modifiers = ["bold"] }
+"markup.heading.4" = { fg = "magenta", modifiers = ["bold"] }
+"markup.heading.5" = { fg = "magenta", modifiers = ["bold"] }
+"markup.heading.6" = { fg = "magenta", modifiers = ["bold"] }
+"markup.bold" = { fg = "fg", modifiers = ["bold"] }
+"markup.italic" = { fg = "fg", modifiers = ["italic"] }
+"markup.link.label" = { fg = "cyan", modifiers = ["underlined"] }
+"markup.link.text" = "cyan"
+"markup.link.url" = { fg = "cyan", modifiers = ["underlined"] }
+"markup.list" = "indigo"
+"markup.list.checked" = "green"
+"markup.list.unchecked" = "grey1"
+"markup.quote" = { fg = "grey1", modifiers = ["italic"] }
+"markup.raw" = "aqua"
+"markup.strikethrough" = { fg = "fg", modifiers = ["crossed_out"] }
 
 # UI --------------------------------------------------------------------------
 
-"ui.background" = { fg = "nord-text", bg = "nord-base" }
-"ui.background.separator" = { fg = "nord-chrome" }
+"ui.background" = { fg = "fg", bg = "bg" }
+"ui.background.separator" = { fg = "bg3" }
 
-"ui.linenr" = { fg = "nord-chrome" }
-"ui.linenr.selected" = { fg = "nord-text" }
+"ui.linenr" = { fg = "grey0" }
+"ui.linenr.selected" = { fg = "grey2" }
 
-"ui.statusline" = { fg = "nord-text", bg = "nord-elevated" }
-"ui.statusline.inactive" = { fg = "nord-dim", bg = "nord-surface" }
-"ui.statusline.insert" = { fg = "nord-base", bg = "nord-cyan" }
-"ui.statusline.normal" = { fg = "nord-base", bg = "nord-text" }
-"ui.statusline.select" = { fg = "nord-base", bg = "nord-aqua" }
-"ui.statusline.separator" = { fg = "nord-chrome" }
+"ui.statusline" = { fg = "fg", bg = "bg2" }
+"ui.statusline.inactive" = { fg = "grey1", bg = "bg1" }
+"ui.statusline.insert" = { fg = "bg", bg = "cyan" }
+"ui.statusline.normal" = { fg = "bg", bg = "fg" }
+"ui.statusline.select" = { fg = "bg", bg = "magenta" }
+"ui.statusline.separator" = { fg = "bg3" }
 
-"ui.menu" = { fg = "nord-text", bg = "nord-base" }
-"ui.menu.scroll" = { fg = "nord-chrome" }
-"ui.menu.selected" = { fg = "nord-cyan", bg = "nord-elevated" }
+"ui.menu" = { fg = "fg", bg = "bg" }
+"ui.menu.scroll" = { fg = "bg3" }
+"ui.menu.selected" = { fg = "cyan", bg = "bg2" }
 
-"ui.popup" = { fg = "nord-dim", bg = "nord-base" }
-"ui.popup.info" = { fg = "nord-dim", bg = "nord-base" }
+"ui.popup" = { fg = "grey1", bg = "bg" }
+"ui.popup.info" = { fg = "grey1", bg = "bg" }
 
-"ui.help" = { fg = "nord-dim", bg = "nord-base" }
-"ui.window" = { fg = "nord-chrome" }
+"ui.help" = { fg = "grey1", bg = "bg" }
+"ui.window" = { fg = "bg3" }
 
-"ui.bufferline" = { fg = "nord-dim", bg = "nord-surface" }
-"ui.bufferline.active" = { fg = "nord-text", bg = "nord-base" }
-"ui.bufferline.background" = { bg = "nord-surface" }
+"ui.bufferline" = { fg = "grey1", bg = "bg1" }
+"ui.bufferline.active" = { fg = "fg", bg = "bg" }
+"ui.bufferline.background" = { bg = "bg1" }
 
-"ui.text" = "nord-text"
-"ui.text.directory" = { fg = "nord-blue" }
-"ui.text.focus" = { fg = "nord-text", bg = "nord-elevated" }
-"ui.text.inactive" = { fg = "nord-dim" }
-"ui.text.info" = { fg = "nord-text" }
+"ui.text" = "fg"
+"ui.text.directory" = { fg = "blue" }
+"ui.text.focus" = { fg = "fg", bg = "bg2" }
+"ui.text.inactive" = { fg = "grey1" }
+"ui.text.info" = { fg = "fg" }
 
-"ui.virtual" = "nord-dim"
-"ui.virtual.indent-guide" = "nord-elevated"
-"ui.virtual.inlay-hint" = { fg = "nord-dim", modifiers = ["italic"] }
-"ui.virtual.inlay-hint.parameter" = { fg = "nord-dim", modifiers = ["italic"] }
-"ui.virtual.inlay-hint.type" = { fg = "nord-dim", modifiers = ["italic"] }
-"ui.virtual.jump-label" = { fg = "nord-cyan", modifiers = ["bold"] }
-"ui.virtual.ruler" = { bg = "nord-cursorline" }
-"ui.virtual.wrap" = "nord-dim"
+"ui.virtual" = "grey1"
+"ui.virtual.indent-guide" = "bg3"
+"ui.virtual.inlay-hint" = { fg = "grey1", modifiers = ["italic"] }
+"ui.virtual.inlay-hint.parameter" = { fg = "grey1", modifiers = ["italic"] }
+"ui.virtual.inlay-hint.type" = { fg = "grey1", modifiers = ["italic"] }
+"ui.virtual.jump-label" = { fg = "cyan", modifiers = ["bold"] }
+"ui.virtual.ruler" = { bg = "cursorline" }
+"ui.virtual.wrap" = "grey1"
 
-"ui.cursor" = { bg = "nord-elevated" }
-"ui.cursor.primary" = { fg = "nord-base", bg = "nord-text" }
-"ui.cursor.match" = { fg = "nord-orange", modifiers = ["bold"] }
+"ui.cursor" = { bg = "bg2" }
+"ui.cursor.primary" = { fg = "bg", bg = "fg" }
+"ui.cursor.match" = { fg = "orange", modifiers = ["bold"] }
 
-"ui.cursor.primary.normal" = { fg = "nord-base", bg = "nord-text" }
-"ui.cursor.primary.insert" = { fg = "nord-base", bg = "nord-text" }
-"ui.cursor.primary.select" = { fg = "nord-base", bg = "nord-text" }
+"ui.cursor.primary.normal" = { fg = "bg", bg = "fg" }
+"ui.cursor.primary.insert" = { fg = "bg", bg = "fg" }
+"ui.cursor.primary.select" = { fg = "bg", bg = "fg" }
 
-"ui.cursor.normal" = { fg = "nord-base", bg = "nord-dim" }
-"ui.cursor.insert" = { fg = "nord-base", bg = "nord-dim" }
-"ui.cursor.select" = { fg = "nord-base", bg = "nord-dim" }
+"ui.cursor.normal" = { fg = "bg", bg = "grey1" }
+"ui.cursor.insert" = { fg = "bg", bg = "grey1" }
+"ui.cursor.select" = { fg = "bg", bg = "grey1" }
 
-"ui.cursorcolumn.primary" = { bg = "nord-surface" }
-"ui.cursorcolumn.secondary" = { bg = "nord-surface" }
+"ui.cursorcolumn.primary" = { bg = "bg1" }
+"ui.cursorcolumn.secondary" = { bg = "bg1" }
 
-"ui.cursorline.primary" = { bg = "nord-cursorline" }
-"ui.cursorline.secondary" = { bg = "nord-cursorline" }
+"ui.cursorline.primary" = { bg = "cursorline" }
+"ui.cursorline.secondary" = { bg = "cursorline" }
 
-"ui.selection" = { bg = "nord-elevated" }
-"ui.selection.primary" = { bg = "nord-elevated" }
+"ui.selection" = { bg = "bg2" }
+"ui.selection.primary" = { bg = "bg2" }
 
-"ui.highlight" = { fg = "nord-base", bg = "nord-yellow" }
+"ui.highlight" = { fg = "bg", bg = "yellow" }
 
-"ui.picker.header" = { fg = "nord-text", modifiers = ["bold"] }
-"ui.picker.header.column" = { fg = "nord-text", modifiers = ["bold"] }
-"ui.picker.header.column.active" = { fg = "nord-cyan", modifiers = ["bold"] }
+"ui.picker.header" = { fg = "fg", modifiers = ["bold"] }
+"ui.picker.header.column" = { fg = "fg", modifiers = ["bold"] }
+"ui.picker.header.column.active" = { fg = "cyan", modifiers = ["bold"] }
 
-"ui.gutter" = { fg = "nord-chrome" }
-"ui.gutter.selected" = { fg = "nord-text" }
+"ui.gutter" = { fg = "bg3" }
+"ui.gutter.selected" = { fg = "fg" }
 
-"diagnostic.deprecated" = { fg = "nord-dim", modifiers = ["crossed_out"] }
-"diagnostic.error" = { underline = { color = "nord-red", style = "curl" } }
-"diagnostic.hint" = { underline = { color = "nord-navy", style = "curl" } }
-"diagnostic.info" = { underline = { color = "nord-navy", style = "curl" } }
+"diagnostic.deprecated" = { fg = "grey1", modifiers = ["crossed_out"] }
+"diagnostic.error" = { underline = { color = "red", style = "curl" } }
+"diagnostic.hint" = { underline = { color = "navy", style = "curl" } }
+"diagnostic.info" = { underline = { color = "navy", style = "curl" } }
 "diagnostic.unnecessary" = { modifiers = ["dim"] }
-"diagnostic.warning" = { underline = { color = "nord-yellow", style = "curl" } }
+"diagnostic.warning" = { underline = { color = "yellow", style = "curl" } }
 
-error = { fg = "nord-red", modifiers = ["italic"] }
-warning = { fg = "nord-yellow", modifiers = ["italic"] }
-info = { fg = "nord-navy", modifiers = ["italic"] }
-hint = { fg = "nord-navy", modifiers = ["italic"] }
+error = { fg = "red", modifiers = ["italic"] }
+warning = { fg = "yellow", modifiers = ["italic"] }
+info = { fg = "navy", modifiers = ["italic"] }
+hint = { fg = "navy", modifiers = ["italic"] }
 
 [palette]
-nord-base = "#212732"
-nord-surface = "#2e3440"
-nord-elevated = "#3b4252"
-nord-chrome = "#434c5e"
-nord-dim = "#798094"
-nord-text = "#b8c5d1"
-nord-bright = "#d4dce6"
-nord-aqua = "#8fbcbb"
-nord-cyan = "#88c0d0"
-nord-blue = "#81a1c1"
-nord-navy = "#5e81ac"
-nord-red = "#bf616a"
-nord-orange = "#d08770"
-nord-yellow = "#ebcb8b"
-nord-green = "#a3be8c"
-nord-magenta = "#b48ead"
+# palette1: polar night (neutral surfaces)
+bg = "#212732"
+bg1 = "#2e3440"
+bg2 = "#3b4252"
+bg3 = "#434c5e"
 
-# Additional colors
-nord-cursorline = "#282e39" # nord-surface 50% over base - for subtle guides
+# palette1: washes (channel-tinted row backgrounds, 10% channel over bg)
+wash_red = "#39313c"
+wash_orange = "#323138"
+wash_yellow = "#313439"
+wash_green = "#2d353a"
+wash_magenta = "#30313e"
+wash_blue = "#2b3340"
+wash_indigo = "#2e3445"
+wash_navy = "#2b3443"
+
+# palette1: deeps (saturated pill backgrounds, paired with fg_bright)
+deep_red = "#82515b"
+deep_orange = "#785751"
+deep_yellow = "#665f50"
+deep_green = "#556356"
+deep_magenta = "#6a5a70"
+deep_blue = "#4e6075"
+deep_indigo = "#5a5d83"
+deep_navy = "#4b617d"
+
+# palette2: default / emphasis foregrounds
+fg = "#b8c5d1"
+fg_bright = "#d4dce6"
+
+# palette2: greys (de-emphasis foregrounds)
+grey0 = "#5d6478"
+grey1 = "#798094"
+grey2 = "#929aae"
+
+# palette2: frost (structural syntax — indigo is the nord-deep addition)
+aqua = "#8fbcbb"
+cyan = "#88c0d0"
+blue = "#81a1c1"
+indigo = "#9090d0"
+navy = "#6c8eb8"
+
+# palette2: aurora (semantic syntax)
+red = "#c97078"
+orange = "#d08770"
+yellow = "#ebcb8b"
+green = "#a3be8c"
+magenta = "#b48ead"
+
+# Derived: editor-buffer cursorline (50/50 blend of bg and bg1).
+cursorline = "#282e39"

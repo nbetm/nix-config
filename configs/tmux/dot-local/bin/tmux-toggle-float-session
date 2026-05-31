@@ -16,8 +16,8 @@ set -ufo pipefail
 
 [[ -z "${TMUX:-}" ]] && exit 0
 
-width="${1:-80%}"
-height="${2:-80%}"
+width="${1:-50%}"
+height="${2:-60%}"
 session_name="$(tmux display-message -p -F '#{session_name}')"
 
 # If already inside a float session, detach

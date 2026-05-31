@@ -26,20 +26,20 @@ sesh_fzf_args=(
     --prompt "❱ "
     --list-border
     --header-border
-    --header "<C-t> 󰕮  │ <C-b> 󰃀  │ <C-f> 󰉋  │ <C-a> 󱡠  │ <C-r> reset │ <A-del> kill"
+    --header "<C-t> 󰕮  │ <C-b> 󰃀  │ <C-f> 󰉋  │ <C-a>   │ <C-r>   │ <A-del>  "
     --bind "tab:down,btab:up,ctrl-n:down,ctrl-p:up"
     --bind "ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up"
     --bind "ctrl-t:change-prompt(󰕮  )+reload(sesh list -t | awk '!/-float\$/ && !seen[\$0]++')"
     --bind "ctrl-b:change-prompt(󰃀  )+reload(sesh list -c)"
     --bind "ctrl-f:change-prompt(󰉋  )+reload(sesh list -z)"
-    --bind "ctrl-a:change-prompt(󱡠  )+reload(sesh list | awk '!/-float\$/ && !seen[\$0]++')"
+    --bind "ctrl-a:change-prompt(  )+reload(sesh list | awk '!/-float\$/ && !seen[\$0]++')"
     --bind "ctrl-r:change-prompt(❱ )+reload(sesh list -t -c | awk '!/-float\$/ && !seen[\$0]++')"
     --bind "alt-bspace:execute-silent(tmux kill-session -t {})+change-prompt(❱ )+reload(sesh list -t -c | awk '!/-float\$/ && !seen[\$0]++')"
 )
 
 # Detect if we're running inside tmux
 if [[ -n "${TMUX:-}" ]]; then
-    session=$(sesh list -t -c | awk '!/-float$/ && !seen[$0]++' | fzf-tmux -p 90%,80% "${sesh_fzf_args[@]}")
+    session=$(sesh list -t -c | awk '!/-float$/ && !seen[$0]++' | fzf-tmux -p 50%,60% "${sesh_fzf_args[@]}")
 else
     session=$(sesh list -t -c | awk '!/-float$/ && !seen[$0]++' | fzf --height 60% "${sesh_fzf_args[@]}")
 fi

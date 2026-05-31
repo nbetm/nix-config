@@ -14,9 +14,9 @@ ble-face -s syntax_quoted fg=#a3be8c
 ble-face -s syntax_quotation fg=#a3be8c
 ble-face -s syntax_escape fg=#ebcb8b
 ble-face -s syntax_expr fg=#88c0d0
-ble-face -s syntax_error fg=#bf616a,bold
+ble-face -s syntax_error fg=#c97078,bold
 ble-face -s syntax_varname fg=#d08770
-ble-face -s syntax_delimiter fg=#798094
+ble-face -s syntax_delimiter fg=#5d6478
 ble-face -s syntax_param_expansion fg=#88c0d0
 ble-face -s syntax_history_expansion fg=#b48ead
 ble-face -s syntax_function_name fg=#b48ead
@@ -40,15 +40,15 @@ ble-face -s command_directory fg=#88c0d0,underline
 bleopt filename_ls_colors="$LS_COLORS"
 
 # Auto-complete suggestion (dimmed)
-ble-face -s auto_complete fg=#798094
+ble-face -s auto_complete fg=#5d6478
 
 # Region/selection
 ble-face -s region bg=#3b4252
 ble-face -s region_insert bg=#434c5e
 
 # Disabled/overwritten text
-ble-face -s disabled fg=#4c566a
-ble-face -s overwrite_mode fg=#bf616a
+ble-face -s disabled fg=#798094
+ble-face -s overwrite_mode fg=#c97078
 
 # ------------------------------------------------------------------------------
 # Behavior Options

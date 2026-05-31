@@ -11,22 +11,24 @@ add_newline = true
 palette = "nord_deep"
 
 [palettes.nord_deep]
-nord_base = "#212732"
-nord_surface = "#2e3440"
-nord_elevated = "#3b4252"
-nord_chrome = "#434c5e"
-nord_dim = "#798094"
-nord_text = "#b8c5d1"
-nord_bright = "#d4dce6"
-nord_aqua = "#8fbcbb"
-nord_cyan = "#88c0d0"
-nord_blue = "#81a1c1"
-nord_navy = "#5e81ac"
-nord_red = "#bf616a"
-nord_orange = "#d08770"
-nord_yellow = "#ebcb8b"
-nord_green = "#a3be8c"
-nord_magenta = "#b48ead"
+bg = "#212732"
+bg1 = "#2e3440"
+bg2 = "#3b4252"
+bg3 = "#434c5e"
+grey0 = "#5d6478"
+grey1 = "#798094"
+fg = "#b8c5d1"
+fg_bright = "#d4dce6"
+aqua = "#8fbcbb"
+cyan = "#88c0d0"
+blue = "#81a1c1"
+navy = "#6c8eb8"
+indigo = "#9090d0"
+red = "#c97078"
+orange = "#d08770"
+yellow = "#ebcb8b"
+green = "#a3be8c"
+magenta = "#b48ead"
 
 # Disabled modules
 [username]
@@ -37,36 +39,37 @@ disabled = true
 
 # Modules Settings
 [character]
-success_symbol = "[❱](bold nord_green)"
-error_symbol = "[❱](bold nord_red)"
-vimcmd_symbol = "[❰](bold nord_green)"
+success_symbol = "[❱](bold green)"
+error_symbol = "[❱](bold red)"
+vimcmd_symbol = "[❰](bold green)"
 
 [hostname]
 ssh_only = true
-style = "bold nord_green"
+style = "bold green"
 format = "[$hostname]($style) "
 
 [directory]
 read_only = "  "
-read_only_style = "nord_red"
-style = "bold nord_blue"
+read_only_style = "red"
+style = "bold blue"
 truncation_symbol = "../"
 truncation_length = 3
 truncate_to_repo = false
 
 [git_branch]
 symbol = " "
-style = "bold nord_magenta"
+style = "bold magenta"
 truncation_symbol = "‥"
 truncation_length = 25
 format = "[$symbol$branch]($style) "
 
 [git_state]
-style = "bold nord_magenta"
+style = "bold magenta"
 format = "⟮[$state( $progress_current/$progress_total)]($style)⟯ "
 
 [git_status]
-style = "bold nord_magenta"
+disabled = true
+style = "bold magenta"
 format = "([⟮$all_status$ahead_behind⟯]($style) )"
 ahead = "↑"
 behind = "↓"
@@ -81,50 +84,50 @@ untracked = "?"
 
 [python]
 symbol = "󰌠 "
-style = "bold nord_yellow"
+style = "bold yellow"
 format = "[$symbol(${version})( ⟮$virtualenv⟯)]($style) "
 pyenv_version_name = false
 
 [terraform]
 symbol = "󱁢 "
-style = "bold #9d91c7"
+style = "bold indigo"
 format = "[$symbol($workspace)]($style) "
 
 [lua]
 symbol = "󰢱 "
-style = "bold nord_yellow"
+style = "bold yellow"
 format = "[$symbol($version)]($style) "
 
 [rust]
 symbol = "󱘗 "
-style = "bold nord_yellow"
+style = "bold yellow"
 format = "[$symbol($version)]($style) "
 
 [nodejs]
 symbol = "󰌞 "
-style = "bold nord_green"
+style = "bold green"
 format = "[$symbol($version)]($style) "
 disabled = true
 
 [vagrant]
 symbol = "󰒓 "
-style = "bold nord_cyan"
+style = "bold cyan"
 format = "[$symbol($version)]($style) "
 disabled = true
 
 [nix_shell]
 symbol = "󱄅 "
-style = "bold nord_aqua"
+style = "bold aqua"
 format = "[$symbol$state( ⟮$name⟯)]($style) "
 
 [docker_context]
 symbol = "󰡨 "
-style = "bold nord_blue"
+style = "bold blue"
 format = "[$symbol$context]($style) "
 
 [aws]
 symbol = "󰛸 "
-style = "bold nord_orange"
+style = "bold orange"
 format = "[$symbol($profile)( ⟮$region⟯)]($style) "
 
 [aws.region_aliases]
@@ -140,7 +143,7 @@ ca-central-1 = "cc1"
 
 [gcloud]
 symbol = "󰛸 "
-style = "bold nord_navy"
+style = "bold navy"
 format = "[$symbol($project)( ⟮$region⟯)]($style) "
 detect_env_vars = ["CLOUDSDK_ACTIVE_CONFIG_NAME"]
 

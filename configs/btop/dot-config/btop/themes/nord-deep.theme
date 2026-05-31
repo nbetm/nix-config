@@ -26,8 +26,9 @@ theme[hi_fg]="#81a1c1"
 # Background color of selected item in processes box
 theme[selected_bg]="#3b4252"
 
-# Foreground color of selected item in processes box
-theme[selected_fg]="#b8c5d1"
+# Foreground color of selected item in processes box (cursor-row tier — bg2
+# + fg_bright per the design's "Row state in lists" rule).
+theme[selected_fg]="#d4dce6"
 
 # Color of inactive/disabled text
 theme[inactive_fg]="#798094"
@@ -54,7 +55,7 @@ theme[div_line]="#434c5e"
 # Temperature graph colors
 theme[temp_start]="#ebcb8b"
 theme[temp_mid]="#d08770"
-theme[temp_end]="#bf616a"
+theme[temp_end]="#c97078"
 
 # CPU graph colors
 theme[cpu_start]="#8fbcbb"
@@ -79,7 +80,7 @@ theme[available_end]="#81a1c1"
 # Mem/Disk used meter - neutral progression from cyan to blue
 theme[used_start]="#88c0d0"
 theme[used_mid]="#81a1c1"
-theme[used_end]="#5e81ac"
+theme[used_end]="#6c8eb8"
 
 # Download graph colors - green to cyan gradient
 theme[download_start]="#a3be8c"

@@ -4,37 +4,56 @@
     dark = true
     right-arrow = ❱
     syntax-theme = nord-deep
+
+    # Blame age tiers — Polar Night ramp, dark to light.
     blame-palette = "#212732 #2e3440 #3b4252"
     blame-code-style = syntax
-    commit-decoration-style = "#3b4252" box ul
-    commit-style = "#ebcb8b" bold
+
+    # Commit header — magenta-bold (landmark channel: section header),
+    # bg3 box border (structural trim).
+    commit-decoration-style = "#434c5e" box ul
+    commit-style = "#b48ead" bold
+
     keep-plus-minus-markers = true
     line-numbers = true
-    line-numbers-minus-style = "#bf616a"
+
+    # Diff line numbers. Minus/plus take their channel; format wrappers
+    # (including the `│` separator) use bg3 structural trim; context-line
+    # numbers sit at grey0 (ghost-text tier, matching nvim's LineNr).
+    line-numbers-minus-style = "#c97078"
     line-numbers-plus-style = "#a3be8c"
-    line-numbers-left-style = "#3b4252"
+    line-numbers-left-style = "#434c5e"
     line-numbers-left-format = " {nm:>3} "
-    line-numbers-right-style = "#3b4252"
+    line-numbers-right-style = "#434c5e"
     line-numbers-right-format = "│ {np:>3} "
-    line-numbers-zero-style = "#434c5e"
-    # 20% nord-red (#bf616a) over nord-base (#212732)
+    line-numbers-zero-style = "#5d6478"
+
+    # Diff row backgrounds. Subtle = palette wash_red/wash_green (10% channel
+    # over bg). Emphasis = ~20% blend kept local since the palette doesn't
+    # ship an "emphasized wash" slot today.
     minus-emph-style = syntax "#40323d"
-    # 10% nord-red (#bf616a) over nord-base (#212732)
-    minus-style = syntax "#302c37"
-    # 20% nord-green (#a3be8c) over nord-base (#212732)
+    minus-style = syntax "#39313c"
     plus-emph-style = syntax "#3b4544"
-    # 10% nord-green (#a3be8c) over nord-base (#212732)
-    plus-style = syntax "#2e363b"
-    whitespace-error-style = "#212732" "#b8c5d1"
+    plus-style = syntax "#2d353a"
+
+    # Trailing whitespace — yellow warning channel (matches nvim's
+    # MiniTrailspace; trailing whitespace is stylistic noise, not an error).
+    whitespace-error-style = "#212732" "#ebcb8b"
     zero-style = syntax
-    file-decoration-style = "#3b4252"
+
+    # File header — magenta-bold (mirrors @markup.heading.* in nvim:
+    # navigational landmark). bg3 box border.
+    file-decoration-style = "#434c5e"
     file-added-label = ⟮+⟯
     file-copied-label = ⟮*⟯
     file-modified-label = ⟮~⟯
     file-removed-label = ⟮-⟯
     file-renamed-label = ⟮>⟯
-    file-style = "#5e81ac" italic
-    hunk-header-decoration-style = "#3b4252" box ul
-    hunk-header-file-style = "#b8c5d1" bold
-    hunk-header-line-number-style = "#b8c5d1" bold
+    file-style = "#b48ead" bold
+
+    # Hunk header — navy-bold (secondary info channel) so the recurring file
+    # name + line-range stays visually subordinate to the main file heading.
+    hunk-header-decoration-style = "#434c5e" box ul
+    hunk-header-file-style = "#6c8eb8" bold
+    hunk-header-line-number-style = "#6c8eb8" bold
     hunk-header-style = file line-number syntax
