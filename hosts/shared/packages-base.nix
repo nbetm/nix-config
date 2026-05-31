@@ -1,7 +1,11 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
+  # AI coding agents (via llm-agents.nix overlay for fresher releases)
+  llm-agents.claude-code
+  # llm-agents.codex
+  # llm-agents.gemini-cli
+
   # Editors
-  u.claude-code
   helix
   u.neovim
   vim

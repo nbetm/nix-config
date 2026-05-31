@@ -23,6 +23,11 @@
 
     # xremap - key remapper for macOS-style shortcuts
     xremap-flake.url = "github:xremap/nix-flake";
+
+    # llm-agents - fresher AI coding agents (claude-code, codex, gemini-cli)
+    # No `inputs.nixpkgs.follows`: overlays.default uses its own pinned nixpkgs
+    # so we get binary-cache hits from upstream.
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =
@@ -82,6 +87,7 @@
                 # Short alias for unstable packages
                 u = final.unstable;
               })
+              inputs.llm-agents.overlays.default
             ];
           };
         in
@@ -115,7 +121,10 @@
           inputs.xremap-flake.nixosModules.default
           inputs.home-manager.nixosModules.home-manager
           {
-            nixpkgs.overlays = [ sharedOverlay ];
+            nixpkgs.overlays = [
+              sharedOverlay
+              inputs.llm-agents.overlays.default
+            ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nbetm = import ./hosts/shared/home-desktop.nix;
@@ -134,7 +143,10 @@
           ./hosts/andromeda/configuration.nix
           inputs.home-manager.nixosModules.home-manager
           {
-            nixpkgs.overlays = [ sharedOverlay ];
+            nixpkgs.overlays = [
+              sharedOverlay
+              inputs.llm-agents.overlays.default
+            ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nbetm = {
@@ -157,7 +169,10 @@
           ./hosts/atlas/configuration.nix
           inputs.home-manager.darwinModules.home-manager
           {
-            nixpkgs.overlays = [ sharedOverlay ];
+            nixpkgs.overlays = [
+              sharedOverlay
+              inputs.llm-agents.overlays.default
+            ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nbetm = import ./hosts/shared/home-darwin.nix;
