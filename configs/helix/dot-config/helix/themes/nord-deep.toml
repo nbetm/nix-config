@@ -5,7 +5,7 @@
 
 "attribute" = "fg"
 
-"boolean" = "indigo"
+"boolean" = "navy"
 
 "type" = "aqua"
 "type.builtin" = "aqua"
@@ -15,8 +15,8 @@
 "constructor" = "aqua"
 
 "constant" = "fg"
-"constant.builtin" = "indigo"
-"constant.language" = "indigo"
+"constant.builtin" = "navy"
+"constant.language" = "navy"
 "constant.character" = "yellow"
 "constant.numeric" = "magenta"
 
@@ -58,7 +58,7 @@
 
 "keyword" = "blue"
 "keyword.control" = "blue"
-"keyword.directive" = "blue"
+"keyword.directive" = "navy" # preprocessor / pragmas (Nord nord10)
 "keyword.function" = "blue"
 "keyword.operator" = "blue"
 "keyword.storage" = "blue"
@@ -82,7 +82,7 @@
 "markup.link.label" = { fg = "cyan", modifiers = ["underlined"] }
 "markup.link.text" = "cyan"
 "markup.link.url" = { fg = "cyan", modifiers = ["underlined"] }
-"markup.list" = "indigo"
+"markup.list" = "blue"
 "markup.list.checked" = "green"
 "markup.list.unchecked" = "grey1"
 "markup.quote" = { fg = "grey1", modifiers = ["italic"] }
@@ -97,7 +97,7 @@
 "ui.linenr" = { fg = "grey0" }
 "ui.linenr.selected" = { fg = "grey2" }
 
-"ui.statusline" = { fg = "fg", bg = "bg2" }
+"ui.statusline" = { fg = "fg", bg = "bg1" }
 "ui.statusline.inactive" = { fg = "grey1", bg = "bg1" }
 "ui.statusline.insert" = { fg = "bg", bg = "cyan" }
 "ui.statusline.normal" = { fg = "bg", bg = "fg" }
@@ -106,7 +106,7 @@
 
 "ui.menu" = { fg = "fg", bg = "bg" }
 "ui.menu.scroll" = { fg = "bg3" }
-"ui.menu.selected" = { fg = "cyan", bg = "bg2" }
+"ui.menu.selected" = { fg = "cyan", bg = "bg3" }
 
 "ui.popup" = { fg = "grey1", bg = "bg" }
 "ui.popup.info" = { fg = "grey1", bg = "bg" }
@@ -120,7 +120,7 @@
 
 "ui.text" = "fg"
 "ui.text.directory" = { fg = "blue" }
-"ui.text.focus" = { fg = "fg", bg = "bg2" }
+"ui.text.focus" = { fg = "fg", bg = "bg3" }
 "ui.text.inactive" = { fg = "grey1" }
 "ui.text.info" = { fg = "fg" }
 
@@ -189,7 +189,6 @@ wash_yellow = "#313439"
 wash_green = "#2d353a"
 wash_magenta = "#30313e"
 wash_blue = "#2b3340"
-wash_indigo = "#2e3445"
 wash_navy = "#2b3443"
 
 # palette1: deeps (saturated pill backgrounds, paired with fg_bright)
@@ -199,7 +198,6 @@ deep_yellow = "#665f50"
 deep_green = "#556356"
 deep_magenta = "#6a5a70"
 deep_blue = "#4e6075"
-deep_indigo = "#5a5d83"
 deep_navy = "#4b617d"
 
 # palette2: default / emphasis foregrounds
@@ -211,11 +209,10 @@ grey0 = "#5d6478"
 grey1 = "#798094"
 grey2 = "#929aae"
 
-# palette2: frost (structural syntax — indigo is the nord-deep addition)
+# palette2: frost (structural syntax)
 aqua = "#8fbcbb"
 cyan = "#88c0d0"
 blue = "#81a1c1"
-indigo = "#9090d0"
 navy = "#6c8eb8"
 
 # palette2: aurora (semantic syntax)

@@ -84,7 +84,7 @@ keybindings:
   prs:
     - key: O
       name: open in octo
-      command: nvim -c "Octo pr edit {{.PrNumber}}"
+      command: nvim -c "Octo pr list"
       prs:
     - key: M
       name: enable auto-merge and squash
@@ -97,10 +97,34 @@ keybindings:
 repoPaths: {}
 theme:
   ui:
-    sectionsShowCount: true
     table:
-      showSeparator: true
+      sectionsShowCount: true
+      showSeparators: true
       compact: false
+  # Nord Deep
+  colors:
+    text:
+      primary: "#b8c5d1"
+      secondary: "#929aae"
+      inverted: "#212732"
+      faint: "#798094"
+      warning: "#ebcb8b"
+      success: "#a3be8c"
+      error: "#c97078"
+      actor: "#929aae"
+    background:
+      selected: "#3b4252"
+    border:
+      primary: "#434c5e"
+      secondary: "#434c5e"
+      faint: "#3b4252"
+    icon:
+      newcontributor: "#a3be8c"
+      contributor: "#8fbcbb"
+      collaborator: "#8fbcbb"
+      member: "#88c0d0"
+      owner: "#b48ead"
+      unknownrole: "#798094"
 pager:
   diff: ""
 confirmQuit: false
