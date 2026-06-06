@@ -35,6 +35,7 @@ pkgs: with pkgs; [
   # Hashistack
   nomad
   packer
+  tenv
   terraform
   terraform-ls
   tflint

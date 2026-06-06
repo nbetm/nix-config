@@ -18,8 +18,8 @@ pkgs: with pkgs; [
   rsync
 
   # Docker (via Colima on macOS)
-  u.colima
-  u.docker-client
+  colima
+  docker-client
 
   # GUI apps
   flameshot

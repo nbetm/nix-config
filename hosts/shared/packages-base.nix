@@ -7,7 +7,7 @@ pkgs: with pkgs; [
 
   # Editors
   helix
-  u.neovim
+  neovim
   vim
 
   # Shell
@@ -17,9 +17,10 @@ pkgs: with pkgs; [
   zsh-fast-syntax-highlighting
 
   # CLI/TUI Tools
-  asciinema_3
+  asciinema
   awscli2
   bat
+  blazingjj
   btop
   delta
   docker-buildx
@@ -28,14 +29,13 @@ pkgs: with pkgs; [
   ffmpeg
   fzf
   gh
-  u.gh-dash
+  gh-dash
   git
   glow
   google-cloud-sdk
+  jjui
   jq
-  u.jjui
-  u.jujutsu
-  u.blazingjj
+  jujutsu
   just
   lazydocker
   lazygit
@@ -51,16 +51,16 @@ pkgs: with pkgs; [
   tmux-xpanes
   tokei
   tree
-  u.tree-sitter
+  tree-sitter
   yazi
   yq-go
   yt-dlp
-  u.zellij
+  zellij
   zoxide
 
   # Ansible
   ansible-lint
-  u.ansible-language-server
+  ansible-language-server
   jinja-lsp
 
   # Bash
@@ -85,21 +85,21 @@ pkgs: with pkgs; [
   # Markdown
   marksman
   prettier
-  u.python313Packages.mdformat
-  u.python313Packages.mdformat-frontmatter
-  u.python313Packages.mdformat-gfm
+  python314Packages.mdformat
+  python314Packages.mdformat-frontmatter
+  python314Packages.mdformat-gfm
 
   # Nix
   nixd
-  nixfmt-rfc-style
+  nixfmt
   nixfmt-tree
 
   # Python
-  python313
-  python313Packages.weasyprint
-  u.pyright
-  u.ruff
-  u.uv
+  python314
+  python314Packages.weasyprint
+  pyright
+  ruff
+  uv
 
   # TOML
   taplo
