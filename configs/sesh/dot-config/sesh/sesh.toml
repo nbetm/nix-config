@@ -4,21 +4,8 @@ blacklist = ["scratch"]
 disable_startup_command = true
 
 [[session]]
-name = "Downloads"
-path = "~/Downloads"
-startup_command = "yazi"
-
-[[session]]
-name = "dotfiles"
-path = "~/code/personal/dotfiles"
-
-[[session]]
 name = "nix-config"
 path = "~/code/personal/nix-config"
-
-[[session]]
-name = "claude-config"
-path = "~/code/personal/claude-config"
 
 [[session]]
 name = "px-cli"
@@ -59,3 +46,11 @@ path = "~/code/px/iac1"
 [[session]]
 name = "px-iac2"
 path = "~/code/px/iac2"
+
+[[session]]
+name = "px-examples"
+path = "~/code/px/examples"
+
+[[session]]
+name = "px-testbench"
+path = "~/code/px/testbench"
