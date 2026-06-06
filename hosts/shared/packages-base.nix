@@ -35,6 +35,7 @@ pkgs: with pkgs; [
   jq
   u.jjui
   u.jujutsu
+  u.blazingjj
   just
   lazydocker
   lazygit

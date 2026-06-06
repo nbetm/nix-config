@@ -26,6 +26,7 @@ alias trw='tmux renamew $(basename "$(pwd)")'
 # ------------------------------------------------------------------------------
 
 alias n="nvim"
+alias ndiff="nvim -d" # diff two files in Neovim (nord-deep colors)
 
 # ------------------------------------------------------------------------------
 # Claude

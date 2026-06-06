@@ -50,6 +50,8 @@ pkgs: with pkgs; [
   # System
   flameshot
   kdePackages.partitionmanager
+  kdiff3
+  meld
   wl-clipboard
   xdg-utils
 
