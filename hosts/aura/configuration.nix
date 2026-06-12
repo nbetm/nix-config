@@ -118,7 +118,6 @@
 
   # HiDPI Overrides
   environment.variables = {
-    QT_SCALE_FACTOR_ROUNDING_POLICY = "Round";
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
     FREETYPE_PROPERTIES = "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
   };
