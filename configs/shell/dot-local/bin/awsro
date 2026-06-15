@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#
+# Description: Stage short-lived read-only AWS credentials for agent containers
+#
+# Set options:
+#   e: Stop script if command fails
+#   u: Stop script if unset variable is referenced
+#   x: Debug, print commands as they are executed
+#   f: Disable file name generation (globbing).
+#   o pipefail: If any command in a pipeline fails it all fails
+#
+set -euo pipefail
+
+REGION="${AWS_REGION:-us-east-2}"
+STAGE_DIR="${STAGE_DIR:-$HOME/.aws/containers-read-only}"
+PROFILE_PREFIX="${PROFILE_PREFIX:-px}"
+RO_SUFFIX="${RO_SUFFIX:-ro}"
+ACCOUNTS=(management development production)
+
+CREDS_FILE="${STAGE_DIR}/credentials"
+CONFIG_FILE="${STAGE_DIR}/config"
+
+show_usage() {
+    cat <<'EOF'
+Usage: awsro
+
+Mints ReadOnlyAccess creds per account and writes a self-contained
+credentials + config pair under STAGE_DIR.
+
+Log in first (the shared px-systems SSO session covers every profile):
+
+  aws sso login --profile px-management
+
+Generate and stage read-only credentials:
+
+  awsro
+
+Then bind-mount STAGE_DIR read-only as a container user's ~/.aws, giving
+an in-container agent read-only AWS (profiles: px-<account>-ro).
+EOF
+    exit 1
+}
+
+[[ "${1:-}" =~ ^(-h|--help|help)$ ]] && show_usage
+
+for cmd in aws jq; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Error: $cmd not found" >&2
+        exit 1
+    fi
+done
+
+mkdir -p "$STAGE_DIR"
+chmod 700 "$STAGE_DIR"
+
+# Start fresh so a removed account never lingers in the staged files
+: >"$CREDS_FILE"
+: >"$CONFIG_FILE"
+chmod 600 "$CREDS_FILE" "$CONFIG_FILE"
+
+expires=""
+for account in "${ACCOUNTS[@]}"; do
+    profile="${PROFILE_PREFIX}-${account}-${RO_SUFFIX}"
+
+    echo -n "Staging ${account} (${profile})... "
+    if ! creds=$(aws configure export-credentials --profile "$profile" 2>/dev/null); then
+        echo "failed!"
+        echo "Error: could not export ${profile}." \
+            "Is it configured and your SSO session active? Run: awsl" >&2
+        exit 1
+    fi
+
+    cat >>"$CREDS_FILE" <<EOF
+[${profile}]
+aws_access_key_id = $(jq -r '.AccessKeyId' <<<"$creds")
+aws_secret_access_key = $(jq -r '.SecretAccessKey' <<<"$creds")
+aws_session_token = $(jq -r '.SessionToken' <<<"$creds")
+
+EOF
+
+    cat >>"$CONFIG_FILE" <<EOF
+[profile ${profile}]
+region = ${REGION}
+output = json
+
+EOF
+
+    expires=$(jq -r '.Expiration' <<<"$creds")
+    echo "done!"
+done
+
+echo ""
+echo "Staged ${#ACCOUNTS[@]} accounts under ${STAGE_DIR} (expires ${expires})"

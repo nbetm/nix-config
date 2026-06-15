@@ -29,6 +29,7 @@
 
     # Shell scripts and bins
     ".local/bin/ytdl".source = ../../configs/shell/dot-local/bin/ytdl;
+    ".local/bin/awsro".source = ../../configs/shell/dot-local/bin/awsro;
     ".local/share/shell" = {
       source = ../../configs/shell/dot-local/share/shell;
       recursive = true;

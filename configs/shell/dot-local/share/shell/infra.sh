@@ -81,31 +81,38 @@ uv-python-symlinks() {
 
 alias awspu="unset AWS_PROFILE"
 
+# Pick a profile from ~/.aws/config with fzf (falls back to "default")
+_aws_pick() {
+    if [[ -f ~/.aws/config ]]; then
+        sed -nr "s/^\[profile (.+)\]$/\1/p" ~/.aws/config | fzf
+    else
+        echo "default"
+    fi
+}
+
+# Set the active profile (no login)
+awsp() {
+    local choice
+    choice=$(_aws_pick)
+    [[ -n "$choice" ]] && export AWS_PROFILE="$choice"
+}
+
+# SSO login, set the active profile, then refresh read-only container creds
 awsl() {
     local choice
-    choice=$(sed -nr "s/^\[profile (.+)\]$/\1/p" ~/.aws/config | fzf)
-
+    choice=$(_aws_pick)
     [[ -z "$choice" ]] && return
 
     if [[ -n "$SSH_TTY" ]]; then
-        aws sso login --no-browser --profile "$choice"
+        aws sso login --no-browser --profile "$choice" || return
     else
-        aws sso login --profile "$choice"
+        aws sso login --profile "$choice" || return
     fi
 
     export AWS_PROFILE="$choice"
-}
 
-awsp() {
-    local choice
-
-    if [[ -f ~/.aws/config ]]; then
-        choice=$(sed -nr "s/^\[profile (.+)\]$/\1/p" ~/.aws/config | fzf)
-    else
-        choice="default"
-    fi
-
-    [[ -n "$choice" ]] && export AWS_PROFILE="$choice"
+    # px-systems logins refresh the staged read-only creds for agent containers
+    [[ "$choice" == px-* ]] && command -v awsro >/dev/null && awsro
 }
 
 # ------------------------------------------------------------------------------
