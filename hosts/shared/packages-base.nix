@@ -20,7 +20,7 @@ pkgs: with pkgs; [
   asciinema
   awscli2
   bat
-  blazingjj
+  bats
   btop
   delta
   docker-buildx
