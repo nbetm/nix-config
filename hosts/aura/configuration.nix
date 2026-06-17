@@ -112,6 +112,12 @@
     };
   };
 
+  programs._1password.enable = true;
+  programs._1password-gui = {
+      enable = true;
+      polkitPolicyOwners = [ "nbetm" ];
+  };
+
   # Packages
   environment.systemPackages =
     myLib.basePackages pkgs ++ myLib.linuxPackages pkgs ++ myLib.linuxDesktopPackages pkgs;
