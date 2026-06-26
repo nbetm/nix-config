@@ -61,6 +61,15 @@
           u = final.unstable;
           # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
           direnv = final.unstable.direnv;
+          # Workaround: openblas checkPhase hangs forever on zblat3 for the
+          # i686 build (pulled in by alsa.support32Bit). Mirror upstream's fix
+          # (nixpkgs PR #534770) verbatim so once our nixpkgs lock includes it
+          # this override collapses to a no-op (identical hash -> cache hit).
+          # x86_64 keeps its tests and cache hit. Drop after `make update`.
+          # https://discourse.nixos.org/t/openblas-i686-linux-hangs-in-checkphase-on-zblat3/78487
+          openblas = prev.openblas.overrideAttrs (_: {
+            doCheck = prev.stdenv.hostPlatform.system != "i686-linux";
+          });
         }
         // (import ./pkgs/iosevka-n {
           inherit (prev) lib stdenvNoCC fetchurl;
