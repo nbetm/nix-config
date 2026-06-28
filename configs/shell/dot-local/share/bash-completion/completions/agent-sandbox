@@ -1,0 +1,29 @@
+# vim: set ft=sh :
+# shellcheck shell=bash
+
+_agent_sandbox() {
+    local cur prev cmds
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD - 1]}"
+    cmds="build-image create enter restart stop update destroy list help"
+
+    # First word: complete the subcommand.
+    if [[ $COMP_CWORD -eq 1 ]]; then
+        mapfile -t COMPREPLY < <(compgen -W "$cmds" -- "$cur")
+        return
+    fi
+
+    # Second word: complete container names. stop -> running only; destroy -> all.
+    local names
+    case "$prev" in
+        stop)
+            names=$(incus list --format csv -c n status=running '.*-sandbox' 2>/dev/null)
+            mapfile -t COMPREPLY < <(compgen -W "$names" -- "$cur")
+            ;;
+        destroy)
+            names=$(incus list --format csv -c n '.*-sandbox' 2>/dev/null)
+            mapfile -t COMPREPLY < <(compgen -W "$names" -- "$cur")
+            ;;
+    esac
+}
+complete -F _agent_sandbox agent-sandbox

@@ -149,3 +149,16 @@ alias nm="nomad"
 alias ans="ansible"
 alias ansp="ansible-playbook --diff"
 alias anspc="ansible-playbook --diff --check"
+
+# ------------------------------------------------------------------------------
+# Agent sandbox (Incus dev containers)
+# ------------------------------------------------------------------------------
+
+alias asb="agent-sandbox build-image"
+alias asc="agent-sandbox create"
+alias ase="agent-sandbox enter"
+alias asr="agent-sandbox restart"
+alias ass="agent-sandbox stop"
+alias asu="agent-sandbox update"
+alias asd="agent-sandbox destroy"
+alias asl="agent-sandbox list"

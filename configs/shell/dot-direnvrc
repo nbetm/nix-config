@@ -42,18 +42,17 @@ layout_activate() {
 }
 
 # Python environment management using uv (https://github.com/astral-sh/uv)
+# Honors UV_PROJECT_ENVIRONMENT, otherwise defaults to a project-local ./.venv.
+# uv venv ignores UV_PROJECT_ENVIRONMENT, so the target path is passed explicitly.
 layout_uv() {
-    if [[ -d ".venv" ]]; then
-        VIRTUAL_ENV="$(pwd)/.venv"
+    local venv="${UV_PROJECT_ENVIRONMENT:-$(pwd)/.venv}"
+
+    if [[ ! -f $venv/pyvenv.cfg ]]; then
+        log_status "Creating uv virtual environment at $venv"
+        uv venv "$venv"
     fi
 
-    if [[ -z $VIRTUAL_ENV || ! -d $VIRTUAL_ENV ]]; then
-        log_status "No virtual environment exists. Executing \`uv venv\` to create one."
-        uv venv
-        VIRTUAL_ENV="$(pwd)/.venv"
-    fi
-
-    PATH_add "$VIRTUAL_ENV/bin"
+    PATH_add "$venv/bin"
     export UV_ACTIVE=1 # or VENV_ACTIVE=1
-    export VIRTUAL_ENV
+    export VIRTUAL_ENV="$venv"
 }

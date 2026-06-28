@@ -1,0 +1,545 @@
+#!/usr/bin/env bash
+#
+# Description: Build and manage Incus dev-container sandboxes for Claude Code
+#
+# Set options:
+#   e: Stop script if command fails
+#   u: Stop script if unset variable is referenced
+#   o pipefail: If any command in a pipeline fails it all fails
+#
+set -euo pipefail
+
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+
+INCUS_IMAGE="images:debian/13"
+IMAGE_ALIAS="agent-base"
+BUILDER="agent-base-builder"
+PROFILE="agent-sandbox"
+JJ_VERSION="v0.42.0"
+TFLINT_VERSION="v0.63.1"
+
+HOST_UID="$(id -u)"
+HOST_GID="$(id -g)"
+HOST_USER="$(id -un)"
+HOST_GROUP="$(id -gn)"
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+_print_header() { echo "==> $1"; }
+
+check_incus() {
+    if ! command -v incus >/dev/null 2>&1; then
+        echo "Error: incus command not found" >&2
+        return 1
+    fi
+    if ! incus list >/dev/null 2>&1; then
+        echo "Error: Cannot connect to Incus. Are you in the incus-admin group?" >&2
+        return 1
+    fi
+}
+
+_wait_for_container() {
+    local container="$1"
+    local max_wait=30 waited=0
+    while ! incus exec "$container" -- true >/dev/null 2>&1; do
+        sleep 1
+        waited=$((waited + 1))
+        if [[ $waited -ge $max_wait ]]; then
+            echo "Error: $container did not become ready" >&2
+            return 1
+        fi
+    done
+}
+
+_wait_for_network() {
+    local container="$1"
+    local max_wait=60 waited=0
+    echo -n "Waiting for network in $container... "
+    while ! incus exec "$container" -- ping -c1 1.1.1.1 &>/dev/null; do
+        sleep 1
+        waited=$((waited + 1))
+        if [[ $waited -ge $max_wait ]]; then
+            echo "timeout!"
+            return 1
+        fi
+    done
+    echo "done!"
+}
+
+_container_name() {
+    local raw
+    raw=$(basename "$(realpath .)")
+    raw="${raw#.}"    # strip leading dot
+    raw="${raw//_/-}" # underscores -> hyphens
+    raw="${raw,,}"    # lowercase
+    echo "${raw}-sandbox"
+}
+
+# -----------------------------------------------------------------------------
+# build-image
+# -----------------------------------------------------------------------------
+
+build_image() {
+    _print_header "Building $IMAGE_ALIAS image"
+
+    incus delete "$BUILDER" --force 2>/dev/null || true
+    incus launch "$INCUS_IMAGE" "$BUILDER" --profile "$PROFILE"
+    _wait_for_container "$BUILDER"
+    _wait_for_network "$BUILDER"
+
+    # Root provisioning
+    incus exec "$BUILDER" \
+        --env JJ_VERSION="$JJ_VERSION" \
+        --env TFLINT_VERSION="$TFLINT_VERSION" \
+        --env HOST_UID="$HOST_UID" \
+        --env HOST_GID="$HOST_GID" \
+        --env HOST_USER="$HOST_USER" \
+        --env HOST_GROUP="$HOST_GROUP" \
+        -- bash -s <<'PROVISION'
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+# Base packages
+apt-get update
+apt-get install -y --no-install-recommends \
+    git curl ca-certificates jq make direnv ripgrep build-essential \
+    python3 python3-pip sudo neovim less awscli locales tzdata gnupg \
+    bash-completion git-delta shellcheck shfmt unzip
+
+# Locale + timezone (mirror nixos-common.nix)
+sed -i 's/^# *en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+locale-gen en_US.UTF-8
+update-locale LANG=en_US.UTF-8
+ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+echo "Europe/Berlin" >/etc/timezone
+dpkg-reconfigure -f noninteractive tzdata
+
+# Node.js
+curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+apt-get install -y nodejs
+node -v
+
+# Docker
+apt-get remove -y docker.io docker-compose docker-doc podman-docker containerd runc 2>/dev/null || true
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+cat >/etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/debian
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+apt-get update
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl enable docker
+
+# GitHub CLI
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    -o /etc/apt/keyrings/githubcli-archive-keyring.gpg
+chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+    >/etc/apt/sources.list.d/github-cli.list
+apt-get update
+apt-get install -y gh
+
+# Terraform
+curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /etc/apt/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com trixie main" \
+    >/etc/apt/sources.list.d/hashicorp.list
+apt update
+apt install -y terraform
+
+# tflint (pinned, arch-mapped GitHub release)
+case "$(uname -m)" in
+    x86_64) TFLINT_ARCH=linux_amd64 ;;
+    aarch64) TFLINT_ARCH=linux_arm64 ;;
+    *)
+        echo "Error: unsupported arch $(uname -m)" >&2
+        exit 1
+        ;;
+esac
+curl -fsSL "https://github.com/terraform-linters/tflint/releases/download/${TFLINT_VERSION}/tflint_${TFLINT_ARCH}.zip" \
+    -o /tmp/tflint.zip
+unzip -o /tmp/tflint.zip -d /usr/local/bin/
+rm /tmp/tflint.zip
+tflint --version
+
+# gcloud
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    -o /etc/apt/keyrings/cloud.google.asc
+echo "deb [signed-by=/etc/apt/keyrings/cloud.google.asc] https://packages.cloud.google.com/apt cloud-sdk main" \
+    >/etc/apt/sources.list.d/google-cloud-sdk.list
+apt-get update
+apt-get install -y google-cloud-cli
+
+# jj (pinned, arch-mapped GitHub release)
+case "$(uname -m)" in
+    x86_64) JJ_ARCH=x86_64-unknown-linux-musl ;;
+    aarch64) JJ_ARCH=aarch64-unknown-linux-musl ;;
+    *)
+        echo "Error: unsupported arch $(uname -m)" >&2
+        exit 1
+        ;;
+esac
+curl -fsSL "https://github.com/jj-vcs/jj/releases/download/${JJ_VERSION}/jj-${JJ_VERSION}-${JJ_ARCH}.tar.gz" \
+    -o /tmp/jj.tar.gz
+tar xzf /tmp/jj.tar.gz -C /usr/local/bin/ ./jj
+rm /tmp/jj.tar.gz
+jj --version
+
+# User matching host identity (nbetm:nbetm, 1000:1000)
+groupadd -g "$HOST_GID" "$HOST_GROUP"
+useradd -u "$HOST_UID" -g "$HOST_GID" -m -s /bin/bash -G sudo,docker "$HOST_USER"
+echo "$HOST_USER ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/"$HOST_USER"
+chmod 440 /etc/sudoers.d/"$HOST_USER"
+
+# uv dirs off the workspace
+mkdir -p /opt/venv /opt/uv-cache
+chown "$HOST_UID:$HOST_GID" /opt/venv /opt/uv-cache
+
+# Pre-create config dirs so create-time mounts/copies land with correct ownership
+sudo -u "$HOST_USER" mkdir -p \
+    "/home/$HOST_USER/.claude" \
+    "/home/$HOST_USER/.config/gh" \
+    "/home/$HOST_USER/.config/jj" \
+    "/home/$HOST_USER/.config/agent-sandbox" \
+    "/home/$HOST_USER/.aws"
+
+# Cleanup
+apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+PROVISION
+
+    # User provisioning (as the mapped user)
+    incus exec "$BUILDER" \
+        --user "$HOST_UID" --group "$HOST_GID" \
+        --cwd "/home/$HOST_USER" --env HOME="/home/$HOST_USER" \
+        -- bash -s <<'PROVISION'
+set -euo pipefail
+
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# claude-code (native install)
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Shell environment
+cat >>"$HOME/.bashrc" <<'BASHRC'
+
+# ----- agent-sandbox environment -----
+export AGENT_SANDBOX=1
+export EDITOR=nvim
+export PATH="$HOME/.local/bin:/opt/venv/bin:$PATH"
+export UV_PROJECT_ENVIRONMENT=/opt/venv
+export UV_CACHE_DIR=/opt/uv-cache
+export GH_TOKEN="$(cat ~/.config/gh/pat-ro 2>/dev/null)"
+export AWS_CONFIG_FILE="$HOME/.aws/config"
+export AWS_SHARED_CREDENTIALS_FILE="$HOME/.aws/credentials"
+eval "$(direnv hook bash)"
+
+# Aliases
+alias c='claude --dangerously-skip-permissions'
+alias ls='ls --color=auto'
+alias ll='ls --all --human-readable --classify -l'
+alias l1='ls --almost-all -1'
+alias lw='l1 | wc -l'
+alias l='ll'
+alias df='df -h -P'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias ssu='sudo su -'
+alias de='direnv'
+alias dea='direnv allow'
+alias der='direnv reload'
+
+# cd to the mounted workspace on login (path written by `agent-sandbox create`)
+[ -f ~/.config/agent-sandbox/workspace ] && cd "$(cat ~/.config/agent-sandbox/workspace)"
+BASHRC
+PROVISION
+
+    incus stop "$BUILDER"
+
+    incus image delete "$IMAGE_ALIAS" 2>/dev/null || true
+    incus publish "$BUILDER" --alias "$IMAGE_ALIAS" \
+        description="Agent sandbox base ($(date -I))"
+    incus delete "$BUILDER"
+    incus image list "$IMAGE_ALIAS"
+
+    echo "done!"
+}
+
+# -----------------------------------------------------------------------------
+# create
+# -----------------------------------------------------------------------------
+
+_add_ro_bind() {
+    local container="$1" name="$2" path="$3"
+    if [ ! -e "$path" ]; then
+        echo "Warning: $path not found, skipping RO bind ($name)" >&2
+        return 0
+    fi
+    incus config device add "$container" "$name" disk \
+        source="$path" path="$path" readonly=true shift=true
+}
+
+_push_claude_files() {
+    local container="$1" f
+    local -A files=(
+        ["$HOME/.claude/.credentials.json"]=600
+        ["$HOME/.claude/settings.json"]=644
+        ["$HOME/.claude.json"]=644
+    )
+    for f in "${!files[@]}"; do
+        if [ -f "$f" ]; then
+            incus file push --create-dirs "$f" "$container$f" \
+                --uid "$HOST_UID" --gid "$HOST_GID" --mode "${files[$f]}"
+        else
+            echo "Warning: $f not found, skipping push" >&2
+        fi
+    done
+}
+
+create_sandbox() {
+    local project_path container enc notes_dir
+    project_path=$(realpath .)
+    container=$(_container_name)
+
+    if incus info "$container" >/dev/null 2>&1; then
+        echo "Sandbox $container already exists. Run: agent-sandbox enter" >&2
+        return 1
+    fi
+
+    _print_header "Creating sandbox $container"
+
+    incus launch "$IMAGE_ALIAS" "$container" --profile "$PROFILE"
+    _wait_for_container "$container"
+
+    # Workspace (RW, shifted) at the matching host path
+    incus config device add "$container" workspace disk \
+        source="$project_path" path="$project_path" shift=true
+
+    # Shared notes dir (sibling of the project, e.g. ~/code/<area>/notes)
+    notes_dir="$(dirname "$project_path")/notes"
+    if [ -d "$notes_dir" ]; then
+        incus config device add "$container" notes disk \
+            source="$notes_dir" path="$notes_dir" shift=true
+    fi
+
+    # Claude project session dir (RW, shifted) — also persists memory/history
+    enc=${project_path//\//-}
+    mkdir -p "$HOME/.claude/projects/$enc"
+    incus config device add "$container" claude-projects disk \
+        source="$HOME/.claude/projects/$enc" \
+        path="$HOME/.claude/projects/$enc" shift=true
+
+    # Read-only config binds (matched paths; shift so host-1000 files read as nbetm)
+    _add_ro_bind "$container" claude-md "$HOME/.claude/CLAUDE.md"
+    _add_ro_bind "$container" claude-cmds "$HOME/.claude/commands"
+    _add_ro_bind "$container" claude-inst "$HOME/.claude/instructions"
+    _add_ro_bind "$container" claude-skills "$HOME/.claude/skills"
+    _add_ro_bind "$container" claude-plugins "$HOME/.claude/plugins"
+    _add_ro_bind "$container" gitconfig "$HOME/.gitconfig"
+    _add_ro_bind "$container" gitignore "$HOME/.gitignore"
+    _add_ro_bind "$container" jjconfig "$HOME/.config/jj/config.toml"
+    _add_ro_bind "$container" delta-config "$HOME/.config/delta"
+    _add_ro_bind "$container" direnvrc "$HOME/.direnvrc"
+    _add_ro_bind "$container" ghpat "$HOME/.config/gh/pat-ro"
+    _add_ro_bind "$container" px-completion \
+        "$HOME/.local/share/bash-completion/completions/px"
+
+    # AWS read-only creds (staged dir -> ~/.aws)
+    if [ -d "$HOME/.aws/containers-read-only" ]; then
+        incus config device add "$container" aws disk \
+            source="$HOME/.aws/containers-read-only" \
+            path="$HOME/.aws" readonly=true shift=true
+    else
+        echo "Warning: ~/.aws/containers-read-only not found (run awsro), skipping aws bind" >&2
+    fi
+
+    # Copy-in the writable claude files
+    _push_claude_files "$container"
+
+    # Tell the box where to cd on login
+    echo "$project_path" | incus file push - \
+        "$container/home/$HOST_USER/.config/agent-sandbox/workspace" \
+        --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
+
+    # Pre-authorize the workspace's .envrc so direnv loads it on entry
+    if [ -f "$project_path/.envrc" ]; then
+        incus exec "$container" \
+            --user "$HOST_UID" --group "$HOST_GID" \
+            --env HOME="/home/$HOST_USER" \
+            -- direnv allow "$project_path" ||
+            echo "Warning: could not direnv-allow $project_path" >&2
+    fi
+
+    _wait_for_network "$container"
+
+    echo "Sandbox $container ready"
+}
+
+# -----------------------------------------------------------------------------
+# enter
+# -----------------------------------------------------------------------------
+
+enter_sandbox() {
+    local container
+    container=$(_container_name)
+    # Create on first use; subsequent enters just attach.
+    if ! incus info "$container" >/dev/null 2>&1; then
+        create_sandbox
+    fi
+    incus start "$container" 2>/dev/null || true
+    _wait_for_container "$container"
+    # su - (not `incus exec --user`) so the login initializes supplementary groups
+    # (docker, sudo); --user/--group alone sets only uid + primary gid.
+    incus exec "$container" -- su - "$HOST_USER"
+}
+
+# -----------------------------------------------------------------------------
+# destroy / list
+# -----------------------------------------------------------------------------
+
+destroy_sandbox() {
+    local container="${1:-$(_container_name)}"
+    _print_header "Destroying sandbox $container"
+    if ! incus info "$container" >/dev/null 2>&1; then
+        echo "Not found: $container"
+        return 0
+    fi
+    incus delete "$container" --force
+    echo "Deleted $container"
+}
+
+list_sandboxes() {
+    incus list -f compact '.*-sandbox'
+}
+
+# -----------------------------------------------------------------------------
+# restart / stop
+# -----------------------------------------------------------------------------
+
+restart_sandbox() {
+    local container
+    container=$(_container_name)
+    if ! incus info "$container" >/dev/null 2>&1; then
+        echo "Not found: $container (run: agent-sandbox create)" >&2
+        return 1
+    fi
+    _print_header "Restarting sandbox $container"
+    # restart a running box; fall back to start if it's stopped
+    incus restart "$container" 2>/dev/null || incus start "$container"
+    _wait_for_container "$container"
+    echo "Restarted $container"
+}
+
+stop_sandbox() {
+    local container="${1:-$(_container_name)}"
+    if ! incus info "$container" >/dev/null 2>&1; then
+        echo "Not found: $container" >&2
+        return 1
+    fi
+    _print_header "Stopping sandbox $container"
+    incus stop "$container"
+    echo "Stopped $container"
+}
+
+# -----------------------------------------------------------------------------
+# update
+# -----------------------------------------------------------------------------
+
+update_sandboxes() {
+    _print_header "Refreshing sandboxes"
+    local containers c
+    containers=$(incus list --format csv -c n status=running '.*-sandbox')
+    if [ -z "$containers" ]; then
+        echo "No running sandbox containers found."
+        return 0
+    fi
+    for c in $containers; do
+        _push_claude_files "$c"
+        echo "Refreshed $c"
+    done
+}
+
+# -----------------------------------------------------------------------------
+# Usage / dispatch
+# -----------------------------------------------------------------------------
+
+show_usage() {
+    cat <<EOF
+Usage: agent-sandbox <command>
+
+Commands:
+    build-image     Build the agent-base Incus image
+    create          Create a sandbox for the current project
+    enter           Open a shell in the sandbox (creating it if needed)
+    update          Refresh Claude creds/config in running sandboxes
+    destroy [name]  Delete the current project's sandbox (or a named one)
+    list            List all sandbox containers
+    restart         Restart the current project's sandbox
+    stop [name]     Stop the current project's sandbox (or a named one)
+    help            Show this help message
+
+EOF
+}
+
+main() {
+    local command="${1:-}"
+
+    case "$command" in
+        build-image)
+            check_incus
+            build_image
+            ;;
+        create)
+            check_incus
+            create_sandbox
+            ;;
+        enter)
+            check_incus
+            enter_sandbox
+            ;;
+        update)
+            check_incus
+            update_sandboxes
+            ;;
+        destroy)
+            check_incus
+            shift || true
+            destroy_sandbox "$@"
+            ;;
+        list)
+            check_incus
+            list_sandboxes
+            ;;
+        restart)
+            check_incus
+            restart_sandbox
+            ;;
+        stop)
+            check_incus
+            shift || true
+            stop_sandbox "$@"
+            ;;
+        help | --help | -h | "")
+            show_usage
+            ;;
+        *)
+            echo "Error: Unknown command: $command" >&2
+            echo
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

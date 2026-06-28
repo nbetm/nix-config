@@ -30,6 +30,7 @@
     # Shell scripts and bins
     ".local/bin/ytdl".source = ../../configs/shell/dot-local/bin/ytdl;
     ".local/bin/awsro".source = ../../configs/shell/dot-local/bin/awsro;
+    ".local/bin/agent-sandbox".source = ../../configs/shell/dot-local/bin/agent-sandbox;
     ".local/share/shell" = {
       source = ../../configs/shell/dot-local/share/shell;
       recursive = true;
@@ -50,6 +51,12 @@
     # ZSH completions (manual — not provided by nix packages)
     ".zsh/completions" = {
       source = ../../configs/shell/dot-zsh/completions;
+      recursive = true;
+    };
+
+    # Bash completions
+    ".local/share/bash-completion/completions" = {
+      source = ../../configs/shell/dot-local/share/bash-completion/completions;
       recursive = true;
     };
 

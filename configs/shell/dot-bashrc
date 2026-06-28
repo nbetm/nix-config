@@ -97,7 +97,7 @@ fi
 if command -v complete_alias &>/dev/null; then
     # shellcheck disable=SC1090
     source "$(command -v complete_alias)"
-    complete -F _complete_alias g t s tf j
+    complete -F _complete_alias g t s tf j ass asd
 fi
 
 # ------------------------------------------------------------------------------

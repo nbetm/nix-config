@@ -28,6 +28,23 @@
 
   environment.variables.LIBVIRT_DEFAULT_URI = "qemu:///system";
 
+  # incusd (root) needs a subuid/subgid grant covering 1000 so the
+  # agent-sandbox profile's `raw.idmap uid/gid 1000 1000` is permitted by
+  # newuidmap. The incus module already grants root the large 1000000+ range
+  # (see /etc/subuid); this appends the single id 1000 it's missing.
+  users.users.root.subUidRanges = [
+    {
+      startUid = 1000;
+      count = 1;
+    }
+  ];
+  users.users.root.subGidRanges = [
+    {
+      startGid = 1000;
+      count = 1;
+    }
+  ];
+
   virtualisation = {
     docker = {
       enable = true;
@@ -57,6 +74,7 @@
             config = {
               "ipv4.address" = "10.0.100.1/24";
               "ipv4.nat" = "true";
+              "ipv4.dhcp.ranges" = "10.0.100.100-10.0.100.250";
             };
             name = "incusbr0";
             type = "bridge";
@@ -101,6 +119,7 @@
               root = {
                 path = "/";
                 pool = "default";
+                size = "35GiB";
                 type = "disk";
               };
             };

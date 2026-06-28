@@ -1,0 +1,50 @@
+#compdef agent-sandbox
+
+_agent_sandbox_completion() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments -C \
+        '1: :->command' \
+        '*:: :->args'
+
+    case $state in
+        command)
+            local -a commands
+            commands=(
+                'build-image:Build the agent-base Incus image'
+                'create:Create a sandbox for the current project'
+                "enter:Open a shell in the current project's sandbox"
+                "restart:Restart the current project's sandbox"
+                'stop:Stop a sandbox (cwd, or a named one)'
+                'update:Refresh Claude creds/config in running sandboxes'
+                'destroy:Delete a sandbox (cwd, or a named one)'
+                'list:List all sandbox containers'
+                'help:Show this help message'
+            )
+            _describe -t commands 'agent-sandbox command' commands
+            ;;
+        args)
+            case $line[1] in
+                stop) _agent_sandbox_names status=running ;;
+                destroy) _agent_sandbox_names ;;
+            esac
+            ;;
+    esac
+}
+
+# Complete sandbox container names. Pass `status=running` to filter (stop); omit for all (destroy).
+_agent_sandbox_names() {
+    (( $+commands[incus] )) || return
+    local -a names
+    names=(${(f)"$(incus list --format csv -c n "$@" '.*-sandbox' 2>/dev/null)"})
+    _describe -t containers 'sandbox' names
+}
+
+if [[ $zsh_eval_context[-1] == loadautofunc ]]; then
+    # autoloaded from fpath: run directly
+    _agent_sandbox_completion "$@"
+else
+    # sourced/eval-ed: register for later
+    compdef _agent_sandbox_completion agent-sandbox
+fi
