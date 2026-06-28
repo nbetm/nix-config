@@ -11,11 +11,16 @@ pkgs: with pkgs; [
   #  - Disable Chromium's wp_color_manager_v1 on KWin (fixes washed-out colors)
   #    https://issues.chromium.org/issues/446254087
   #    https://issues.chromium.org/issues/476172415
-  ((vivaldi.override { commandLineArgs = "--password-store=kwallet6 --disable-features=WaylandWpColorManagerV1"; }).overrideAttrs (oldAttrs: {
-    dontWrapQtApps = false;
-    dontPatchELF = true;
-    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ pkgs.kdePackages.wrapQtAppsHook ];
-  }))
+  (
+    (vivaldi.override {
+      commandLineArgs = "--password-store=kwallet6 --disable-features=WaylandWpColorManagerV1";
+    }).overrideAttrs
+    (oldAttrs: {
+      dontWrapQtApps = false;
+      dontPatchELF = true;
+      nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ pkgs.kdePackages.wrapQtAppsHook ];
+    })
+  )
   vivaldi-ffmpeg-codecs
 
   # Communication

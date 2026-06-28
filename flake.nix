@@ -21,7 +21,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # xremap - key remapper for macOS-style shortcuts
+    # plasma-manager
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.home-manager.follows = "home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # xremap
     xremap-flake.url = "github:xremap/nix-flake";
 
@@ -137,6 +143,7 @@
             ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
             home-manager.users.nbetm = import ./hosts/shared/home-desktop.nix;
           }
         ];
