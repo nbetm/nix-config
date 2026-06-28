@@ -22,7 +22,6 @@ alias g="git"
 alias lzg="lazygit"
 alias j="jj"
 alias jui="jjui"
-alias bjj="blazingjj"
 
 # ------------------------------------------------------------------------------
 # Branch (b)

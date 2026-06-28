@@ -15,11 +15,11 @@ ble-face -s syntax_quotation fg=#a3be8c
 ble-face -s syntax_escape fg=#ebcb8b
 ble-face -s syntax_expr fg=#88c0d0
 ble-face -s syntax_error fg=#c97078,bold
-ble-face -s syntax_varname fg=#d08770
-ble-face -s syntax_delimiter fg=#5d6478
+ble-face -s syntax_varname fg=#b8c5d1
+ble-face -s syntax_delimiter fg=#81a1c1
 ble-face -s syntax_param_expansion fg=#88c0d0
 ble-face -s syntax_history_expansion fg=#b48ead
-ble-face -s syntax_function_name fg=#b48ead
+ble-face -s syntax_function_name fg=#88c0d0
 ble-face -s syntax_comment fg=#798094
 ble-face -s syntax_glob fg=#ebcb8b
 ble-face -s syntax_brace fg=#88c0d0
@@ -29,15 +29,62 @@ ble-face -s syntax_document_begin fg=#a3be8c
 
 # Command types
 ble-face -s command_builtin fg=#81a1c1
+ble-face -s command_builtin_dot fg=#81a1c1,bold
 ble-face -s command_alias fg=#8fbcbb
-ble-face -s command_function fg=#b48ead
+ble-face -s command_function fg=#88c0d0
 ble-face -s command_file fg=#a3be8c
 ble-face -s command_keyword fg=#81a1c1,bold
 ble-face -s command_jobs fg=#ebcb8b
 ble-face -s command_directory fg=#88c0d0,underline
+ble-face -s command_suffix fg=#d4dce6,bg=#556356
+ble-face -s command_suffix_new fg=#d4dce6,bg=#82515b
 
-# Filename colors (inherit from LS_COLORS)
+# Command-line arguments
+ble-face -s argument_option fg=#6c8eb8
+ble-face -s argument_error fg=#c97078,bold
+
+# Variable names ($var by kind)
+ble-face -s varname_unset fg=#798094
+ble-face -s varname_empty fg=#929aae
+ble-face -s varname_export fg=#d08770,bold
+ble-face -s varname_readonly fg=#d08770
+ble-face -s varname_array fg=#ebcb8b,bold
+ble-face -s varname_hash fg=#8fbcbb,bold
+ble-face -s varname_number fg=#b48ead
+ble-face -s varname_expr fg=#88c0d0,bold
+ble-face -s varname_transform fg=#8fbcbb,bold
+ble-face -s varname_new fg=#a3be8c
+
+# TODO: Filenames on the command line are colored from LS_COLORS.
+# ble adds underline on top via the filename_ls_colors face.
+# Only `url` and `warning` have no LS_COLORS key.
 bleopt filename_ls_colors="$LS_COLORS"
+ble-face -s filename_ls_colors none
+# ble-face -s filename_url fg=#88c0d0
+# ble-face -s filename_warning fg=#c97078
+# ble-face -s filename_directory fg=#81a1c1
+# ble-face -s filename_directory_sticky fg=#81a1c1,bg=#2b3340
+# ble-face -s filename_link fg=#88c0d0
+# ble-face -s filename_orphan fg=#c97078,bg=#39313c
+# ble-face -s filename_executable fg=#a3be8c
+# ble-face -s filename_setuid fg=#d08770
+# ble-face -s filename_setgid fg=#d08770
+# ble-face -s filename_block fg=#ebcb8b
+# ble-face -s filename_character fg=#ebcb8b
+# ble-face -s filename_pipe fg=#d08770
+# ble-face -s filename_socket fg=#b48ead
+# ble-face -s filename_url fg=#88c0d0
+# ble-face -s filename_warning fg=#c97078
+# ble-face -s filename_other fg=#b8c5d1
+
+# Completion menu
+ble-face -s menu_complete_match fg=#88c0d0,bold
+ble-face -s menu_complete_selected bg=#434c5e
+ble-face -s menu_filter_input fg=#88c0d0,bold
+ble-face -s menu_filter_fixed fg=#d4dce6,bold
+ble-face -s menu_desc_default fg=#798094
+ble-face -s menu_desc_type fg=#8fbcbb
+ble-face -s menu_desc_quote fg=#a3be8c
 
 # Auto-complete suggestion (dimmed)
 ble-face -s auto_complete fg=#5d6478
@@ -45,29 +92,50 @@ ble-face -s auto_complete fg=#5d6478
 # Region/selection
 ble-face -s region bg=#3b4252
 ble-face -s region_insert bg=#434c5e
+ble-face -s region_match fg=#212732,bg=#ebcb8b
+ble-face -s region_target fg=#212732,bg=#88c0d0
 
 # Disabled/overwritten text
 ble-face -s disabled fg=#798094
 ble-face -s overwrite_mode fg=#c97078
 
+# ble.sh status line (dormant unless `bleopt prompt_status_line` is set) and
+# the cd-into-CDPATH hint
+ble-face -s prompt_status_line fg=#b8c5d1,bg=#2e3440
+ble-face -s cmdinfo_cd_cdpath fg=#6c8eb8
+
+# Visible bell (paired with edit_bell=visual)
+ble-face -s vbell fg=#212732,bg=#ebcb8b
+ble-face -s vbell_flash fg=#212732,bg=#88c0d0
+ble-face -s vbell_erase bg=#2e3440
+
 # ------------------------------------------------------------------------------
 # Behavior Options
 # ------------------------------------------------------------------------------
 
-# Share history across all sessions
+# Share history across all sessions and loading for faster startup
 bleopt history_share=1
+bleopt history_lazyload=1
 
-# Disable exit status marker (use starship for this)
+# Disable exit marker like "[ble: exit]"
 bleopt exec_errexit_mark=
-
-# Disable exit message
 bleopt exec_exit_mark=
+
+# starship drives a multi-line prompt through PROMPT_COMMAND. ble.sh otherwise
+# assumes PROMPT_COMMAND doesn't change the layout, which double-draws the
+# prompt's first line when a new shell starts. Tell ble.sh to account for it.
+bleopt prompt_command_changes_layout=1
+
+# Collapse past prompts to their last line after a command runs. Keeps
+# scrollback tight and pairs well with starship's multi-line prompt.
+bleopt prompt_ps1_transient=trim
+
+# Visible bell instead of audible
+bleopt edit_bell=visual
+bleopt decode_error_cseq_abell=
 
 # Don't show hidden files by default in completion
 bind 'set match-hidden-files off'
-
-# Enable visible bell instead of audible
-bleopt decode_error_cseq_abell=
 
 # ------------------------------------------------------------------------------
 # Keybindings
@@ -114,10 +182,7 @@ ble-import -d integration/fzf-key-bindings
 # Sesh Integration (Ctrl-O for tmux session picker)
 # ------------------------------------------------------------------------------
 
-function ble/widget/sesh-sessions {
-    ble/widget/.hide-current-line
-    sesh-picker
-    ble/widget/.show-current-line
-    ble/textarea#invalidate
-}
-ble-bind -f 'C-o' sesh-sessions
+# Use -x (external-command context) so ble.sh hands the terminal to fzf and
+# keys like Esc reach it. A -f widget keeps ble.sh's input layer engaged, which
+# swallows Esc. ble.sh's own fzf widgets (C-r/C-t) bind with -x for this reason.
+ble-bind -x 'C-o' 'sesh-picker'

@@ -12,6 +12,8 @@ pkgs: with pkgs; [
 
   # Shell
   bash-completion
+  blesh
+  complete-alias
   starship
   zsh-autosuggestions
   zsh-fast-syntax-highlighting

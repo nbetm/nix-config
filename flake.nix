@@ -56,10 +56,25 @@
         darwinPackages = import ./hosts/shared/packages-darwin.nix;
       };
 
+      # ble.sh: nixpkgs ships 0.4.0-devel3, which is broken on Bash 5.3
+      # (_ble_decode_hook errors on every keystroke). Pin the upstream nightly
+      # using the same prebuilt-tarball approach as the nixpkgs derivation.
+      # Update: bump the URL date+rev and re-run `nix-prefetch-url --unpack <url>`.
+      bleshNightly =
+        pkgs:
+        pkgs.blesh.overrideAttrs (_: {
+          version = "0.4.0-nightly+5d39ebe";
+          src = pkgs.fetchzip {
+            url = "https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly-20260627+5d39ebe.tar.xz";
+            hash = "sha256-tHYBv8tkEyVxs77NBIq4UDIS/YS/LdVg1zBvXrnDnkk=";
+          };
+        });
+
       # Shared overlay - cross-platform packages
       sharedOverlay =
         final: prev:
         {
+          blesh = bleshNightly prev;
           unstable = import nixpkgs-unstable {
             system = prev.stdenv.hostPlatform.system;
             config.allowUnfree = true;
@@ -102,6 +117,7 @@
                 };
                 # Short alias for unstable packages
                 u = final.unstable;
+                blesh = bleshNightly prev;
               })
               inputs.llm-agents.overlays.default
             ];

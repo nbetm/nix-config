@@ -5,11 +5,27 @@
 [[ $- != *i* ]] && return
 
 # ------------------------------------------------------------------------------
+# LS_COLORS
+# ------------------------------------------------------------------------------
+# Set before ble.sh
+if [[ -f "${HOME}/.dir_colors" ]]; then
+    eval "$(dircolors -b "${HOME}/.dir_colors")"
+fi
+
+# ------------------------------------------------------------------------------
 # ble.sh - Bash Line Editor (attach early)
 # ------------------------------------------------------------------------------
 
-if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" ]]; then
-    source "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" --attach=none
+# Prefer the nix-managed package (provides blesh-share); fall back to a manual
+# install (Debian/Ubuntu) under XDG_DATA_HOME.
+if command -v blesh-share &>/dev/null; then
+    _ble_sh="$(blesh-share)/ble.sh"
+elif [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh" ]]; then
+    _ble_sh="${XDG_DATA_HOME:-$HOME/.local/share}/blesh/ble.sh"
+fi
+if [[ -n "${_ble_sh:-}" ]]; then
+    # shellcheck disable=SC1090
+    source "$_ble_sh" --attach=none
 fi
 
 # ------------------------------------------------------------------------------
@@ -50,11 +66,6 @@ if command -v starship &>/dev/null; then
     eval "$(starship init bash)"
 fi
 
-# LS_COLORS
-if [[ -f "${HOME}/.dir_colors" ]]; then
-    eval "$(dircolors -b "${HOME}/.dir_colors")"
-fi
-
 # ------------------------------------------------------------------------------
 # Bash Completion
 # ------------------------------------------------------------------------------
@@ -81,19 +92,13 @@ fi
 # ------------------------------------------------------------------------------
 # Alias Completions
 # ------------------------------------------------------------------------------
-# Completions don't auto-inherit when aliasing commands.
-# Eagerly load completions for frequently-used aliases.
-
-_completion_loader git 2>/dev/null
-_completion_loader tmux 2>/dev/null
-
-# git (alias g in vcs.sh)
-if declare -F __git_complete &>/dev/null; then
-    __git_complete g __git_main
+# Completions don't inherit through aliases. complete-alias expands the alias
+# into COMP_LINE and dispatches to the real command's completion.
+if command -v complete_alias &>/dev/null; then
+    # shellcheck disable=SC1090
+    source "$(command -v complete_alias)"
+    complete -F _complete_alias g t s tf j
 fi
-
-# tmux (alias t in tools.sh)
-declare -F _tmux &>/dev/null && complete -F _tmux t
 
 # ------------------------------------------------------------------------------
 # Zoxide (must be near the end per zoxide docs)

@@ -20,8 +20,8 @@
 
   # Environment
   environment.variables = {
-    EDITOR = "hx";
-    VISUAL = "hx";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
     UV_PYTHON_DOWNLOADS = "never";
   };
 }
