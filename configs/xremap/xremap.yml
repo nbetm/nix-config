@@ -8,7 +8,7 @@ keymap:
   # Super+key → Ctrl+Shift+key (preserves Ctrl+C as SIGINT)
   # Unmapped Super+key combos pass through to terminal app
   # (undo/redo, text nav, splits, font size handled by Ghostty/kitty)
-  - name: Terminal shortcuts
+  - name: Terminal
     exact_match: true
     application:
       only: [ghostty, kitty, konsole, alacritty, foot, wezterm]
@@ -27,14 +27,14 @@ keymap:
   # ---------------------------------------------------------------------------
   # App-specific overrides (must come before Non-Terminal)
   # ---------------------------------------------------------------------------
-  - name: Dolphin shortcuts
+  - name: Dolphin
     exact_match: true
     application:
       only: [dolphin]
     remap:
       Super-Backspace: Delete # Move to trash
 
-  - name: Firefox shortcuts
+  - name: Firefox
     exact_match: true
     application:
       only: [firefox]
@@ -45,10 +45,26 @@ keymap:
       Super-y: C-Shift-h # History (alt)
       Super-Shift-o: C-Shift-o # Bookmarks manager
 
+  - name: Signal
+    exact_match: true
+    application:
+      only: [signal]
+    remap:
+      Super-Comma: C-Shift-Comma
+      Super-KEY_1: C-KEY_1
+      Super-KEY_2: C-KEY_2
+      Super-KEY_3: C-KEY_3
+      Super-KEY_4: C-KEY_4
+      Super-KEY_5: C-KEY_5
+      Super-KEY_6: C-KEY_6
+      Super-KEY_7: C-KEY_7
+      Super-KEY_8: C-KEY_8
+      Super-KEY_9: C-KEY_9
+
   # ---------------------------------------------------------------------------
   # Non-terminal apps
   # ---------------------------------------------------------------------------
-  - name: Non-Terminal shortcuts
+  - name: Non-Terminal
     exact_match: true
     application:
       not: [ghostty, kitty, konsole, alacritty, foot, wezterm]
@@ -58,12 +74,15 @@ keymap:
       Super-x: C-x
       Super-v: C-v
       Super-a: C-a
+      Super-e: C-e
+      Super-u: C-u
+      Super-Shift-u: C-Shift-y
       Super-z: C-z
-      Super-Shift-z: C-Shift-z # Redo
+      Super-Shift-z: C-Shift-z
       Super-f: C-f
-      Super-k: C-k # Insert link / search bar
-      Super-g: C-g # Find next
-      Super-Shift-g: C-Shift-g # Find previous
+      Super-k: C-k
+      Super-g: C-g
+      Super-Shift-g: C-Shift-g
 
       # Zoom
       Super-Equal: C-Equal # Zoom in

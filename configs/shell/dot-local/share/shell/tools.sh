@@ -60,3 +60,9 @@ md2pdf() {
     pandoc "$1" -o "${1%.md}.pdf" --pdf-engine=weasyprint \
         --css="$XDG_CONFIG_HOME"/md2pdf.css
 }
+
+# ------------------------------------------------------------------------------
+# xremap
+# ------------------------------------------------------------------------------
+
+alias xr="systemctl --user restart xremap"

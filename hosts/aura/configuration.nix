@@ -142,6 +142,7 @@
   };
 
   # xremap - macOS-style keyboard shortcuts
+  # https://github.com/xremap/nix-flake
   hardware.uinput.enable = true;
   services.xremap = {
     enable = true;

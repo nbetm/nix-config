@@ -22,6 +22,7 @@
     };
 
     # xremap - key remapper for macOS-style shortcuts
+    # xremap
     xremap-flake.url = "github:xremap/nix-flake";
 
     # llm-agents - fresher AI coding agents (claude-code, codex, gemini-cli)
