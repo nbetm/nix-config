@@ -37,7 +37,7 @@ pkgs: with pkgs; [
   google-cloud-sdk
   jjui
   jq
-  jujutsu
+  u.jujutsu
   just
   lazydocker
   lazygit
