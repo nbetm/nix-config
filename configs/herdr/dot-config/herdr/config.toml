@@ -1,0 +1,47 @@
+# herdr config — nord-deep theme + keybindings matched to my tmux setup.
+# Full option reference: .notes/herdr-default.toml (from `herdr --default-config`).
+# Use `prefix+?` to see live bindings, `prefix+shift+r` to reload after edits.
+
+[theme]
+# Base is herdr's built-in nord; custom tokens push it to my nord-deep variant.
+name = "nord"
+
+[theme.custom]
+# nord-deep differs from stock nord mainly in a darker background + brighter red;
+# frost cyan is the highlight. Other aurora/frost tokens already match base nord.
+# (herdr documents panel_bg/accent/red/green as override tokens; verify by eye and
+# add more from herdr's theme docs if the chrome needs further tuning.)
+panel_bg = "#212732" # nord-deep deep background
+accent = "#88c0d0"   # frost cyan
+red = "#c97078"      # nord-deep red
+
+[keys]
+# tmux prefix is C-Space. If the terminal/herdr won't register ctrl+space, fall back
+# to something like "ctrl+a".  (VERIFY: space may not be an accepted prefix key.)
+prefix = "ctrl+space"
+
+# Pane focus — vim h/j/k/l (same as herdr default; pinned for clarity)
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# Splits — v = left/right, s = top/bottom (matches tmux `v`/`s`).
+# herdr's split_horizontal defaults to prefix+minus; we move it to `s`.
+# `s` is herdr's default `settings` key, so settings moves to shift+s (below).
+split_vertical = "prefix+v"
+split_horizontal = "prefix+s"
+settings = "prefix+shift+s"
+
+# Tabs — c new, . next, , prev (herdr defaults: next=prefix+n, prev=prefix+p).
+# VERIFY: "." isn't in herdr's documented named-punctuation list; if it won't bind,
+# use "prefix+comma"/keep herdr's prefix+n/prefix+p, or pick other keys.
+new_tab = ["prefix+c", "prefix+n"]
+next_tab = "prefix+."
+previous_tab = "prefix+,"
+
+# Zoom — tmux `z` or Enter
+zoom = ["prefix+z", "prefix+enter"]
+
+# Detach — match tmux prefix+d (herdr default is prefix+q)
+detach = "prefix+d"

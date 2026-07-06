@@ -35,6 +35,7 @@ pkgs: with pkgs; [
   git
   glow
   google-cloud-sdk
+  u.herdr
   jjui
   jq
   u.jujutsu
