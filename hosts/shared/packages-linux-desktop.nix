@@ -5,6 +5,15 @@ pkgs: with pkgs; [
   u.kitty
 
   # Browsers
+  (chromium.override {
+    enableWideVine = true;
+    commandLineArgs = [
+      "--enable-features=AcceleratedVideoEncoder"
+      "--ignore-gpu-blocklist"
+      "--enable-zero-copy"
+    ];
+  })
+
   # Vivaldi:
   #  - kwallet6 for browser-internal secrets
   #  - Qt wrap for Plasma 6 stability
