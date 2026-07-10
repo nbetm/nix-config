@@ -34,16 +34,7 @@ pkgs: with pkgs; [
 
   # Communication
   signal-desktop
-  (pkgs.symlinkJoin {
-    name = "zoom-us-hidpi";
-    paths = [ u.zoom-us ];
-    buildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/zoom \
-        --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
-        --set QT_SCALE_FACTOR_ROUNDING_POLICY Round
-    '';
-  })
+  u.zoom-us
 
   # Media
   spotify
