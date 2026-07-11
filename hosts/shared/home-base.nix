@@ -83,10 +83,10 @@
     };
     "lazygit".source = ../../configs/git/dot-config/lazygit;
     "gh-dash".source = ../../configs/git/dot-config/gh-dash;
-    "herdr" = {
-      source = ../../configs/herdr/dot-config/herdr;
-      recursive = true;
-    };
+    # "herdr" = {
+    #   source = ../../configs/herdr/dot-config/herdr;
+    #   recursive = true;
+    # };
     "jj" = {
       source = ../../configs/jj/dot-config/jj;
       recursive = true;
