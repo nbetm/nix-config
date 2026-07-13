@@ -346,6 +346,7 @@ create_sandbox() {
     _add_ro_bind "$container" claude-inst "$HOME/.claude/instructions"
     _add_ro_bind "$container" claude-skills "$HOME/.claude/skills"
     _add_ro_bind "$container" claude-plugins "$HOME/.claude/plugins"
+    _add_ro_bind "$container" claude-hooks "$HOME/.claude/hooks"
     _add_ro_bind "$container" gitconfig "$HOME/.gitconfig"
     _add_ro_bind "$container" gitignore "$HOME/.gitignore"
     _add_ro_bind "$container" jjconfig "$HOME/.config/jj/config.toml"
