@@ -15,7 +15,7 @@ _git_log_brief_format="%C(green)%h%C(reset) %C(blue)(%ar by %C(cyan)%an%C(blue))
 _git_status_ignore_submodules="none"
 
 # ------------------------------------------------------------------------------
-# Git / TUI
+# Git / Jujutsu / TUI
 # ------------------------------------------------------------------------------
 
 alias g="git"
@@ -23,11 +23,20 @@ alias lzg="lazygit"
 alias j="jj"
 alias jui="jjui"
 
+alias jgi="jj git init && jj bookmark track main"
+
 # ------------------------------------------------------------------------------
 # Branch (b)
 # ------------------------------------------------------------------------------
 
-alias gb="git branch"
+gb() {
+    if [[ -d .jj ]]; then
+        jj bookmark list
+    else
+        git branch
+    fi
+}
+
 gba() {
     if [[ -d .jj ]]; then
         jj bookmark list --all-remotes
@@ -35,9 +44,11 @@ gba() {
         git branch --all
     fi
 }
-alias gbc="git checkout -b"
+
 alias gbd="git branch --delete"
+alias gbD="git branch --delete --force"
 alias gbm="git branch --move"
+alias gbM="git branch --move --force"
 alias gbs="git show-branch"
 alias gbsa="git show-branch --all"
 
@@ -188,14 +199,7 @@ alias gpt="git push --tags"
 # Rebase (r)
 # ------------------------------------------------------------------------------
 
-gr() {
-    if [[ -d .jj ]]; then
-        jj rebase -d "$@"
-    else
-        git rebase "$@"
-    fi
-}
-
+alias gr="git rebase"
 alias gra="git rebase --abort"
 alias grc="git rebase --continue"
 alias gri="git rebase --interactive"
