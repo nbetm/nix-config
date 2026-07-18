@@ -42,4 +42,5 @@ pkgs: with pkgs; [
 
   # System Tools
   nvd
+  samba
 ]

@@ -170,6 +170,29 @@
         ];
       };
 
+      # Aphrodite - Headless NixOS homelab NAS + media server (x86_64-linux)
+      nixosConfigurations.aphrodite = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs;
+          myLib = myLib;
+        };
+        modules = [
+          ./hosts/aphrodite/configuration.nix
+          inputs.home-manager.nixosModules.home-manager
+          {
+            nixpkgs.overlays = [ sharedOverlay ];
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.nbetm = {
+              imports = [ ./hosts/shared/home-base.nix ];
+              home.username = "nbetm";
+              home.homeDirectory = "/home/nbetm";
+            };
+          }
+        ];
+      };
+
       # Darwin system configuration
       darwinConfigurations.atlas = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin"; # Change to x86_64-darwin for Intel Macs

@@ -113,6 +113,9 @@ else
 	@exit 1
 endif
 
+deploy-aphrodite: ## Build aphrodite locally and push it over SSH (run from aura)
+	nixos-rebuild switch --flake .#aphrodite --target-host nbetm@192.168.50.198 --sudo
+
 install: ## Install packages (deploy on NixOS/Darwin, profile add elsewhere)
 ifeq ($(OS_DISTRO),nixos)
 	$(MAKE) deploy
