@@ -30,11 +30,6 @@
 
     # xremap
     xremap-flake.url = "github:xremap/nix-flake";
-
-    # llm-agents - fresher AI coding agents (claude-code, codex, gemini-cli)
-    # No `inputs.nixpkgs.follows`: overlays.default uses its own pinned nixpkgs
-    # so we get binary-cache hits from upstream.
-    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =
@@ -83,15 +78,6 @@
           u = final.unstable;
           # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
           direnv = final.unstable.direnv;
-          # Workaround: openblas checkPhase hangs forever on zblat3 for the
-          # i686 build (pulled in by alsa.support32Bit). Mirror upstream's fix
-          # (nixpkgs PR #534770) verbatim so once our nixpkgs lock includes it
-          # this override collapses to a no-op (identical hash -> cache hit).
-          # x86_64 keeps its tests and cache hit. Drop after `make update`.
-          # https://discourse.nixos.org/t/openblas-i686-linux-hangs-in-checkphase-on-zblat3/78487
-          openblas = prev.openblas.overrideAttrs (_: {
-            doCheck = prev.stdenv.hostPlatform.system != "i686-linux";
-          });
         }
         // (import ./pkgs/iosevka-n {
           inherit (prev) lib stdenvNoCC fetchurl;
@@ -119,7 +105,6 @@
                 u = final.unstable;
                 blesh = bleshNightly prev;
               })
-              inputs.llm-agents.overlays.default
             ];
           };
         in
@@ -153,10 +138,7 @@
           inputs.xremap-flake.nixosModules.default
           inputs.home-manager.nixosModules.home-manager
           {
-            nixpkgs.overlays = [
-              sharedOverlay
-              inputs.llm-agents.overlays.default
-            ];
+            nixpkgs.overlays = [ sharedOverlay ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
@@ -176,10 +158,7 @@
           ./hosts/andromeda/configuration.nix
           inputs.home-manager.nixosModules.home-manager
           {
-            nixpkgs.overlays = [
-              sharedOverlay
-              inputs.llm-agents.overlays.default
-            ];
+            nixpkgs.overlays = [ sharedOverlay ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nbetm = {
@@ -202,10 +181,7 @@
           ./hosts/atlas/configuration.nix
           inputs.home-manager.darwinModules.home-manager
           {
-            nixpkgs.overlays = [
-              sharedOverlay
-              inputs.llm-agents.overlays.default
-            ];
+            nixpkgs.overlays = [ sharedOverlay ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nbetm = import ./hosts/shared/home-darwin.nix;

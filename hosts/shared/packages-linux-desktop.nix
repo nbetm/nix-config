@@ -68,4 +68,7 @@ pkgs: with pkgs; [
 
   # Icons
   papirus-icon-theme
+
+  # Notes
+  obsidian
 ]
