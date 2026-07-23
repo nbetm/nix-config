@@ -22,6 +22,21 @@ alias tka="tmux kill-session -a"
 alias trw='tmux renamew $(basename "$(pwd)")'
 
 # ------------------------------------------------------------------------------
+# Herdr
+# ------------------------------------------------------------------------------
+
+alias h="herdr"
+alias hwl="herdr workspace list"
+alias hsl="herdr session list"
+
+hupdate() {
+    local skill_url="https://raw.githubusercontent.com/ogulcancelik/herdr/refs/heads/master/SKILL.md"
+    local skill_path="$HOME/.claude/skills/herdr"
+    mkdir -p skill_path
+    curl -fsSL $skill_url -o "$skill_path/SKILL.md"
+}
+
+# ------------------------------------------------------------------------------
 # Editors
 # ------------------------------------------------------------------------------
 

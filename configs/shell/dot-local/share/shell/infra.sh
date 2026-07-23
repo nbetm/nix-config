@@ -6,22 +6,6 @@
 # ------------------------------------------------------------------------------
 
 alias venvrm="find . -name .venv -type d -print0 | xargs -0 rm -fr"
-alias pipu="python -m pip install --upgrade pip setuptools wheel"
-alias pipi="python -m pip install"
-
-pipr() {
-    local req_file="requirements.txt"
-    local req_dev_file="requirements-dev.txt"
-
-    if [[ -f $req_dev_file ]]; then
-        python -m pip install -r "$req_dev_file"
-    elif [[ -f $req_file ]]; then
-        python -m pip install -r "$req_file"
-    else
-        echo "No requirements file found." >&2
-        return 1
-    fi
-}
 
 # ------------------------------------------------------------------------------
 # uv (Python package manager)
