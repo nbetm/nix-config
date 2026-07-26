@@ -2,9 +2,10 @@
 
 # OS
 .DS_Store
+._*
 Thumbs.db
 
-# swap vim files
+# vim backup files
 *~
 
 # log files
@@ -14,12 +15,15 @@ logs/
 *.log.*
 
 # editors
+.idea/
 .vscode/
 .zed/
 
-# generic
-.idea/
-.notes/
+# notes
+# Deliberately no trailing slash: a pattern ending in / matches directories
+# only, and .notes is a symlink into the notes vault in most repos. Git does
+# not follow symlinks, so `.notes/` would leave every one of them untracked.
+.notes
 
 # direnv
 .envrc

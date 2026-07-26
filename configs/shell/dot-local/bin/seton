@@ -1,0 +1,281 @@
+#!/usr/bin/env bash
+#
+# Description: Sync the Obsidian vault with its remote via jj
+#
+# Set options:
+#   e: Stop script if command fails
+#   u: Stop script if unset variable is referenced
+#   o pipefail: If any command in a pipeline fails it all fails
+#
+set -euo pipefail
+
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+
+SETON_DIR="${SETON_DIR:-$HOME/.seton}"
+SETON_REMOTE="${SETON_REMOTE:-origin}"
+SETON_BOOKMARK="${SETON_BOOKMARK:-main}"
+# Vault subdir holding agent-facing notes, mirroring ~/code/<area>
+SETON_CODE_SUBDIR="${SETON_CODE_SUBDIR:-code}"
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+_print_header() { echo "==> $1"; }
+
+_host() { hostname -s 2>/dev/null || uname -n; }
+
+check_vault() {
+    if ! command -v jj >/dev/null 2>&1; then
+        echo "Error: jj not found" >&2
+        return 1
+    fi
+    if [ ! -d "$SETON_DIR/.jj" ]; then
+        echo "Error: $SETON_DIR is not a jj repo" >&2
+        echo "Set SETON_DIR, or bootstrap the vault first." >&2
+        return 1
+    fi
+}
+
+# jj snapshots the working copy on every invocation, so these queries also see
+# edits made since the last command. There is no separate capture step.
+_wc_is_empty() {
+    [ "$(jj log -r @ --no-graph -T 'empty')" = "true" ]
+}
+
+# Scoped to ancestors of @ -- the commits push would actually carry. A bare
+# conflicts() is repo-wide and would wedge sync on a stray conflicted commit
+# sitting on an unrelated branch, reporting "conflicts present" next to a
+# perfectly clean jj status.
+_has_conflicts() {
+    [ -n "$(jj log -r 'conflicts() & ::@' --no-graph -T '"x"')" ]
+}
+
+_remote_bookmark_exists() {
+    jj log -r "${SETON_BOOKMARK}@${SETON_REMOTE}" --no-graph -T '""' >/dev/null 2>&1
+}
+
+_at_remote_head() {
+    [ "$(jj log -r '@-' --no-graph -T 'commit_id')" \
+        = "$(jj log -r "${SETON_BOOKMARK}@${SETON_REMOTE}" --no-graph -T 'commit_id')" ]
+}
+
+_count_revs() {
+    local out
+    out=$(jj log -r "$1" --no-graph -T '"x\n"' 2>/dev/null || true)
+    if [ -z "$out" ]; then
+        echo 0
+    else
+        # printf '%s\n' restores the trailing newline that command
+        # substitution strips -- without it wc -l undercounts by one.
+        printf '%s\n' "$out" | wc -l | tr -d ' '
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# sync
+# -----------------------------------------------------------------------------
+
+sync_vault() {
+    cd "$SETON_DIR"
+
+    _print_header "Fetching from $SETON_REMOTE"
+    jj git fetch --quiet --remote "$SETON_REMOTE"
+
+    if ! _remote_bookmark_exists; then
+        echo "Error: ${SETON_BOOKMARK}@${SETON_REMOTE} not found" >&2
+        echo "Has the vault been bootstrapped and pushed?" >&2
+        return 1
+    fi
+
+    # A quiet fetch alone does not mean there is nothing to do -- local edits
+    # need committing and pushing regardless. Both halves must be idle.
+    if _wc_is_empty && _at_remote_head && ! _has_conflicts; then
+        echo "Already in sync"
+        return 0
+    fi
+
+    _print_header "Rebasing onto ${SETON_BOOKMARK}@${SETON_REMOTE}"
+    # No-op when @ is already in place: jj reports "Skipped rebase ..." exit 0.
+    jj rebase -b @ -o "${SETON_BOOKMARK}@${SETON_REMOTE}"
+
+    # Must gate before committing: jj commits conflict markers happily, but
+    # push then refuses that commit forever -- only `jj squash` gets it out.
+    # Left in @, recovery is just editing the file and re-running.
+    if _has_conflicts; then
+        echo "Error: conflicts present, sync stopped" >&2
+        echo >&2
+        jj status >&2
+        echo >&2
+        echo "Resolve them (jj resolve, or edit the markers), then: seton sync" >&2
+        return 1
+    fi
+
+    if _wc_is_empty; then
+        echo "Nothing to commit"
+    else
+        _print_header "Committing local edits"
+        jj commit -m "update vault ($(_host))"
+    fi
+
+    # No -B: a backwards bookmark move means something is wrong upstream, and
+    # failing loudly beats rewinding the remote.
+    jj bookmark set "$SETON_BOOKMARK" -r @-
+
+    # Pull-only runs leave the bookmark where the remote already is; pushing
+    # then costs a round-trip to be told "already matches".
+    if [ "$(_count_revs "${SETON_BOOKMARK}@${SETON_REMOTE}..${SETON_BOOKMARK}")" = "0" ]; then
+        echo "Nothing to push"
+    else
+        _print_header "Pushing $SETON_BOOKMARK to $SETON_REMOTE"
+        jj git push --remote "$SETON_REMOTE" -b "$SETON_BOOKMARK"
+    fi
+
+    echo "done!"
+}
+
+# -----------------------------------------------------------------------------
+# status
+# -----------------------------------------------------------------------------
+
+show_vault_status() {
+    local do_fetch=0
+    if [ "${1:-}" = "--fetch" ]; then
+        do_fetch=1
+    elif [ -n "${1:-}" ]; then
+        echo "Error: Unknown option: $1" >&2
+        return 1
+    fi
+
+    cd "$SETON_DIR"
+
+    if [ "$do_fetch" -eq 1 ]; then
+        jj git fetch --remote "$SETON_REMOTE" >/dev/null
+    fi
+
+    local working conflicts unpushed behind
+    if _wc_is_empty; then working="clean"; else working="dirty"; fi
+    if _has_conflicts; then conflicts="yes"; else conflicts="no"; fi
+    if _remote_bookmark_exists; then
+        unpushed=$(_count_revs "${SETON_BOOKMARK}@${SETON_REMOTE}..${SETON_BOOKMARK}")
+    else
+        unpushed="?"
+    fi
+
+    echo "vault:     $SETON_DIR"
+    echo "working:   $working"
+    echo "conflicts: $conflicts"
+    echo "unpushed:  $unpushed"
+    if [ "$do_fetch" -eq 1 ]; then
+        behind=$(_count_revs "${SETON_BOOKMARK}..${SETON_BOOKMARK}@${SETON_REMOTE}")
+        echo "behind:    $behind"
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# link
+# -----------------------------------------------------------------------------
+
+link_notes() {
+    local repo area target link current
+
+    repo=$(realpath .)
+    if [ ! -d "$repo/.git" ] && [ ! -d "$repo/.jj" ]; then
+        echo "Error: $repo is not a repo root" >&2
+        echo "Run seton link from the top level of a project repo." >&2
+        return 1
+    fi
+
+    area=$(basename "$(dirname "$repo")")
+    target="$SETON_DIR/$SETON_CODE_SUBDIR/$area"
+    link="$repo/.notes"
+
+    # Compare resolved paths, so a hand-made relative link pointing at the same
+    # place is recognised rather than rejected. -m tolerates a dangling link.
+    # Report the raw text, which is what the user actually needs to see.
+    if [ -L "$link" ]; then
+        current=$(readlink "$link")
+        if [ "$(realpath -m "$link")" = "$(realpath -m "$target")" ]; then
+            echo "Already linked: .notes -> $current"
+            return 0
+        fi
+        echo "Error: .notes already points to $current" >&2
+        echo "Remove it first if you meant to relink." >&2
+        return 1
+    fi
+
+    # `ln -s` into an existing dir silently nests (.notes/px -> ...) instead of
+    # failing; agents recreate a real .notes via mkdir -p if the link is gone.
+    if [ -e "$link" ]; then
+        echo "Error: $link exists and is not a symlink" >&2
+        echo "Move its contents into $target, remove it, then re-run." >&2
+        return 1
+    fi
+
+    if [ ! -d "$target" ]; then
+        _print_header "Creating $target"
+        mkdir -p "$target"
+    fi
+
+    ln -s "$target" "$link"
+    echo "Linked: .notes -> $target"
+}
+
+# -----------------------------------------------------------------------------
+# Usage / dispatch
+# -----------------------------------------------------------------------------
+
+show_usage() {
+    cat <<'EOF'
+Usage: seton <command>
+
+Commands:
+    sync              Fetch, rebase, commit local edits, and push
+    status            Show local state (working / conflicts / unpushed)
+    link              Link this repo's .notes into the vault
+    help              Show this help message
+
+Options:
+    status --fetch    Also report how far behind the remote is
+
+Environment:
+    SETON_DIR         Vault location (default: ~/.seton)
+    SETON_REMOTE      Git remote name (default: origin)
+    SETON_BOOKMARK    Bookmark to track (default: main)
+    SETON_CODE_SUBDIR Vault subdir mirroring ~/code (default: code)
+
+EOF
+}
+
+main() {
+    local command="${1:-}"
+
+    case "$command" in
+        sync)
+            check_vault
+            sync_vault
+            ;;
+        status)
+            check_vault
+            shift || true
+            show_vault_status "$@"
+            ;;
+        link)
+            check_vault
+            link_notes
+            ;;
+        help | --help | -h | "")
+            show_usage
+            ;;
+        *)
+            echo "Error: Unknown command: $command" >&2
+            echo
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
