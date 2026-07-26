@@ -326,11 +326,16 @@ create_sandbox() {
     incus config device add "$container" workspace disk \
         source="$project_path" path="$project_path" shift=true
 
-    # Shared notes dir (sibling of the project, e.g. ~/code/<area>/notes)
-    notes_dir="$(dirname "$project_path")/notes"
-    if [ -d "$notes_dir" ]; then
+    # Shared notes dir: follow the project's own .notes symlink into the vault
+    # (see `seton link`) and bind the resolved target at its real path. The
+    # symlink rides along inside the workspace bind, so it only resolves in the
+    # container if its target is mounted at the identical path.
+    if [ -d "$project_path/.notes" ]; then
+        notes_dir=$(realpath "$project_path/.notes")
         incus config device add "$container" notes disk \
             source="$notes_dir" path="$notes_dir" shift=true
+    else
+        echo "Warning: $project_path/.notes not found, skipping notes bind" >&2
     fi
 
     # Claude project session dir (RW, shifted) — also persists memory/history
