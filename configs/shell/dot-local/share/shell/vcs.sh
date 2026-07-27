@@ -179,6 +179,21 @@ alias gmF="git merge --no-ff"
 alias gma="git merge --abort"
 alias gmt="git mergetool"
 
+ghm() {
+    local pr rc=0
+    if [[ ${1:-} == "-" ]]; then
+        while read -r pr; do
+            [[ -n $pr ]] || continue
+            gh pr edit "$pr" --add-label "merge" </dev/null || rc=1
+        done
+    else
+        for pr in "$@"; do
+            gh pr edit "$pr" --add-label "merge" || rc=1
+        done
+    fi
+    return $rc
+}
+
 # ------------------------------------------------------------------------------
 # Push (p)
 # ------------------------------------------------------------------------------
