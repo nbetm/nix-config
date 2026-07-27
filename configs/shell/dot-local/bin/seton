@@ -2,6 +2,13 @@
 #
 # Description: Sync the Obsidian vault with its remote via jj
 #
+# Exit codes from `sync` are a contract, not decoration. Callers (the Obsidian
+# plugin, a future timer) need "go fix something" to look different from "try
+# again later", otherwise a dead network is indistinguishable from a conflict:
+#   0  synced, or already in sync
+#   1  needs a human -- conflict, missing remote bookmark, missing dependency
+#   2  retry later -- fetch/push failed, or another sync holds the lock
+#
 # Set options:
 #   e: Stop script if command fails
 #   u: Stop script if unset variable is referenced
@@ -18,6 +25,8 @@ SETON_REMOTE="${SETON_REMOTE:-origin}"
 SETON_BOOKMARK="${SETON_BOOKMARK:-main}"
 # Vault subdir holding agent-facing notes, mirroring ~/code/<area>
 SETON_CODE_SUBDIR="${SETON_CODE_SUBDIR:-code}"
+# Kept out of the vault so it is never committed or synced
+SETON_LOCK="${SETON_LOCK:-${TMPDIR:-/tmp}/seton-sync.lock}"
 
 # -----------------------------------------------------------------------------
 # Helpers
@@ -81,8 +90,28 @@ _count_revs() {
 sync_vault() {
     cd "$SETON_DIR"
 
+    # A lock that silently does not lock is worse than no lock, so this is a
+    # hard dependency rather than a graceful degrade.
+    if ! command -v flock >/dev/null 2>&1; then
+        echo "Error: flock not found" >&2
+        return 1
+    fi
+
+    # -n fails fast rather than blocking: this can run from Obsidian's quit
+    # handler, where waiting on a lock would stall the app shutting down.
+    exec 9>"$SETON_LOCK"
+    if ! flock -n 9; then
+        echo "Error: another sync is in progress" >&2
+        return 2
+    fi
+
     _print_header "Fetching from $SETON_REMOTE"
-    jj git fetch --quiet --remote "$SETON_REMOTE"
+    # set -e would abort here on a dead network, losing the chance to report
+    # this as retryable rather than as something the user broke.
+    if ! jj git fetch --quiet --remote "$SETON_REMOTE"; then
+        echo "Error: fetch failed (offline?)" >&2
+        return 2
+    fi
 
     if ! _remote_bookmark_exists; then
         echo "Error: ${SETON_BOOKMARK}@${SETON_REMOTE} not found" >&2
@@ -130,7 +159,11 @@ sync_vault() {
         echo "Nothing to push"
     else
         _print_header "Pushing $SETON_BOOKMARK to $SETON_REMOTE"
-        jj git push --remote "$SETON_REMOTE" -b "$SETON_BOOKMARK"
+        if ! jj git push --remote "$SETON_REMOTE" -b "$SETON_BOOKMARK"; then
+            echo "Error: push failed (offline?)" >&2
+            echo "Local edits are committed; the next sync will push them." >&2
+            return 2
+        fi
     fi
 
     echo "done!"
@@ -240,11 +273,17 @@ Commands:
 Options:
     status --fetch    Also report how far behind the remote is
 
+Exit codes (sync):
+    0                 Synced, or already in sync
+    1                 Needs a human (conflict, missing bookmark or dependency)
+    2                 Retry later (offline, or another sync holds the lock)
+
 Environment:
     SETON_DIR         Vault location (default: ~/.seton)
     SETON_REMOTE      Git remote name (default: origin)
     SETON_BOOKMARK    Bookmark to track (default: main)
     SETON_CODE_SUBDIR Vault subdir mirroring ~/code (default: code)
+    SETON_LOCK        Sync lock file (default: \$TMPDIR/seton-sync.lock)
 
 EOF
 }

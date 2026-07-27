@@ -29,6 +29,7 @@ pkgs: with pkgs; [
   doitlive
   fd
   ffmpeg
+  flock
   fzf
   gh
   gh-dash
