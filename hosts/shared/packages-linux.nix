@@ -33,12 +33,12 @@ pkgs: with pkgs; [
   zls
 
   # Hashistack
-  nomad
-  packer
-  tenv
-  terraform
-  terraform-ls
-  tflint
+  u.nomad
+  u.packer
+  u.tenv
+  u.terraform
+  u.terraform-ls
+  u.tflint
 
   # System Tools
   nvd
