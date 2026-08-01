@@ -58,10 +58,10 @@
       bleshNightly =
         pkgs:
         pkgs.blesh.overrideAttrs (_: {
-          version = "0.4.0-nightly+5d39ebe";
+          version = "0.4.0-nightly+d69e4d5";
           src = pkgs.fetchzip {
-            url = "https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly-20260627+5d39ebe.tar.xz";
-            hash = "sha256-tHYBv8tkEyVxs77NBIq4UDIS/YS/LdVg1zBvXrnDnkk=";
+            url = "https://github.com/akinomyoga/ble.sh/releases/download/nightly/ble-nightly-20260711+d69e4d5.tar.xz";
+            hash = "sha256-YufcfgCiIdvmqJsXnn2WHv2W9QwycnSqg4AdfCvVcZo=";
           };
         });
 
