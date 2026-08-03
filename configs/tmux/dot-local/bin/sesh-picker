@@ -3,20 +3,41 @@
 # Interactive session picker using sesh and fzf.
 #
 # Supports switching between tmux sessions, config dirs, and zoxide paths.
-# Float sessions (ending in -float) are hidden from all listings.
+# Internal sessions (see HIDDEN_RE) are hidden from all listings.
 #
 # Set options:
 #   e: Stop script if command fails
 #   u: Stop script if unset variable is referenced
-#   x: Debug, print commands as they are executed
-#   f: Disable file name generation (globbing).
 #   o pipefail: If any command in a pipeline fails it all fails
 #
-set -ufo pipefail
+set -euo pipefail
 
-exec </dev/tty
+# Best effort. fzf wants a terminal on stdin, but under `run-shell` there is no
+# controlling terminal at all and /dev/tty cannot be opened. fzf-tmux does not
+# need one there, drawing in a tmux popup instead, so this must not be fatal.
+exec </dev/tty 2>/dev/null || true
 exec <&1
 session=
+
+# Sessions tmux owns for internal use, never worth switching to by hand:
+#
+#   -float  per-window popup sessions)
+#   -stack  side-pane stack parking lots)
+#
+# These filters are embedded in fzf reload() actions, which parse up to a matching
+# paren, so a `)` in the pattern would truncate the action.
+HIDDEN_RE='-float$|-stack$'
+
+# Drop internal sessions, then de-duplicate. Two forms of the same filter, both
+# fed from HIDDEN_RE so the pattern itself is written once:
+#
+#   _hide   pipeline form, for the direct calls in this script
+#   HIDE    string form, for embedding in fzf reload() actions, which run via sh
+#
+# Expanding it unquoted in a bash pipeline splits on whitespace without re-parsing
+# the inner quotes, so awk would receive the quote characters literally.
+_hide() { awk -v re="${HIDDEN_RE}" '$0 !~ re && !seen[$0]++'; }
+HIDE="awk -v re='${HIDDEN_RE}' '\$0 !~ re && !seen[\$0]++'"
 
 # Shared sesh fzf configuration
 sesh_fzf_args=(
@@ -29,23 +50,25 @@ sesh_fzf_args=(
     --header "<C-t> 󰕮  │ <C-b> 󰃀  │ <C-f> 󰉋  │ <C-a>   │ <C-r>   │ <A-del>  "
     --bind "tab:down,btab:up,ctrl-n:down,ctrl-p:up"
     --bind "ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up"
-    --bind "ctrl-t:change-prompt(󰕮  )+reload(sesh list -t | awk '!/-float\$/ && !seen[\$0]++')"
+    --bind "ctrl-t:change-prompt(󰕮  )+reload(sesh list -t | ${HIDE})"
     --bind "ctrl-b:change-prompt(󰃀  )+reload(sesh list -c)"
     --bind "ctrl-f:change-prompt(󰉋  )+reload(sesh list -z)"
-    --bind "ctrl-a:change-prompt(  )+reload(sesh list | awk '!/-float\$/ && !seen[\$0]++')"
-    --bind "ctrl-r:change-prompt(❱ )+reload(sesh list -t -c | awk '!/-float\$/ && !seen[\$0]++')"
-    --bind "alt-bspace:execute-silent(tmux kill-session -t {})+change-prompt(❱ )+reload(sesh list -t -c | awk '!/-float\$/ && !seen[\$0]++')"
+    --bind "ctrl-a:change-prompt(  )+reload(sesh list | ${HIDE})"
+    --bind "ctrl-r:change-prompt(❱ )+reload(sesh list -t -c | ${HIDE})"
+    --bind "alt-bspace:execute-silent(tmux kill-session -t {})+change-prompt(❱ )+reload(sesh list -t -c | ${HIDE})"
 )
 
-# Detect if we're running inside tmux
+# Detect if we're running inside tmux.
+#
+# `|| true` because fzf reports a cancelled pick as a failure: 130 for Esc or
+# Ctrl-C, 1 for no match. Under `set -e` that would abort here, before the empty
+# selection below is ever considered.
 if [[ -n "${TMUX:-}" ]]; then
-    session=$(sesh list -t -c | awk '!/-float$/ && !seen[$0]++' | fzf-tmux -p 50%,60% "${sesh_fzf_args[@]}")
+    session=$(sesh list -t -c | _hide | fzf-tmux -p 50%,60% "${sesh_fzf_args[@]}") || true
 else
-    session=$(sesh list -t -c | awk '!/-float$/ && !seen[$0]++' | fzf --height 60% "${sesh_fzf_args[@]}")
+    session=$(sesh list -t -c | _hide | fzf --height 60% "${sesh_fzf_args[@]}") || true
 fi
 
 if [[ -n "$session" ]]; then
     sesh connect "$session"
-else
-    true
 fi
