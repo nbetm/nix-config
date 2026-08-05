@@ -39,11 +39,8 @@
 
     # Tmux
     ".local/bin/sesh-picker".source = ../../configs/tmux/dot-local/bin/sesh-picker;
-    ".local/bin/tmux-toggle-side-pane".source = ../../configs/tmux/dot-local/bin/tmux-toggle-side-pane;
-    ".local/bin/tmux-toggle-float-session".source =
-      ../../configs/tmux/dot-local/bin/tmux-toggle-float-session;
-    ".local/bin/tmux-cleanup-float-session".source =
-      ../../configs/tmux/dot-local/bin/tmux-cleanup-float-session;
+    ".local/bin/tmux-side-pane".source = ../../configs/tmux/dot-local/bin/tmux-side-pane;
+    ".local/bin/tmux-float-session".source = ../../configs/tmux/dot-local/bin/tmux-float-session;
     ".local/bin/tmux-open-url".source = ../../configs/tmux/dot-local/bin/tmux-open-url;
 
     # GH-Dash

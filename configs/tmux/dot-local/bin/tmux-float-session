@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+#
+# Description: Manage per-window floating tmux sessions
+#
+# A float is a popup whose contents live in their own session, one per window,
+# named <parent>-<hex>-float and recorded in that window's @float_session.
+# Backing it with a session rather than a bare popup is what makes the work
+# inside survive being dismissed.
+#
+# That persistence is also why cleanup exists: nothing destroys a float when its
+# owning window goes away, so orphans are found by comparing the float sessions
+# that exist against the ones windows still claim.
+#
+# Set options:
+#   e: Stop script if command fails
+#   u: Stop script if unset variable is referenced
+#   o pipefail: If any command in a pipeline fails it all fails
+#
+set -euo pipefail
+
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+
+FLOAT_WIDTH="${FLOAT_WIDTH:-50%}"
+FLOAT_HEIGHT="${FLOAT_HEIGHT:-60%}"
+# Load-bearing: cleanup recognises floats by it, and sesh-picker filters on it.
+FLOAT_SUFFIX="-float"
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+_session_name() { tmux display-message -p -F '#{session_name}'; }
+
+_in_float() { [[ "$(_session_name)" == *"${FLOAT_SUFFIX}" ]]; }
+
+# A stale name is ordinary state, not an error: the session can be killed from
+# anywhere and the window has no way to hear about it, so the record is dropped
+# on read.
+_float_for_window() {
+    local float
+    float="$(tmux show-option -wqv @float_session)"
+    if [[ -n "$float" ]] && ! tmux has-session -t "=${float}" 2>/dev/null; then
+        tmux set-option -wu @float_session 2>/dev/null || true
+        float=""
+    fi
+    printf '%s' "$float"
+}
+
+# -----------------------------------------------------------------------------
+# toggle
+# -----------------------------------------------------------------------------
+
+float_toggle() {
+    local float parent
+
+    # From inside, the gesture means dismiss. Only the client goes away; the
+    # session keeps running, which is the whole point of backing it with one.
+    if _in_float; then
+        tmux detach-client
+        return 0
+    fi
+
+    float="$(_float_for_window)"
+    if [[ -z "$float" ]]; then
+        parent="$(_session_name)"
+        float="${parent}-$(printf '%04x' "${RANDOM}")${FLOAT_SUFFIX}"
+        tmux set-option -w @float_session "$float"
+    fi
+
+    # detach-on-destroy so the popup closes with its last window instead of
+    # falling back to another session; status off because a single-window popup
+    # has nothing to put in a status bar.
+    tmux popup -d "#{pane_current_path}" -xC -yC \
+        -w"$FLOAT_WIDTH" -h"$FLOAT_HEIGHT" \
+        -E "tmux new -As '${float}' \; set detach-on-destroy on \; set status off"
+}
+
+# -----------------------------------------------------------------------------
+# cleanup
+# -----------------------------------------------------------------------------
+
+# Runs from window-unlinked and session-closed, where the window holding the
+# reference may already be gone.
+float_cleanup() {
+    local floats referenced="" target val float
+
+    floats="$(tmux list-sessions -F '#{session_name}' 2>/dev/null |
+        grep -- "${FLOAT_SUFFIX}\$" || true)"
+    if [[ -z "$floats" ]]; then
+        return 0
+    fi
+
+    while IFS= read -r target; do
+        val="$(tmux show-option -wqv -t "$target" @float_session 2>/dev/null || true)"
+        if [[ -n "$val" ]]; then
+            referenced="${referenced}${val}"$'\n'
+        fi
+    done < <(tmux list-windows -a -F '#{session_name}:#{window_index}' 2>/dev/null)
+
+    while IFS= read -r float; do
+        if [[ -z "$float" ]]; then
+            continue
+        fi
+        if ! printf '%s' "$referenced" | grep -qxF "$float"; then
+            tmux kill-session -t "=${float}" 2>/dev/null || true
+        fi
+    done <<<"$floats"
+}
+
+# -----------------------------------------------------------------------------
+# Usage / dispatch
+# -----------------------------------------------------------------------------
+
+show_usage() {
+    cat <<'EOF'
+Usage: tmux-float-session <command>
+
+Commands:
+    toggle        Show the window's float, or dismiss it from inside (default)
+    cleanup       Kill float sessions no window references (hook-driven)
+    help          Show this help message
+
+Environment:
+    FLOAT_WIDTH   Popup width (default: 50%)
+    FLOAT_HEIGHT  Popup height (default: 60%)
+
+EOF
+}
+
+main() {
+    if [[ -z "${TMUX:-}" ]]; then
+        exit 0
+    fi
+
+    local command="${1:-toggle}"
+
+    case "$command" in
+        toggle) float_toggle ;;
+        cleanup) float_cleanup ;;
+        help | --help | -h) show_usage ;;
+        *)
+            echo "Error: Unknown command: $command" >&2
+            echo
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
