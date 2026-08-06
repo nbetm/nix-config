@@ -5,8 +5,6 @@
 # Set options:
 #   e: Stop script if command fails
 #   u: Stop script if unset variable is referenced
-#   x: Debug, print commands as they are executed
-#   f: Disable file name generation (globbing).
 #   o pipefail: If any command in a pipeline fails it all fails
 #
 set -euo pipefail
@@ -59,13 +57,10 @@ detect_format() {
     local first_line
     first_line=$(head -1 "$file")
 
-    # Check for Exportify CSV headers
     if [[ "$first_line" == *"Track Name"* && "$first_line" == *"Artist"* ]]; then
         echo "csv"
-    # Check for semicolon separator
     elif [[ "$first_line" == *";"* ]]; then
         echo "semicolon"
-    # Check for " - " separator (Artist - Title format)
     elif [[ "$first_line" == *" - "* ]]; then
         echo "dash"
     else
@@ -92,7 +87,6 @@ with open(sys.argv[1], 'r', encoding='utf-8') as f:
 parse_semicolon() {
     local file="$1"
     while IFS=';' read -r artist title || [[ -n "$artist" ]]; do
-        # Skip empty lines
         [[ -z "$artist" ]] && continue
         # Trim whitespace
         artist="${artist#"${artist%%[![:space:]]*}"}"
@@ -106,9 +100,9 @@ parse_semicolon() {
 parse_dash() {
     local file="$1"
     while IFS= read -r line || [[ -n "$line" ]]; do
-        # Skip empty lines and comments
         [[ -z "$line" || "$line" == \#* ]] && continue
-        # Split on " - " (first occurrence only)
+        # %% not %: "Artist - Title - Remix" keeps the artist, not everything
+        # up to the last separator
         artist="${line%% - *}"
         title="${line#* - }"
         # Trim whitespace
@@ -120,7 +114,6 @@ parse_dash() {
     done <"$file"
 }
 
-# Validate arguments
 [[ -z "$INPUT_FILE" ]] && show_usage
 
 if [[ ! -f "$INPUT_FILE" ]]; then
@@ -138,7 +131,6 @@ if ! command -v ffmpeg &>/dev/null; then
     exit 1
 fi
 
-# Detect input format
 FILE_FORMAT=$(detect_format "$INPUT_FILE")
 echo "Detected format: $FILE_FORMAT"
 
@@ -153,7 +145,6 @@ fi
 
 mkdir -p "$OUTPUT_DIR"
 
-# Setup logging
 LOG_FILE="$OUTPUT_DIR/download-log.txt"
 REVIEW_FILE="$OUTPUT_DIR/needs-review.txt"
 echo "Download Log - $(date)" >"$LOG_FILE"
@@ -161,10 +152,8 @@ echo "========================================" >>"$LOG_FILE"
 echo "" >>"$LOG_FILE"
 : >"$REVIEW_FILE" # Clear review file
 
-# Track progress
 FAILED_TRACKS=""
 
-# Parse based on detected format
 case "$FILE_FORMAT" in
     csv) TRACKS=$(parse_csv "$INPUT_FILE") ;;
     semicolon) TRACKS=$(parse_semicolon "$INPUT_FILE") ;;
@@ -182,17 +171,15 @@ echo ""
 echo "Log file: $LOG_FILE"
 echo ""
 
-# Process tracks
 while IFS=$'\t' read -r artist title; do
     [[ -z "$artist" || -z "$title" ]] && continue
 
-    # Clean filename (remove characters that cause issues)
+    # Only for the filename; the search still uses the untouched text
     clean_artist=$(echo "$artist" | sed 's/[<>:"/\\|?*]/-/g')
     clean_title=$(echo "$title" | sed 's/[<>:"/\\|?*]/-/g')
     OUTPUT_FILE="$OUTPUT_DIR/$clean_artist - $clean_title.$FORMAT"
     SEARCH_QUERY="$artist $title"
 
-    # Skip if already downloaded
     if [[ -f "$OUTPUT_FILE" ]]; then
         echo "SKIP: $artist - $title"
         echo "[SKIP] $artist - $title (already exists)" >>"$LOG_FILE"
@@ -204,7 +191,6 @@ while IFS=$'\t' read -r artist title; do
     echo "" >>"$LOG_FILE"
     echo "Requested: $artist - $title" >>"$LOG_FILE"
 
-    # Get search results info
     SEARCH_RESULTS=$(yt-dlp --print $'%(title)s\t%(duration_string)s\t%(duration)s\t%(webpage_url)s' "ytsearch5:$SEARCH_QUERY" 2>/dev/null || true)
 
     if [[ -z "$SEARCH_RESULTS" ]]; then
@@ -214,7 +200,6 @@ while IFS=$'\t' read -r artist title; do
         continue
     fi
 
-    # Show what we found
     echo "  Found:"
     INDEX=1
     while IFS=$'\t' read -r yt_title yt_duration yt_seconds _; do
@@ -226,7 +211,6 @@ while IFS=$'\t' read -r artist title; do
         ((INDEX++))
     done <<<"$SEARCH_RESULTS"
 
-    # Get first result details for logging
     FIRST_RESULT=$(echo "$SEARCH_RESULTS" | head -1)
     FIRST_TITLE=$(echo "$FIRST_RESULT" | cut -f1)
     FIRST_DURATION=$(echo "$FIRST_RESULT" | cut -f2)
@@ -236,7 +220,6 @@ while IFS=$'\t' read -r artist title; do
     SELECTED_TITLE="$FIRST_TITLE"
     SELECTED_DURATION="$FIRST_DURATION"
 
-    # Interactive mode
     if [[ "$VERIFY" == "1" ]]; then
         echo ""
         read -rp "  Download which? [1-5, s=skip, q=quit]: " choice </dev/tty
@@ -251,7 +234,6 @@ while IFS=$'\t' read -r artist title; do
                 continue
                 ;;
             [2-5])
-                # Get the selected result
                 SELECTED=$(echo "$SEARCH_RESULTS" | sed -n "${choice}p")
                 SELECTED_TITLE=$(echo "$SELECTED" | cut -f1)
                 SELECTED_DURATION=$(echo "$SELECTED" | cut -f2)
@@ -263,7 +245,6 @@ while IFS=$'\t' read -r artist title; do
         esac
     fi
 
-    # Build yt-dlp command
     YT_CMD=(
         yt-dlp
         --quiet
@@ -275,7 +256,6 @@ while IFS=$'\t' read -r artist title; do
         --no-playlist
     )
 
-    # Download
     if [[ "$VERIFY" == "1" ]]; then
         # In verify mode, download specific URL
         if "${YT_CMD[@]}" "$SELECTED_URL"; then
@@ -288,9 +268,9 @@ while IFS=$'\t' read -r artist title; do
             FAILED_TRACKS="$FAILED_TRACKS\n  - $artist - $title"
         fi
     else
-        # Auto mode
         if [[ "$MIN_DURATION" -gt 0 ]]; then
-            # With duration filter, search more results to find a match
+            # No URL is picked here: which result passes the filter is not
+            # known until yt-dlp applies it, so hand it the search instead
             YT_CMD+=(--match-filter "duration>=$MIN_DURATION")
             if "${YT_CMD[@]}" "ytsearch5:$SEARCH_QUERY" --max-downloads 1; then
                 echo "  ✓ Done"
@@ -302,7 +282,8 @@ while IFS=$'\t' read -r artist title; do
                 FAILED_TRACKS="$FAILED_TRACKS\n  - $artist - $title"
             fi
         else
-            # Standard auto download - use URL from search to avoid race condition
+            # Reuse the URL already seen; re-running the search can rank a
+            # different video first and download something else
             if "${YT_CMD[@]}" "$FIRST_URL"; then
                 echo "  ✓ Done"
                 echo "Got:       $FIRST_TITLE [$FIRST_DURATION]" >>"$LOG_FILE"
@@ -311,7 +292,8 @@ while IFS=$'\t' read -r artist title; do
                 # Flag for review if title looks different (case-insensitive check)
                 TITLE_LOWER="${title,,}"
                 FIRST_LOWER="${FIRST_TITLE,,}"
-                # Extract just the main title part (before any brackets/parens) for comparison
+                # Drop "(Remastered)" / "[Live]" suffixes, which differ between
+                # the request and the upload without meaning a wrong track
                 TITLE_MAIN="${TITLE_LOWER%% (*}"
                 TITLE_MAIN="${TITLE_MAIN%% [*}"
                 if [[ "$FIRST_LOWER" != *"$TITLE_MAIN"* ]]; then
@@ -340,7 +322,6 @@ echo "Downloaded to: $OUTPUT_DIR"
 echo ""
 echo "Log file: $LOG_FILE"
 
-# Check if review file has content
 if [[ -s "$REVIEW_FILE" ]]; then
     REVIEW_COUNT=$(grep -c "^[^[:space:]]" "$REVIEW_FILE" 2>/dev/null || echo 0)
     echo ""

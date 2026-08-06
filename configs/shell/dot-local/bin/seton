@@ -41,7 +41,7 @@ check_vault() {
         echo "Error: jj not found" >&2
         return 1
     fi
-    if [ ! -d "$SETON_DIR/.jj" ]; then
+    if [[ ! -d "$SETON_DIR/.jj" ]]; then
         echo "Error: $SETON_DIR is not a jj repo" >&2
         echo "Set SETON_DIR, or bootstrap the vault first." >&2
         return 1
@@ -51,7 +51,7 @@ check_vault() {
 # jj snapshots the working copy on every invocation, so these queries also see
 # edits made since the last command. There is no separate capture step.
 _wc_is_empty() {
-    [ "$(jj log -r @ --no-graph -T 'empty')" = "true" ]
+    [[ "$(jj log -r @ --no-graph -T 'empty')" = "true" ]]
 }
 
 # Scoped to ancestors of @ -- the commits push would actually carry. A bare
@@ -59,7 +59,7 @@ _wc_is_empty() {
 # sitting on an unrelated branch, reporting "conflicts present" next to a
 # perfectly clean jj status.
 _has_conflicts() {
-    [ -n "$(jj log -r 'conflicts() & ::@' --no-graph -T '"x"')" ]
+    [[ -n "$(jj log -r 'conflicts() & ::@' --no-graph -T '"x"')" ]]
 }
 
 _remote_bookmark_exists() {
@@ -67,14 +67,16 @@ _remote_bookmark_exists() {
 }
 
 _at_remote_head() {
-    [ "$(jj log -r '@-' --no-graph -T 'commit_id')" \
-        = "$(jj log -r "${SETON_BOOKMARK}@${SETON_REMOTE}" --no-graph -T 'commit_id')" ]
+    local here there
+    here="$(jj log -r '@-' --no-graph -T 'commit_id')"
+    there="$(jj log -r "${SETON_BOOKMARK}@${SETON_REMOTE}" --no-graph -T 'commit_id')"
+    [[ "$here" == "$there" ]]
 }
 
 _count_revs() {
     local out
     out=$(jj log -r "$1" --no-graph -T '"x\n"' 2>/dev/null || true)
-    if [ -z "$out" ]; then
+    if [[ -z "$out" ]]; then
         echo 0
     else
         # printf '%s\n' restores the trailing newline that command
@@ -155,7 +157,7 @@ sync_vault() {
 
     # Pull-only runs leave the bookmark where the remote already is; pushing
     # then costs a round-trip to be told "already matches".
-    if [ "$(_count_revs "${SETON_BOOKMARK}@${SETON_REMOTE}..${SETON_BOOKMARK}")" = "0" ]; then
+    if [[ "$(_count_revs "${SETON_BOOKMARK}@${SETON_REMOTE}..${SETON_BOOKMARK}")" = "0" ]]; then
         echo "Nothing to push"
     else
         _print_header "Pushing $SETON_BOOKMARK to $SETON_REMOTE"
@@ -175,16 +177,16 @@ sync_vault() {
 
 show_vault_status() {
     local do_fetch=0
-    if [ "${1:-}" = "--fetch" ]; then
+    if [[ "${1:-}" = "--fetch" ]]; then
         do_fetch=1
-    elif [ -n "${1:-}" ]; then
+    elif [[ -n "${1:-}" ]]; then
         echo "Error: Unknown option: $1" >&2
         return 1
     fi
 
     cd "$SETON_DIR"
 
-    if [ "$do_fetch" -eq 1 ]; then
+    if [[ "$do_fetch" -eq 1 ]]; then
         jj git fetch --remote "$SETON_REMOTE" >/dev/null
     fi
 
@@ -201,7 +203,7 @@ show_vault_status() {
     echo "working:   $working"
     echo "conflicts: $conflicts"
     echo "unpushed:  $unpushed"
-    if [ "$do_fetch" -eq 1 ]; then
+    if [[ "$do_fetch" -eq 1 ]]; then
         behind=$(_count_revs "${SETON_BOOKMARK}..${SETON_BOOKMARK}@${SETON_REMOTE}")
         echo "behind:    $behind"
     fi
@@ -215,7 +217,7 @@ link_notes() {
     local repo area target link current
 
     repo=$(realpath .)
-    if [ ! -d "$repo/.git" ] && [ ! -d "$repo/.jj" ]; then
+    if [[ ! -d "$repo/.git" ]] && [[ ! -d "$repo/.jj" ]]; then
         echo "Error: $repo is not a repo root" >&2
         echo "Run seton link from the top level of a project repo." >&2
         return 1
@@ -228,9 +230,9 @@ link_notes() {
     # Compare resolved paths, so a hand-made relative link pointing at the same
     # place is recognised rather than rejected. -m tolerates a dangling link.
     # Report the raw text, which is what the user actually needs to see.
-    if [ -L "$link" ]; then
+    if [[ -L "$link" ]]; then
         current=$(readlink "$link")
-        if [ "$(realpath -m "$link")" = "$(realpath -m "$target")" ]; then
+        if [[ "$(realpath -m "$link")" = "$(realpath -m "$target")" ]]; then
             echo "Already linked: .notes -> $current"
             return 0
         fi
@@ -241,13 +243,13 @@ link_notes() {
 
     # `ln -s` into an existing dir silently nests (.notes/px -> ...) instead of
     # failing; agents recreate a real .notes via mkdir -p if the link is gone.
-    if [ -e "$link" ]; then
+    if [[ -e "$link" ]]; then
         echo "Error: $link exists and is not a symlink" >&2
         echo "Move its contents into $target, remove it, then re-run." >&2
         return 1
     fi
 
-    if [ ! -d "$target" ]; then
+    if [[ ! -d "$target" ]]; then
         _print_header "Creating $target"
         mkdir -p "$target"
     fi

@@ -263,7 +263,7 @@ alias dea='direnv allow'
 alias der='direnv reload'
 
 # cd to the mounted workspace on login (path written by `agent-sandbox create`)
-[ -f ~/.config/agent-sandbox/workspace ] && cd "$(cat ~/.config/agent-sandbox/workspace)"
+[[ -f ~/.config/agent-sandbox/workspace ]] && cd "$(cat ~/.config/agent-sandbox/workspace)"
 BASHRC
 PROVISION
 
@@ -284,7 +284,7 @@ PROVISION
 
 _add_ro_bind() {
     local container="$1" name="$2" path="$3"
-    if [ ! -e "$path" ]; then
+    if [[ ! -e "$path" ]]; then
         echo "Warning: $path not found, skipping RO bind ($name)" >&2
         return 0
     fi
@@ -303,7 +303,7 @@ _push_claude_files() {
         ["$HOME/.claude.json"]=644
     )
     for f in "${!files[@]}"; do
-        if [ -f "$f" ]; then
+        if [[ -f "$f" ]]; then
             incus file push --create-dirs "$f" "$container$f" \
                 --uid "$HOST_UID" --gid "$HOST_GID" --mode "${files[$f]}"
         else
@@ -335,7 +335,7 @@ create_sandbox() {
     # (see `seton link`) and bind the resolved target at its real path. The
     # symlink rides along inside the workspace bind, so it only resolves in the
     # container if its target is mounted at the identical path.
-    if [ -d "$project_path/.notes" ]; then
+    if [[ -d "$project_path/.notes" ]]; then
         notes_dir=$(realpath "$project_path/.notes")
         incus config device add "$container" notes disk \
             source="$notes_dir" path="$notes_dir" shift=true
@@ -368,7 +368,7 @@ create_sandbox() {
         "$HOME/.local/share/bash-completion/completions/px"
 
     # AWS read-only creds (staged dir -> ~/.aws)
-    if [ -d "$HOME/.aws/containers-read-only" ]; then
+    if [[ -d "$HOME/.aws/containers-read-only" ]]; then
         incus config device add "$container" aws disk \
             source="$HOME/.aws/containers-read-only" \
             path="$HOME/.aws" readonly=true shift=true
@@ -385,7 +385,7 @@ create_sandbox() {
         --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
 
     # Pre-authorize the workspace's .envrc so direnv loads it on entry
-    if [ -f "$project_path/.envrc" ]; then
+    if [[ -f "$project_path/.envrc" ]]; then
         incus exec "$container" \
             --user "$HOST_UID" --group "$HOST_GID" \
             --env HOME="/home/$HOST_USER" \
@@ -472,7 +472,7 @@ update_sandboxes() {
     _print_header "Refreshing sandboxes"
     local containers c
     containers=$(incus list --format csv -c n status=running '.*-sandbox')
-    if [ -z "$containers" ]; then
+    if [[ -z "$containers" ]]; then
         echo "No running sandbox containers found."
         return 0
     fi

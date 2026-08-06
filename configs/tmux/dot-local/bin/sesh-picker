@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Interactive session picker using sesh and fzf.
+# Description: Interactive session picker using sesh and fzf
 #
 # Supports switching between tmux sessions, config dirs, and zoxide paths.
 # Internal sessions (see HIDDEN_RE) are hidden from all listings.
