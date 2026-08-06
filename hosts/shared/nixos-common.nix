@@ -36,7 +36,7 @@
     description = "Nelson Monserrate";
     group = "nbetm";
     extraGroups = [ "users" ];
-    shell = pkgs.zsh;
+    shell = pkgs.bash;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICR+Am/2drHgOPkf0pzogA8SRcNhJsdVMDEvfDIrOauO nbetm@localhost"
     ];

@@ -82,8 +82,8 @@ command -v aws_completer &>/dev/null && complete -C aws_completer aws
 # Shared Shell Config
 # ------------------------------------------------------------------------------
 
-if [[ -d "${XDG_DATA_HOME}/shell" ]]; then
-    for file in "${XDG_DATA_HOME}"/shell/*.sh; do
+if [[ -d "${XDG_DATA_HOME:-$HOME/.local/share}/shell" ]]; then
+    for file in "${XDG_DATA_HOME:-$HOME/.local/share}"/shell/*.sh; do
         # shellcheck disable=SC1090
         [[ -f "$file" ]] && source "$file"
     done

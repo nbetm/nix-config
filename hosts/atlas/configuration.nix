@@ -16,6 +16,9 @@
   # User home path — required for home-manager to derive homeDirectory
   users.users.nbetm.home = "/Users/nbetm";
 
+  # Make the nix bash a legitimate login shell, so chsh will accept it
+  environment.shells = [ pkgs.bash ];
+
   # GPG agent
   programs.gnupg.agent.enable = true;
 
