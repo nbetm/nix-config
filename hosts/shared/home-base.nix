@@ -22,8 +22,6 @@
     ".zprofile".source = ../../configs/shell/dot-zprofile;
     ".blerc".source = ../../configs/shell/dot-blerc;
     ".dir_colors".source = ../../configs/shell/dot-dir_colors;
-    ".gitconfig".source = ../../configs/git/dot-gitconfig;
-    ".gitignore".source = ../../configs/git/dot-gitignore;
     ".mdformat.toml".source = ../../configs/mdformat/dot-mdformat.toml;
 
     # Shell scripts and bins
@@ -43,7 +41,7 @@
     ".local/bin/tmux-open-url".source = ../../configs/tmux/dot-local/bin/tmux-open-url;
 
     # GH-Dash
-    ".local/bin/ghd".source = ../../configs/git/dot-local/bin/ghd;
+    ".local/bin/ghd".source = ../../configs/gh-dash/dot-local/bin/ghd;
 
     # ZSH completions (manual — not provided by nix packages)
     ".zsh/completions" = {
@@ -73,30 +71,52 @@
       source = ../../configs/btop/dot-config/btop;
       recursive = true;
     };
+    "delta" = {
+      source = ../../configs/delta/dot-config/delta;
+      recursive = true;
+    };
     "direnv" = {
       source = ../../configs/direnv/dot-config/direnv;
       recursive = true;
     };
-    "delta".source = ../../configs/delta/dot-config/delta;
+    "gh-dash" = {
+      source = ../../configs/gh-dash/dot-config/gh-dash;
+      recursive = true;
+    };
+    "git" = {
+      source = ../../configs/git/dot-config/git;
+      recursive = true;
+    };
     "helix" = {
       source = ../../configs/helix/dot-config/helix;
       recursive = true;
     };
-    "lazygit".source = ../../configs/git/dot-config/lazygit;
-    "gh-dash".source = ../../configs/git/dot-config/gh-dash;
     "jj" = {
       source = ../../configs/jj/dot-config/jj;
       recursive = true;
     };
-    "md2pdf.css".source = ../../configs/shell/dot-config/md2pdf.css;
-    "ncdu".source = ../../configs/ncdu/dot-config/ncdu;
-    "sesh".source = ../../configs/sesh/dot-config/sesh;
+    "lazygit" = {
+      source = ../../configs/lazygit/dot-config/lazygit;
+      recursive = true;
+    };
+    "md2pdf.css".source = ../../configs/md2pdf/dot-config/md2pdf.css;
+    "ncdu" = {
+      source = ../../configs/ncdu/dot-config/ncdu;
+      recursive = true;
+    };
+    "sesh" = {
+      source = ../../configs/sesh/dot-config/sesh;
+      recursive = true;
+    };
     "starship.toml".source = ../../configs/starship/dot-config/starship.toml;
     "tmux" = {
       source = ../../configs/tmux/dot-config/tmux;
       recursive = true;
     };
-    "yamlfmt".source = ../../configs/yamlfmt/dot-config/yamlfmt;
+    "yamlfmt" = {
+      source = ../../configs/yamlfmt/dot-config/yamlfmt;
+      recursive = true;
+    };
     "yazi" = {
       source = ../../configs/yazi/dot-config/yazi;
       recursive = true;

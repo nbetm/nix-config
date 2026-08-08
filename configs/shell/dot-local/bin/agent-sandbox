@@ -108,7 +108,7 @@ apt-get update
 apt-get install -y --no-install-recommends \
     git curl ca-certificates jq make direnv ripgrep build-essential \
     python3 python3-pip sudo neovim less awscli locales tzdata gnupg \
-    bash-completion git-delta shellcheck shfmt unzip
+    bash-completion git-delta shellcheck shfmt unzip ncurses-term
 
 # Locale + timezone (mirror nixos-common.nix)
 sed -i 's/^# *en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
@@ -356,15 +356,14 @@ create_sandbox() {
     _add_ro_bind "$container" claude-inst "$HOME/.claude/instructions"
     _add_ro_bind "$container" claude-skills "$HOME/.claude/skills"
     _add_ro_bind "$container" claude-plugins "$HOME/.claude/plugins"
-    _add_ro_bind "$container" claude-hooks "$HOME/.claude/hooks"
-    _add_ro_bind "$container" gitconfig "$HOME/.gitconfig"
-    _add_ro_bind "$container" gitignore "$HOME/.gitignore"
-    _add_ro_bind "$container" jjconfig "$HOME/.config/jj/config.toml"
-    _add_ro_bind "$container" delta-config "$HOME/.config/delta"
+    _add_ro_bind "$container" gitconfig "$HOME/.config/git/config"
+    _add_ro_bind "$container" gitignore "$HOME/.config/git/ignore"
+    _add_ro_bind "$container" jj-config "$HOME/.config/jj/config.toml"
+    _add_ro_bind "$container" delta "$HOME/.config/delta/themes.gitconfig"
     _add_ro_bind "$container" direnvrc "$HOME/.config/direnv/direnvrc"
     _add_ro_bind "$container" direnv-config "/etc/direnv/direnv.toml"
-    _add_ro_bind "$container" ghpat "$HOME/.config/gh/pat-ro"
-    _add_ro_bind "$container" claudeoat "$HOME/.claude/sandbox-oauth-token"
+    _add_ro_bind "$container" gh-token "$HOME/.config/gh/pat-ro"
+    _add_ro_bind "$container" claude-token "$HOME/.claude/sandbox-oauth-token"
     _add_ro_bind "$container" px-completion \
         "$HOME/.local/share/bash-completion/completions/px"
 
