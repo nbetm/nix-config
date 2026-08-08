@@ -16,7 +16,23 @@
     enable = true;
     completion.enable = true;
   };
-  programs.direnv.enable = true;
+
+  # Direnv
+  programs.direnv = {
+    enable = true;
+    settings.whitelist.prefix = [
+      "~/projects/personal/aoc/"
+      "~/projects/personal/iac/"
+      "~/projects/personal/iosevka-n/"
+      "~/projects/personal/nix-config/"
+      "~/projects/px/cli"
+      "~/projects/px/dashx"
+      "~/projects/px/examples"
+      "~/projects/px/iac"
+      "~/projects/px/testbench"
+      "~/projects/px/webx"
+    ];
+  };
 
   # Environment
   environment.variables = {

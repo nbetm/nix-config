@@ -22,7 +22,6 @@
     ".zprofile".source = ../../configs/shell/dot-zprofile;
     ".blerc".source = ../../configs/shell/dot-blerc;
     ".dir_colors".source = ../../configs/shell/dot-dir_colors;
-    ".direnvrc".source = ../../configs/shell/dot-direnvrc;
     ".gitconfig".source = ../../configs/git/dot-gitconfig;
     ".gitignore".source = ../../configs/git/dot-gitignore;
     ".mdformat.toml".source = ../../configs/mdformat/dot-mdformat.toml;
@@ -74,6 +73,10 @@
       source = ../../configs/btop/dot-config/btop;
       recursive = true;
     };
+    "direnv" = {
+      source = ../../configs/direnv/dot-config/direnv;
+      recursive = true;
+    };
     "delta".source = ../../configs/delta/dot-config/delta;
     "helix" = {
       source = ../../configs/helix/dot-config/helix;
@@ -81,10 +84,6 @@
     };
     "lazygit".source = ../../configs/git/dot-config/lazygit;
     "gh-dash".source = ../../configs/git/dot-config/gh-dash;
-    # "herdr" = {
-    #   source = ../../configs/herdr/dot-config/herdr;
-    #   recursive = true;
-    # };
     "jj" = {
       source = ../../configs/jj/dot-config/jj;
       recursive = true;
