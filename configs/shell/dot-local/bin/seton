@@ -20,11 +20,11 @@ set -euo pipefail
 # Constants
 # -----------------------------------------------------------------------------
 
-SETON_DIR="${SETON_DIR:-$HOME/.seton}"
+SETON_DIR="${SETON_DIR:-$HOME/seton}"
 SETON_REMOTE="${SETON_REMOTE:-origin}"
 SETON_BOOKMARK="${SETON_BOOKMARK:-main}"
-# Vault subdir holding agent-facing notes, mirroring ~/code/<area>
-SETON_CODE_SUBDIR="${SETON_CODE_SUBDIR:-code}"
+# Vault subdir holding agent-facing notes, mirroring ~/projects/<area>
+SETON_PROJECTS_SUBDIR="${SETON_PROJECTS_SUBDIR:-projects}"
 # Kept out of the vault so it is never committed or synced
 SETON_LOCK="${SETON_LOCK:-${TMPDIR:-/tmp}/seton-sync.lock}"
 
@@ -224,7 +224,7 @@ link_notes() {
     fi
 
     area=$(basename "$(dirname "$repo")")
-    target="$SETON_DIR/$SETON_CODE_SUBDIR/$area"
+    target="$SETON_DIR/$SETON_PROJECTS_SUBDIR/$area"
     link="$repo/.notes"
 
     # Compare resolved paths, so a hand-made relative link pointing at the same
@@ -267,25 +267,25 @@ show_usage() {
 Usage: seton <command>
 
 Commands:
-    sync              Fetch, rebase, commit local edits, and push
-    status            Show local state (working / conflicts / unpushed)
-    link              Link this repo's .notes into the vault
-    help              Show this help message
+    sync                    Fetch, rebase, commit local edits, and push
+    status                  Show local state (working / conflicts / unpushed)
+    link                    Link this repo's .notes into the vault
+    help                    Show this help message
 
 Options:
-    status --fetch    Also report how far behind the remote is
+    status --fetch          Also report how far behind the remote is
 
 Exit codes (sync):
-    0                 Synced, or already in sync
-    1                 Needs a human (conflict, missing bookmark or dependency)
-    2                 Retry later (offline, or another sync holds the lock)
+    0                       Synced, or already in sync
+    1                       Needs a human (conflict, missing bookmark or dependency)
+    2                       Retry later (offline, or another sync holds the lock)
 
 Environment:
-    SETON_DIR         Vault location (default: ~/.seton)
-    SETON_REMOTE      Git remote name (default: origin)
-    SETON_BOOKMARK    Bookmark to track (default: main)
-    SETON_CODE_SUBDIR Vault subdir mirroring ~/code (default: code)
-    SETON_LOCK        Sync lock file (default: \$TMPDIR/seton-sync.lock)
+    SETON_DIR               Vault location (default: ~/seton)
+    SETON_REMOTE            Git remote name (default: origin)
+    SETON_BOOKMARK          Bookmark to track (default: main)
+    SETON_PROJECTS_SUBDIR   Vault subdir mirroring ~/projects (default: projects)
+    SETON_LOCK              Sync lock file (default: \$TMPDIR/seton-sync.lock)
 
 EOF
 }
