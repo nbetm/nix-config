@@ -241,7 +241,6 @@ export PATH="$HOME/.local/bin:/opt/venv/bin:$PATH"
 export UV_PROJECT_ENVIRONMENT=/opt/venv
 export UV_CACHE_DIR=/opt/uv-cache
 export GH_TOKEN="$(cat ~/.config/gh/pat-ro 2>/dev/null)"
-export CLAUDE_CODE_OAUTH_TOKEN="$(cat ~/.claude/sandbox-oauth-token 2>/dev/null)"
 export AWS_CONFIG_FILE="$HOME/.aws/config"
 export AWS_SHARED_CREDENTIALS_FILE="$HOME/.aws/credentials"
 eval "$(direnv hook bash)"
@@ -292,13 +291,10 @@ _add_ro_bind() {
         source="$path" path="$path" readonly=true shift=true
 }
 
-# Config only. The OAuth credential is deliberately not here: it holds a
-# rotating refresh token, and handing every sandbox its own copy means the first
-# one to refresh invalidates the rest. Sandboxes authenticate with the
-# long-lived token from `claude setup-token`, bound read-only in create_sandbox.
 _push_claude_files() {
     local container="$1" f
     local -A files=(
+        ["$HOME/.claude/.credentials.json"]=600
         ["$HOME/.claude/settings.json"]=644
         ["$HOME/.claude.json"]=644
     )
@@ -363,7 +359,6 @@ create_sandbox() {
     _add_ro_bind "$container" direnvrc "$HOME/.config/direnv/direnvrc"
     _add_ro_bind "$container" direnv-config "/etc/direnv/direnv.toml"
     _add_ro_bind "$container" gh-token "$HOME/.config/gh/pat-ro"
-    _add_ro_bind "$container" claude-token "$HOME/.claude/sandbox-oauth-token"
     _add_ro_bind "$container" px-completion \
         "$HOME/.local/share/bash-completion/completions/px"
 
@@ -494,7 +489,7 @@ Commands:
     build-image     Build the agent-base Incus image
     create          Create a sandbox for the current project
     enter           Open a shell in the sandbox (creating it if needed)
-    update          Refresh Claude config in running sandboxes
+    update          Refresh Claude creds/config in running sandboxes
     destroy [name]  Delete the current project's sandbox (or a named one)
     list            List all sandbox containers
     restart         Restart the current project's sandbox
