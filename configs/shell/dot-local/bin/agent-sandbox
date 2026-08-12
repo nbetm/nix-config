@@ -291,12 +291,16 @@ _add_ro_bind() {
         source="$path" path="$path" readonly=true shift=true
 }
 
-_push_claude_files() {
+# Copies, not binds: every writer here replaces the file by rename, and a file
+# bind mount pins the original inode, so the container would serve the pre-edit
+# copy forever.
+_push_host_files() {
     local container="$1" f
     local -A files=(
         ["$HOME/.claude/.credentials.json"]=600
         ["$HOME/.claude/settings.json"]=644
         ["$HOME/.claude.json"]=644
+        ["$HOME/.config/nvim/colors/nord-deep.lua"]=644
     )
     for f in "${!files[@]}"; do
         if [[ -f "$f" ]]; then
@@ -306,6 +310,13 @@ _push_claude_files() {
             echo "Warning: $f not found, skipping push" >&2
         fi
     done
+
+    # Minted, not pushed: the host's init.lua wants a plugin set the box lacks.
+    # Earns its place in the Claude prompt editor, the only nvim that renders
+    # here, where the built-in colorscheme would paint over the terminal's bg.
+    printf 'pcall(vim.cmd.colorscheme, "nord-deep")\n' |
+        incus file push - "$container/home/$HOST_USER/.config/nvim/init.lua" \
+            --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
 }
 
 create_sandbox() {
@@ -371,8 +382,8 @@ create_sandbox() {
         echo "Warning: ~/.aws/containers-read-only not found (run awsro), skipping aws bind" >&2
     fi
 
-    # Copy-in the writable claude files
-    _push_claude_files "$container"
+    # Copy-in the host files that can't be bound
+    _push_host_files "$container"
 
     # Tell the box where to cd on login
     echo "$project_path" | incus file push - \
@@ -472,7 +483,7 @@ update_sandboxes() {
         return 0
     fi
     for c in $containers; do
-        _push_claude_files "$c"
+        _push_host_files "$c"
         echo "Refreshed $c"
     done
 }
@@ -489,7 +500,7 @@ Commands:
     build-image     Build the agent-base Incus image
     create          Create a sandbox for the current project
     enter           Open a shell in the sandbox (creating it if needed)
-    update          Refresh Claude creds/config in running sandboxes
+    update          Refresh host files in running sandboxes
     destroy [name]  Delete the current project's sandbox (or a named one)
     list            List all sandbox containers
     restart         Restart the current project's sandbox
