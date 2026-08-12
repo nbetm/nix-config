@@ -13,6 +13,7 @@
     ../shared/nixos-common.nix
     ../shared/virtualization.nix
     ../shared/tailscale.nix
+    ../shared/seton-sync.nix
   ];
 
   # KVM kernel modules

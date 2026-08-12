@@ -13,6 +13,7 @@
     ./hardware-configuration.nix
     ../shared/nixos-common.nix
     ../shared/virtualization.nix
+    ../shared/seton-sync.nix
   ];
 
   networking.hostName = "andromeda";
