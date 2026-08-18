@@ -87,7 +87,7 @@ pkgs: with pkgs; [
   stylua
 
   # Markdown
-  marksman
+  u.markdown-oxide
   prettier
   python314Packages.mdformat
   python314Packages.mdformat-frontmatter
