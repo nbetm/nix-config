@@ -30,6 +30,9 @@
 
     # xremap
     xremap-flake.url = "github:xremap/nix-flake";
+
+    # ghostty (comment this out to fall back to nixpkgs-unstable)
+    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs =
@@ -78,6 +81,10 @@
           u = final.unstable;
           # Workaround: direnv 2.37.1 in stable fails to build on darwin (cgo linking)
           direnv = final.unstable.direnv;
+          # `or` covers both halves of the ghostty toggle: input commented out,
+          # and darwin, which upstream ships no nix package for.
+          ghostty =
+            inputs.ghostty.packages.${prev.stdenv.hostPlatform.system}.default or final.unstable.ghostty;
         }
         // (import ./pkgs/iosevka-n {
           inherit (prev) lib stdenvNoCC fetchurl;

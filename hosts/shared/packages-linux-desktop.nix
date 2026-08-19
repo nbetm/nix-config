@@ -1,7 +1,7 @@
 # Linux Desktop packages - GUI applications and desktop-specific tools
 pkgs: with pkgs; [
   # Terminals
-  u.ghostty
+  ghostty
   u.kitty
 
   # Browsers

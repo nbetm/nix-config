@@ -122,6 +122,14 @@
     polkitPolicyOwners = [ "nbetm" ];
   };
 
+  # Upstream's own cache, for the ghostty flake input.
+  nix.settings = {
+    extra-substituters = [ "https://ghostty.cachix.org" ];
+    extra-trusted-public-keys = [
+      "ghostty.cachix.org-1:QB389yTa6gTyneehvqG58y0WnHjQOqgnA+wBnpWWxns="
+    ];
+  };
+
   # Packages
   environment.systemPackages =
     myLib.basePackages pkgs ++ myLib.linuxPackages pkgs ++ myLib.linuxDesktopPackages pkgs;
