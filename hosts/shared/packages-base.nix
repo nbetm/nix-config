@@ -100,7 +100,6 @@ pkgs: with pkgs; [
 
   # Python
   python314
-  python314Packages.weasyprint
   pyright
   ruff
   uv

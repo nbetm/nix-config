@@ -40,6 +40,9 @@ pkgs: with pkgs; [
   u.terraform-ls
   u.tflint
 
+  # Weasyprint
+  python314Packages.weasyprint
+
   # System Tools
   nvd
   samba
