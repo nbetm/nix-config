@@ -14,9 +14,10 @@ REPO_PATH=$(git rev-parse --show-toplevel 2>/dev/null)
 
 if [[ -n "$REPO" ]] && [[ -n "$REPO_PATH" ]]; then
     export REPO REPO_PATH
-    gh-dash --config <(
-        yq '.repoPaths[strenv(REPO)] = strenv(REPO_PATH)' ~/.config/gh-dash/config.yml
-    )
+    CONFIG=$(mktemp -t ghd-config.XXXXXX.yml)
+    trap 'rm -f "$CONFIG"' EXIT
+    yq '.repoPaths[strenv(REPO)] = strenv(REPO_PATH)' ~/.config/gh-dash/config.yml >"$CONFIG"
+    gh-dash --config "$CONFIG"
 else
     gh-dash
 fi
