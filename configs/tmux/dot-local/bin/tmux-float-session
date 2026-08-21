@@ -22,8 +22,8 @@ set -euo pipefail
 # Constants
 # -----------------------------------------------------------------------------
 
-FLOAT_WIDTH="${FLOAT_WIDTH:-50%}"
-FLOAT_HEIGHT="${FLOAT_HEIGHT:-60%}"
+FLOAT_WIDTH="${FLOAT_WIDTH:-70%}"
+FLOAT_HEIGHT="${FLOAT_HEIGHT:-70%}"
 # Load-bearing: cleanup recognises floats by it, and sesh-picker filters on it.
 FLOAT_SUFFIX="-float"
 
