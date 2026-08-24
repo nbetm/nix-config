@@ -368,7 +368,7 @@ create_sandbox() {
     _add_ro_bind "$container" jj-config "$HOME/.config/jj/config.toml"
     _add_ro_bind "$container" delta "$HOME/.config/delta/themes.gitconfig"
     _add_ro_bind "$container" direnvrc "$HOME/.config/direnv/direnvrc"
-    _add_ro_bind "$container" direnv-config "/etc/direnv/direnv.toml"
+    _add_ro_bind "$container" direnv-config "$HOME/.config/direnv/direnv.toml"
     _add_ro_bind "$container" gh-token "$HOME/.config/gh/pat-ro"
     _add_ro_bind "$container" px-completion \
         "$HOME/.local/share/bash-completion/completions/px"
