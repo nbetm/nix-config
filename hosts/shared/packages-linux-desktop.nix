@@ -67,7 +67,7 @@ pkgs: with pkgs; [
   xdg-utils
 
   # Icons
-  papirus-icon-theme
+  u.papirus-icon-theme
 
   # Notes
   obsidian
