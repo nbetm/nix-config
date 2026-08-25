@@ -210,6 +210,7 @@ sudo -u "$HOST_USER" mkdir -p \
     "/home/$HOST_USER/.config/gh" \
     "/home/$HOST_USER/.config/jj" \
     "/home/$HOST_USER/.config/agent-sandbox" \
+    "/home/$HOST_USER/.claude/auth" \
     "/home/$HOST_USER/.aws"
 
 # Cleanup
@@ -243,6 +244,7 @@ export UV_CACHE_DIR=/opt/uv-cache
 export GH_TOKEN="$(cat ~/.config/gh/pat-ro 2>/dev/null)"
 export AWS_CONFIG_FILE="$HOME/.aws/config"
 export AWS_SHARED_CREDENTIALS_FILE="$HOME/.aws/credentials"
+export CLAUDE_SECURESTORAGE_CONFIG_DIR="$HOME/.claude/auth"
 eval "$(direnv hook bash)"
 
 # Aliases
@@ -297,7 +299,7 @@ _add_ro_bind() {
 _push_host_files() {
     local container="$1" f
     local -A files=(
-        ["$HOME/.claude/.credentials.json"]=600
+        ["$HOME/.claude/keybindings.json"]=644
         ["$HOME/.claude/settings.json"]=644
         ["$HOME/.claude.json"]=644
         ["$HOME/.config/nvim/colors/nord-deep.lua"]=644
@@ -356,6 +358,11 @@ create_sandbox() {
     incus config device add "$container" claude-projects disk \
         source="$HOME/.claude/projects/$enc" \
         path="$HOME/.claude/projects/$enc" shift=true
+
+    # Claude credential store (RW, shifted)
+    incus config device add "$container" claude-auth disk \
+        source="$HOME/.claude/auth" \
+        path="$HOME/.claude/auth" shift=true
 
     # Read-only config binds (matched paths; shift so host-1000 files read as nbetm)
     _add_ro_bind "$container" claude-md "$HOME/.claude/CLAUDE.md"

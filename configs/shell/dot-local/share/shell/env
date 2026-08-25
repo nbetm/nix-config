@@ -49,9 +49,6 @@ export AWS_PAGER=""
 # Cheat
 export CHEAT_USE_FZF=true
 
-# Google Cloud SDK
-export CLOUDSDK_PYTHON="${HOME}/.local/bin/python3.12"
-
 # Man pager with bat
 export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
 
@@ -63,3 +60,6 @@ export COLORTERM=truecolor
 
 # PDSH
 export PDSH_RCMD_TYPE=ssh
+
+# Claude credential store (sandboxes rw-bind this dir)
+export CLAUDE_SECURESTORAGE_CONFIG_DIR="${HOME}/.claude/auth"
