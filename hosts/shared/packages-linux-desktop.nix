@@ -37,7 +37,7 @@ pkgs: with pkgs; [
   u.zoom-us
 
   # Media
-  spotify
+  u.spotify
 
   # Password management
   keepassxc
@@ -59,7 +59,8 @@ pkgs: with pkgs; [
   })
 
   # System
-  flameshot
+  u.flameshot
+  kdePackages.francis
   kdePackages.partitionmanager
   kdiff3
   meld

@@ -51,7 +51,7 @@ pkgs: with pkgs; [
   single-file-cli
   spotdl
   stow
-  tmux
+  u.tmux
   tmux-xpanes
   tokei
   tree
