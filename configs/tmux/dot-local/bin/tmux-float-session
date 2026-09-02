@@ -7,8 +7,8 @@
 # Backing it with a session rather than a bare popup is what makes the work
 # inside survive being dismissed.
 #
-# That persistence is also why cleanup exists: nothing destroys a float when its
-# owning window goes away, so orphans are found by comparing the float sessions
+# That persistence is also why cleanup exists. Nothing destroys a float when its
+# owning window goes away. Cleanup finds orphans by comparing the float sessions
 # that exist against the ones windows still claim.
 #
 # Set options:
@@ -35,9 +35,8 @@ _session_name() { tmux display-message -p -F '#{session_name}'; }
 
 _in_float() { [[ "$(_session_name)" == *"${FLOAT_SUFFIX}" ]]; }
 
-# A stale name is ordinary state, not an error: the session can be killed from
-# anywhere and the window has no way to hear about it, so the record is dropped
-# on read.
+# A stale name is ordinary state, not an error. Anything can kill the session,
+# and the window has no way to hear about it. This drops the record on read.
 _float_for_window() {
     local float
     float="$(tmux show-option -wqv @float_session)"
@@ -55,7 +54,7 @@ _float_for_window() {
 float_toggle() {
     local float parent
 
-    # From inside, the gesture means dismiss. Only the client goes away; the
+    # From inside, the gesture means dismiss. Only the client goes away. The
     # session keeps running, which is the whole point of backing it with one.
     if _in_float; then
         tmux detach-client
@@ -70,8 +69,8 @@ float_toggle() {
     fi
 
     # detach-on-destroy so the popup closes with its last window instead of
-    # falling back to another session; status off because a single-window popup
-    # has nothing to put in a status bar.
+    # falling back to another session. status off keeps a single-window popup
+    # from drawing a status bar it has nothing to fill.
     tmux popup -d "#{pane_current_path}" -xC -yC \
         -w"$FLOAT_WIDTH" -h"$FLOAT_HEIGHT" \
         -E "tmux new -As '${float}' \; set detach-on-destroy on \; set status off"

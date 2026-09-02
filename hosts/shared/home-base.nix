@@ -39,6 +39,7 @@
     ".local/bin/tmux-side-pane".source = ../../configs/tmux/dot-local/bin/tmux-side-pane;
     ".local/bin/tmux-float-session".source = ../../configs/tmux/dot-local/bin/tmux-float-session;
     ".local/bin/tmux-open-url".source = ../../configs/tmux/dot-local/bin/tmux-open-url;
+    ".local/bin/tmux-session-cycle".source = ../../configs/tmux/dot-local/bin/tmux-session-cycle;
 
     # GH-Dash
     ".local/bin/ghd".source = ../../configs/gh-dash/dot-local/bin/ghd;
