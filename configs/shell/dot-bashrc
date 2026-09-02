@@ -109,6 +109,25 @@ if command -v zoxide &>/dev/null; then
 fi
 
 # ------------------------------------------------------------------------------
+# ble.sh - Word boundaries
+# ------------------------------------------------------------------------------
+
+# dot-zshrc gets these boundaries by removing / . - from WORDCHARS. ble.sh has
+# no WORDCHARS. It ships five fixed word classes, defined in
+# ble/edit/word:<class>/setup. cword is the match, with the set _a-zA-Z0-9.
+# The emacs keymap defaults the motion keys to sword and the kill keys to
+# uword. sword breaks only on shell metacharacters. uword breaks only on
+# whitespace.
+if [[ ${BLE_VERSION-} ]]; then
+    ble-bind -f 'M-b' backward-cword
+    ble-bind -f 'M-f' forward-cword
+    ble-bind -f 'C-w' 'kill-region-or kill-backward-cword'
+    ble-bind -f 'S-delete' 'kill-region-or kill-backward-cword'
+    ble-bind -f 'M-C-?' kill-backward-cword
+    ble-bind -f 'M-DEL' kill-backward-cword
+fi
+
+# ------------------------------------------------------------------------------
 # ble.sh - Attach (must be at the end)
 # ------------------------------------------------------------------------------
 
