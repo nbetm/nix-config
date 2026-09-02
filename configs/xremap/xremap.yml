@@ -1,5 +1,19 @@
 ---
 # macOS-style keybindings for KDE Plasma (Linux)
+#
+# This command lists every application name xremap has seen this boot.
+#
+#   journalctl --user -u xremap -b | grep -oE 'application: .*' | sort -u
+#
+# xremap picks the matcher from the string's shape:
+#
+#   /re/        regex, partial match
+#   has a dot   literal, exact equality
+#   no dot      compares against the segment after the last dot
+#
+# `ghostty` therefore matches com.mitchellh.ghostty. `spotify` does not match
+# Spotify. Two dotless strings compare literally. That comparison is
+# case-sensitive.
 
 keymap:
   # ---------------------------------------------------------------------------
@@ -60,6 +74,14 @@ keymap:
       Super-KEY_7: C-KEY_7
       Super-KEY_8: C-KEY_8
       Super-KEY_9: C-KEY_9
+
+  - name: Spotify
+    exact_match: true
+    application:
+      only: [/(?i)spotify/]
+    remap:
+      Super-Comma: C-p # Settings
+      Super-q: C-Shift-q # Quit
 
   # ---------------------------------------------------------------------------
   # Non-terminal apps
