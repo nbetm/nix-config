@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+#
+# Description: Switch to the next or previous session, skipping internal ones
+#
+# tmux has no hidden-session concept. switch-client -n/-p walks every session in
+# name order, so the -float and -stack sessions the other scripts create land in
+# the rotation.
+#
+# Set options:
+#   e: Stop script if command fails
+#   u: Stop script if unset variable is referenced
+#   o pipefail: If any command in a pipeline fails it all fails
+#
+set -euo pipefail
+
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+
+# Mirrors HIDDEN_RE in sesh-picker, which hides the same sessions from the picker.
+HIDDEN_RE='-float$|-stack$'
+
+# -----------------------------------------------------------------------------
+# cycle
+# -----------------------------------------------------------------------------
+
+# Landing on the first visible session is the useful answer when the current one
+# is itself hidden, which happens when the gesture arrives from inside a float.
+cycle() {
+    local direction="$1" current target idx=-1 i count
+    local -a sessions
+
+    current="$(tmux display-message -p -F '#{session_name}')"
+    mapfile -t sessions < <(
+        tmux list-sessions -F '#{session_name}' 2>/dev/null |
+            grep -vE -- "$HIDDEN_RE" || true
+    )
+
+    count=${#sessions[@]}
+    if ((count == 0)); then
+        return 0
+    fi
+
+    for i in "${!sessions[@]}"; do
+        if [[ "${sessions[i]}" == "$current" ]]; then
+            idx=$i
+            break
+        fi
+    done
+
+    if ((idx < 0)); then
+        target="${sessions[0]}"
+    elif [[ "$direction" == "next" ]]; then
+        target="${sessions[$(((idx + 1) % count))]}"
+    else
+        target="${sessions[$(((idx - 1 + count) % count))]}"
+    fi
+
+    tmux switch-client -t "=${target}"
+}
+
+# -----------------------------------------------------------------------------
+# Usage / dispatch
+# -----------------------------------------------------------------------------
+
+show_usage() {
+    cat <<'EOF'
+Usage: tmux-session-cycle <command>
+
+Commands:
+    next          Switch to the next visible session
+    prev          Switch to the previous visible session
+    help          Show this help message
+
+EOF
+}
+
+main() {
+    if [[ -z "${TMUX:-}" ]]; then
+        exit 0
+    fi
+
+    local command="${1:-next}"
+
+    case "$command" in
+        next) cycle next ;;
+        prev) cycle prev ;;
+        help | --help | -h) show_usage ;;
+        *)
+            echo "Error: Unknown command: $command" >&2
+            echo
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
