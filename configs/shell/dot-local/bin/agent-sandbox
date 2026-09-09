@@ -293,14 +293,13 @@ _add_ro_bind() {
         source="$path" path="$path" readonly=true shift=true
 }
 
-# Copies, not binds: every writer here replaces the file by rename, and a file
+# Copies, not binds. Every writer here replaces the file by rename, and a file
 # bind mount pins the original inode, so the container would serve the pre-edit
 # copy forever.
 _push_host_files() {
     local container="$1" f
     local -A files=(
         ["$HOME/.claude/keybindings.json"]=644
-        ["$HOME/.claude/settings.json"]=644
         ["$HOME/.claude.json"]=644
         ["$HOME/.config/nvim/colors/nord-deep.lua"]=644
     )
@@ -313,9 +312,16 @@ _push_host_files() {
         fi
     done
 
-    # Minted, not pushed: the host's init.lua wants a plugin set the box lacks.
-    # Earns its place in the Claude prompt editor, the only nvim that renders
-    # here, where the built-in colorscheme would paint over the terminal's bg.
+    # And an explicit `ask` rule still prompts under bypassPermissions.
+    if [[ -f "$HOME/.claude/settings.json" ]]; then
+        jq 'del(.permissions)' "$HOME/.claude/settings.json" |
+            incus file push - "$container/home/$HOST_USER/.claude/settings.json" \
+                --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
+    else
+        echo "Warning: $HOME/.claude/settings.json not found, skipping push" >&2
+    fi
+
+    # Configure nvim to use nord-deep
     printf 'pcall(vim.cmd.colorscheme, "nord-deep")\n' |
         incus file push - "$container/home/$HOST_USER/.config/nvim/init.lua" \
             --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
