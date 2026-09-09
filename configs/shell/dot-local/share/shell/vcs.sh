@@ -22,7 +22,6 @@ alias g="git"
 alias lzg="lazygit"
 alias j="jj"
 alias jui="jjui"
-
 alias jgi="jj git init && jj bookmark track main"
 
 # ------------------------------------------------------------------------------
@@ -76,24 +75,11 @@ alias gc="git commit --verbose"
 alias gca="git commit --verbose --all"
 alias gcm="git commit --message"
 alias gcam="git commit --all --message"
-alias gcO="git checkout --patch"
 alias gcf="git commit --amend --reuse-message HEAD"
 alias gcF="git commit --verbose --amend"
 alias gcr="git revert"
 alias gcR='git reset "HEAD^"'
 alias gcl="git-commit-lost"
-
-# ------------------------------------------------------------------------------
-# Conflict (C)
-# ------------------------------------------------------------------------------
-
-alias gCl="git --no-pager diff --name-only --diff-filter=U"
-alias gCa='git add $(gCl)'
-alias gCe='git mergetool $(gCl)'
-alias gCo="git checkout --ours --"
-alias gCO='gCo $(gCl)'
-alias gCt="git checkout --theirs --"
-alias gCT='gCt $(gCl)'
 
 # ------------------------------------------------------------------------------
 # Data (d)
@@ -104,6 +90,17 @@ alias gdc="git ls-files --cached"
 alias gdd="git ls-files --deleted"
 alias gdm="git ls-files --modified"
 alias gdu="git ls-files --other --exclude-standard"
+
+# ------------------------------------------------------------------------------
+# Grep (g)
+# ------------------------------------------------------------------------------
+
+alias gg="git grep"
+alias ggi="git grep --ignore-case"
+alias ggl="git grep --files-with-matches"
+alias ggL="git grep --files-without-matches"
+alias ggv="git grep --invert-match"
+alias ggw="git grep --word-regexp"
 
 # ------------------------------------------------------------------------------
 # Fetch (f)
@@ -131,17 +128,6 @@ alias gfm="git pull"
 alias gfma="git pull --autostash"
 alias gfr="git pull --rebase"
 alias gfra="git pull --rebase --autostash"
-
-# ------------------------------------------------------------------------------
-# Grep (g)
-# ------------------------------------------------------------------------------
-
-alias gg="git grep"
-alias ggi="git grep --ignore-case"
-alias ggl="git grep --files-with-matches"
-alias ggL="git grep --files-without-matches"
-alias ggv="git grep --invert-match"
-alias ggw="git grep --word-regexp"
 
 # ------------------------------------------------------------------------------
 # Index (i)
@@ -177,22 +163,6 @@ alias gm="git merge"
 alias gmC="git merge --no-commit"
 alias gmF="git merge --no-ff"
 alias gma="git merge --abort"
-alias gmt="git mergetool"
-
-ghm() {
-    local pr rc=0
-    if [[ ${1:-} == "-" ]]; then
-        while read -r pr; do
-            [[ -n $pr ]] || continue
-            gh pr edit "$pr" --add-label "merge" </dev/null || rc=1
-        done
-    else
-        for pr in "$@"; do
-            gh pr edit "$pr" --add-label "merge" || rc=1
-        done
-    fi
-    return $rc
-}
 
 # ------------------------------------------------------------------------------
 # Push (p)
@@ -206,7 +176,6 @@ gp() {
     fi
 }
 
-alias gpf="git push --force-with-lease"
 alias gpF="git push --force"
 alias gpt="git push --tags"
 
@@ -224,17 +193,13 @@ alias grs="git rebase --skip"
 # Remote (R)
 # ------------------------------------------------------------------------------
 
-alias gR="git remote"
-alias gRl="git remote --verbose"
-
-# ------------------------------------------------------------------------------
-# Stash (s)
-# ------------------------------------------------------------------------------
-
-alias gs="git stash"
-alias gsl="git stash list"
-alias gsp="git stash pop"
-alias gss="git stash push --include-untracked"
+gR() {
+    if [[ -d .jj ]]; then
+        jj git remote list
+    else
+        git remote --verbose
+    fi
+}
 
 # ------------------------------------------------------------------------------
 # Tag (t)
@@ -270,5 +235,50 @@ gwd() {
 
 alias gwS='git status --ignore-submodules=$_git_status_ignore_submodules'
 alias gwD="git diff --no-ext-diff --word-diff"
-alias gwc="git clean --dry-run"
-alias gwC="git clean --force"
+
+# ------------------------------------------------------------------------------
+# GitHub
+# ------------------------------------------------------------------------------
+
+_ghpr_each() {
+    local fn="$1" pr rc=0
+    shift
+    if [[ ${1:-} == "-" ]]; then
+        while read -r pr; do
+            [[ -n $pr ]] || continue
+            "$fn" "$pr" || rc=1
+        done
+    elif (($# == 0)); then
+        "$fn" || rc=1
+    else
+        for pr in "$@"; do
+            "$fn" "$pr" || rc=1
+        done
+    fi
+    return $rc
+}
+
+_ghpr_merge_one() {
+    gh pr edit "$@" --add-label "merge" </dev/null
+}
+
+_ghpr_ready_one() {
+    local reviewer="${GH_PR_REVIEWER:-thornycrackers}" rc=0 draft
+    draft="$(gh pr view "$@" --json isDraft --jq .isDraft </dev/null)" || return 1
+    if [[ $draft != "true" ]]; then
+        echo "ghprr: already ready for review, skipping ${1:-current branch}" >&2
+        return 0
+    fi
+    gh pr ready "$@" </dev/null || rc=1
+    gh pr edit "$@" --add-reviewer "$reviewer" </dev/null || rc=1
+    gh pr comment "$@" --body "@${reviewer}, this one is ready for review." </dev/null || rc=1
+    return $rc
+}
+
+ghprm() { _ghpr_each _ghpr_merge_one "$@"; }
+alias ghm="ghprm"
+
+ghprr() { _ghpr_each _ghpr_ready_one "$@"; }
+alias ghr="ghprm"
+
+alias ghprl="gh pr list --author nbetm"
