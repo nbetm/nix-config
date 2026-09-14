@@ -294,7 +294,7 @@ _add_ro_bind() {
 }
 
 # Copies, not binds. Every writer here replaces the file by rename, and a file
-# bind mount pins the original inode, so the container would serve the pre-edit
+# bind mount pins the original inode. The container would serve the pre-edit
 # copy forever.
 _push_host_files() {
     local container="$1" f
@@ -312,7 +312,8 @@ _push_host_files() {
         fi
     done
 
-    # And an explicit `ask` rule still prompts under bypassPermissions.
+    # The box runs claude under bypassPermissions, where an explicit `ask` rule
+    # still prompts.
     if [[ -f "$HOME/.claude/settings.json" ]]; then
         jq 'del(.permissions)' "$HOME/.claude/settings.json" |
             incus file push - "$container/home/$HOST_USER/.claude/settings.json" \
@@ -321,7 +322,9 @@ _push_host_files() {
         echo "Warning: $HOME/.claude/settings.json not found, skipping push" >&2
     fi
 
-    # Configure nvim to use nord-deep
+    # The host's init.lua needs plugins the box lacks. The Claude prompt editor is
+    # the only nvim that renders here, where the built-in colorscheme would paint
+    # over the terminal background.
     printf 'pcall(vim.cmd.colorscheme, "nord-deep")\n' |
         incus file push - "$container/home/$HOST_USER/.config/nvim/init.lua" \
             --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
@@ -346,9 +349,9 @@ create_sandbox() {
     incus config device add "$container" workspace disk \
         source="$project_path" path="$project_path" shift=true
 
-    # Shared notes dir: follow the project's own .notes symlink into the vault
+    # Shared notes dir. Follow the project's own .notes symlink into the vault
     # (see `seton link`) and bind the resolved target at its real path. The
-    # symlink rides along inside the workspace bind, so it only resolves in the
+    # symlink rides along inside the workspace bind. It only resolves in the
     # container if its target is mounted at the identical path.
     if [[ -d "$project_path/.notes" ]]; then
         notes_dir=$(realpath "$project_path/.notes")
@@ -358,7 +361,8 @@ create_sandbox() {
         echo "Warning: $project_path/.notes not found, skipping notes bind" >&2
     fi
 
-    # Claude project session dir (RW, shifted) — also persists memory/history
+    # Claude project session dir (RW, shifted), which also persists memory and
+    # history
     enc=${project_path//\//-}
     mkdir -p "$HOME/.claude/projects/$enc"
     incus config device add "$container" claude-projects disk \
@@ -370,7 +374,7 @@ create_sandbox() {
         source="$HOME/.claude/auth" \
         path="$HOME/.claude/auth" shift=true
 
-    # Read-only config binds (matched paths; shift so host-1000 files read as nbetm)
+    # Read-only config binds (matched paths, shift so host-1000 files read as nbetm)
     _add_ro_bind "$container" claude-md "$HOME/.claude/CLAUDE.md"
     _add_ro_bind "$container" claude-cmds "$HOME/.claude/commands"
     _add_ro_bind "$container" claude-inst "$HOME/.claude/instructions"
@@ -424,14 +428,14 @@ create_sandbox() {
 enter_sandbox() {
     local container
     container=$(_container_name)
-    # Create on first use; subsequent enters just attach.
+    # Create on first use. Subsequent enters just attach.
     if ! incus info "$container" >/dev/null 2>&1; then
         create_sandbox
     fi
     incus start "$container" 2>/dev/null || true
     _wait_for_container "$container"
     # su - (not `incus exec --user`) so the login initializes supplementary groups
-    # (docker, sudo); --user/--group alone sets only uid + primary gid.
+    # (docker, sudo). --user/--group alone sets only uid + primary gid.
     incus exec "$container" -- su - "$HOST_USER"
 }
 
@@ -466,7 +470,7 @@ restart_sandbox() {
         return 1
     fi
     _print_header "Restarting sandbox $container"
-    # restart a running box; fall back to start if it's stopped
+    # restart a running box, or start it if it's stopped
     incus restart "$container" 2>/dev/null || incus start "$container"
     _wait_for_container "$container"
     echo "Restarted $container"

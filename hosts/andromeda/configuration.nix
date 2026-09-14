@@ -18,7 +18,7 @@
 
   networking.hostName = "andromeda";
 
-  # Static DNS — Fusion's NAT DNS proxy returns malformed responses on macOS Sequoia
+  # Static DNS. Fusion's NAT DNS proxy returns malformed responses on macOS Sequoia
   networking.nameservers = [
     "1.1.1.1"
     "8.8.8.8"

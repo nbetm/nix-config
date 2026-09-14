@@ -14,18 +14,18 @@ set -euo pipefail
 
 # Best effort. fzf wants a terminal on stdin, but under `run-shell` there is no
 # controlling terminal at all and /dev/tty cannot be opened. fzf-tmux does not
-# need one there, drawing in a tmux popup instead, so this must not be fatal.
+# need one there, drawing in a tmux popup instead. This must not be fatal.
 exec </dev/tty 2>/dev/null || true
 exec <&1
 session=
 
 # Sessions tmux owns for internal use, never worth switching to by hand:
 #
-#   -float  per-window popup sessions)
-#   -stack  side-pane stack parking lots)
+#   -float  per-window popup sessions
+#   -stack  side-pane stack parking lots
 #
-# These filters are embedded in fzf reload() actions, which parse up to a matching
-# paren, so a `)` in the pattern would truncate the action.
+# These filters sit inside fzf reload() actions, which parse up to a matching
+# paren. A `)` in the pattern would truncate the action.
 HIDDEN_RE='-float$|-stack$'
 
 # Drop internal sessions, then de-duplicate. Two forms of the same filter, both
@@ -34,8 +34,8 @@ HIDDEN_RE='-float$|-stack$'
 #   _hide   pipeline form, for the direct calls in this script
 #   HIDE    string form, for embedding in fzf reload() actions, which run via sh
 #
-# Expanding it unquoted in a bash pipeline splits on whitespace without re-parsing
-# the inner quotes, so awk would receive the quote characters literally.
+# Expanding it unquoted in a bash pipeline splits on whitespace without
+# re-parsing the inner quotes. awk would receive the quote characters literally.
 _hide() { awk -v re="${HIDDEN_RE}" '$0 !~ re && !seen[$0]++'; }
 HIDE="awk -v re='${HIDDEN_RE}' '\$0 !~ re && !seen[\$0]++'"
 
@@ -58,8 +58,6 @@ sesh_fzf_args=(
     --bind "alt-bspace:execute-silent(tmux kill-session -t {})+change-prompt(❱ )+reload(sesh list -t -c | ${HIDE})"
 )
 
-# Detect if we're running inside tmux.
-#
 # `|| true` because fzf reports a cancelled pick as a failure: 130 for Esc or
 # Ctrl-C, 1 for no match. Under `set -e` that would abort here, before the empty
 # selection below is ever considered.

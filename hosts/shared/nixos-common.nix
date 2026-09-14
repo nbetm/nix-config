@@ -1,4 +1,4 @@
-# Shared config for NixOS hosts (aura, andromeda).
+# Shared config for NixOS hosts (aura, andromeda, aphrodite).
 { pkgs, ... }:
 
 {

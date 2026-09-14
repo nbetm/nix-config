@@ -2,22 +2,22 @@
 { ... }:
 
 {
-  # Shared identity: nas owns the data; the media group grants Jellyfin
-  # read access without anything being world-readable
+  # Shared identity. nas owns the data. The media group grants Jellyfin read
+  # access without making anything world-readable
   users.groups.media = { };
   users.groups.nas = { };
   users.users.nas = {
     isSystemUser = true;
     group = "nas";
     extraGroups = [ "media" ];
-    # No Unix password or login shell; the only credential is the Samba
-    # one, set once post-install with `smbpasswd -a nas`
+    # No Unix password or login shell. The only credential is the Samba one,
+    # set once post-install with `smbpasswd -a nas`
   };
 
   services.samba = {
     enable = true;
     openFirewall = true;
-    # mDNS handles discovery; no Windows clients, no NetBIOS
+    # mDNS handles discovery. No Windows clients, no NetBIOS
     nmbd.enable = false;
     winbindd.enable = false;
     settings = {
@@ -29,7 +29,7 @@
         "hosts allow" = "192.168.50. 127.0.0.1 ::1";
         "hosts deny" = "ALL";
         # macOS interop: fruit must stack with streams_xattr, catia first.
-        # No fruit:posix_rename - removed in Samba 4.22.
+        # No fruit:posix_rename. Samba 4.22 removed it.
         "vfs objects" = "catia fruit streams_xattr";
         "fruit:aapl" = "yes";
         "fruit:metadata" = "stream";

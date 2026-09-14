@@ -168,11 +168,7 @@
             nixpkgs.overlays = [ sharedOverlay ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.nbetm = {
-              imports = [ ./hosts/shared/home-base.nix ];
-              home.username = "nbetm";
-              home.homeDirectory = "/home/nbetm";
-            };
+            home-manager.users.nbetm = import ./hosts/shared/home-headless.nix;
           }
         ];
       };
@@ -191,11 +187,7 @@
             nixpkgs.overlays = [ sharedOverlay ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.nbetm = {
-              imports = [ ./hosts/shared/home-base.nix ];
-              home.username = "nbetm";
-              home.homeDirectory = "/home/nbetm";
-            };
+            home-manager.users.nbetm = import ./hosts/shared/home-headless.nix;
           }
         ];
       };

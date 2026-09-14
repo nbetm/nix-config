@@ -1,8 +1,8 @@
 # shellcheck shell=bash disable=SC1091
-# VCS aliases — git + jj, inspired by prezto's git module.
+# VCS aliases for git and jj, inspired by prezto's git module.
 # https://github.com/sorin-ionescu/prezto/blob/master/modules/git/alias.zsh
 #
-# Dual functions (gco, gp, gf, gfa, glg, gws, gwd, gcs, gba, gt, gr) dispatch
+# Dual functions (gco, gp, gf, gfa, glg, gws, gwd, gcs, gb, gba, gt, gR) dispatch
 # to jj when .jj/ is present in the repo root, else fall back to git.
 
 # ------------------------------------------------------------------------------

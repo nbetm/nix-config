@@ -109,7 +109,7 @@ ble-face -s vbell_erase bg=#212732
 # Behavior Options
 # ------------------------------------------------------------------------------
 
-# Share history across all sessions and loading for faster startup
+# Share history across sessions, and load it lazily for faster startup
 bleopt history_share=1
 bleopt history_lazyload=1
 

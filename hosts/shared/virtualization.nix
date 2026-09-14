@@ -6,7 +6,6 @@
 }:
 
 {
-  # Use nftables
   networking.nftables.enable = true;
 
   # Trust libvirt bridge interfaces for VM networking
@@ -31,7 +30,7 @@
   # incusd (root) needs a subuid/subgid grant covering 1000 so the
   # agent-sandbox profile's `raw.idmap uid/gid 1000 1000` is permitted by
   # newuidmap. The incus module already grants root the large 1000000+ range
-  # (see /etc/subuid); this appends the single id 1000 it's missing.
+  # (see /etc/subuid). This appends the single id 1000 it's missing.
   users.users.root.subUidRanges = [
     {
       startUid = 1000;

@@ -1,5 +1,5 @@
 # Jellyfin with Intel Quick Sync (Gen9 / HD 530) via VAAPI.
-# QSV-proper (oneVPL) is Gen12+; no tone-mapping (no 10-bit HEVC decode).
+# QSV-proper (oneVPL) is Gen12+.
 { pkgs, ... }:
 
 {
@@ -7,7 +7,7 @@
     enable = true;
     openFirewall = true;
     # Own encoding.xml on every start (otherwise settings only apply if
-    # the file doesn't exist yet); transcode config is declarative-only
+    # the file doesn't exist yet). Transcode config is declarative-only
     forceEncodingConfig = true;
     hardwareAcceleration = {
       enable = true;
@@ -25,7 +25,7 @@
         vc1 = true;
         vp8 = true;
         vp9 = true;
-        # 10-bit variants stay off - unsupported on Gen9
+        # 10-bit and AV1 variants stay off. Gen9 decodes neither.
       };
     };
   };

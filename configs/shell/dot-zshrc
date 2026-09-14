@@ -72,7 +72,7 @@ update-zsh-plugins() {
     done
 }
 
-# Auto-install on first run (skipped on nix-managed systems via $DISTRO guard)
+# Auto-install on first run (skipped on nix-managed systems via $OS_DISTRO guard)
 [[ ! -d "${HOME}/.zsh/plugins" ]] || [[ -z "$(ls -A "${HOME}/.zsh/plugins" 2>/dev/null)" ]] && install-zsh-plugins
 
 # zsh-autosuggestions

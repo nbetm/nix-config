@@ -11,9 +11,9 @@ in
       type = lib.types.listOf lib.types.str;
       default = [ ];
       description = ''
-        Subnets to advertise to the tailnet. Note: this is documentation
-        only — pass the same value to `sudo tailscale up --advertise-routes=...`
-        on first bring-up.
+        Subnets to advertise to the tailnet. This option is documentation only.
+        Pass the same value to `sudo tailscale up --advertise-routes=...` on
+        first bring-up.
       '';
     };
 

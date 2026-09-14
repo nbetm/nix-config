@@ -24,7 +24,7 @@
   followTags = true
 
 [fetch]
-  purne = true
+  prune = true
   pruneTags = true
   all = true
 

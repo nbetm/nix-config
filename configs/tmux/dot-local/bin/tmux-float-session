@@ -122,8 +122,8 @@ Commands:
     help          Show this help message
 
 Environment:
-    FLOAT_WIDTH   Popup width (default: 50%)
-    FLOAT_HEIGHT  Popup height (default: 60%)
+    FLOAT_WIDTH   Popup width (default: 70%)
+    FLOAT_HEIGHT  Popup height (default: 70%)
 
 EOF
 }

@@ -133,7 +133,7 @@ keymap:
       Super-Shift-p: C-Shift-p # Private / incognito window
       Super-Shift-Backspace: C-Shift-Delete # Clear history
 
-      # Text navigation (Cmd+Arrow → Home/End)
+      # Text navigation (Cmd+Left/Right → line ends, Cmd+Up/Down → document ends)
       Super-Left: Home
       Super-Right: End
       Super-Up: C-Home
@@ -167,7 +167,7 @@ keymap:
       # Window management
       Super-Shift-w: Alt-F4 # Close window
 
-      # Tab switching (Cmd+1-9 → Alt+1-9)
+      # Tab switching (Cmd+Shift+[/] → prev/next, Cmd+1-9 → Alt+1-9)
       Super-Shift-LeftBrace: C-pageup
       Super-Shift-RightBrace: C-pagedown
       Super-KEY_1: Alt-KEY_1

@@ -3,11 +3,11 @@
 # Description: Sync the Obsidian vault with its remote via jj
 #
 # Exit codes from `sync` are a contract, not decoration. Callers (the Obsidian
-# plugin, a future timer) need "go fix something" to look different from "try
+# plugin, the systemd timer) need "go fix something" to look different from "try
 # again later", otherwise a dead network is indistinguishable from a conflict:
 #   0  synced, or already in sync
-#   1  needs a human -- conflict, missing remote bookmark, missing dependency
-#   2  retry later -- fetch/push failed, or another sync holds the lock
+#   1  needs a human: conflict, missing remote bookmark, missing dependency
+#   2  retry later: fetch/push failed, or another sync holds the lock
 #
 # Set options:
 #   e: Stop script if command fails
@@ -48,16 +48,16 @@ check_vault() {
     fi
 }
 
-# jj snapshots the working copy on every invocation, so these queries also see
+# jj snapshots the working copy on every invocation. These queries also see
 # edits made since the last command. There is no separate capture step.
 _wc_is_empty() {
     [[ "$(jj log -r @ --no-graph -T 'empty')" = "true" ]]
 }
 
-# Scoped to ancestors of @ -- the commits push would actually carry. A bare
-# conflicts() is repo-wide and would wedge sync on a stray conflicted commit
-# sitting on an unrelated branch, reporting "conflicts present" next to a
-# perfectly clean jj status.
+# Scoped to ancestors of @, which are the commits push would actually carry. A
+# bare conflicts() is repo-wide and would wedge sync on a stray conflicted
+# commit sitting on an unrelated branch, reporting "conflicts present" next to
+# a perfectly clean jj status.
 _has_conflicts() {
     [[ -n "$(jj log -r 'conflicts() & ::@' --no-graph -T '"x"')" ]]
 }
@@ -80,7 +80,7 @@ _count_revs() {
         echo 0
     else
         # printf '%s\n' restores the trailing newline that command
-        # substitution strips -- without it wc -l undercounts by one.
+        # substitution strips. Without it wc -l undercounts by one.
         printf '%s\n' "$out" | wc -l | tr -d ' '
     fi
 }
@@ -92,14 +92,14 @@ _count_revs() {
 sync_vault() {
     cd "$SETON_DIR"
 
-    # A lock that silently does not lock is worse than no lock, so this is a
-    # hard dependency rather than a graceful degrade.
+    # A lock that silently does not lock is worse than no lock. flock is a hard
+    # dependency here rather than a graceful degrade.
     if ! command -v flock >/dev/null 2>&1; then
         echo "Error: flock not found" >&2
         return 1
     fi
 
-    # -n fails fast rather than blocking: this can run from Obsidian's quit
+    # -n fails fast rather than blocking. This can run from Obsidian's quit
     # handler, where waiting on a lock would stall the app shutting down.
     exec 9>"$SETON_LOCK"
     if ! flock -n 9; then
@@ -121,7 +121,7 @@ sync_vault() {
         return 1
     fi
 
-    # A quiet fetch alone does not mean there is nothing to do -- local edits
+    # A quiet fetch alone does not mean there is nothing to do. Local edits
     # need committing and pushing regardless. Both halves must be idle.
     if _wc_is_empty && _at_remote_head && ! _has_conflicts; then
         echo "Already in sync"
@@ -129,11 +129,11 @@ sync_vault() {
     fi
 
     _print_header "Rebasing onto ${SETON_BOOKMARK}@${SETON_REMOTE}"
-    # No-op when @ is already in place: jj reports "Skipped rebase ..." exit 0.
+    # No-op when @ is already in place. jj reports "Skipped rebase ..." exit 0.
     jj rebase -b @ -o "${SETON_BOOKMARK}@${SETON_REMOTE}"
 
-    # Must gate before committing: jj commits conflict markers happily, but
-    # push then refuses that commit forever -- only `jj squash` gets it out.
+    # Must gate before committing. jj commits conflict markers happily, but
+    # push then refuses that commit forever. Only `jj squash` gets it out.
     # Left in @, recovery is just editing the file and re-running.
     if _has_conflicts; then
         echo "Error: conflicts present, sync stopped" >&2
@@ -155,7 +155,7 @@ sync_vault() {
     # failing loudly beats rewinding the remote.
     jj bookmark set "$SETON_BOOKMARK" -r @-
 
-    # Pull-only runs leave the bookmark where the remote already is; pushing
+    # Pull-only runs leave the bookmark where the remote already is. Pushing
     # then costs a round-trip to be told "already matches".
     if [[ "$(_count_revs "${SETON_BOOKMARK}@${SETON_REMOTE}..${SETON_BOOKMARK}")" = "0" ]]; then
         echo "Nothing to push"
@@ -227,8 +227,8 @@ link_notes() {
     target="$SETON_DIR/$SETON_PROJECTS_SUBDIR/$area"
     link="$repo/.notes"
 
-    # Compare resolved paths, so a hand-made relative link pointing at the same
-    # place is recognised rather than rejected. -m tolerates a dangling link.
+    # Compare resolved paths. A hand-made relative link pointing at the same
+    # place then matches instead of failing. -m tolerates a dangling link.
     # Report the raw text, which is what the user actually needs to see.
     if [[ -L "$link" ]]; then
         current=$(readlink "$link")
@@ -242,7 +242,7 @@ link_notes() {
     fi
 
     # `ln -s` into an existing dir silently nests (.notes/px -> ...) instead of
-    # failing; agents recreate a real .notes via mkdir -p if the link is gone.
+    # failing. Agents recreate a real .notes via mkdir -p if the link is gone.
     if [[ -e "$link" ]]; then
         echo "Error: $link exists and is not a symlink" >&2
         echo "Move its contents into $target, remove it, then re-run." >&2
@@ -285,7 +285,7 @@ Environment:
     SETON_REMOTE            Git remote name (default: origin)
     SETON_BOOKMARK          Bookmark to track (default: main)
     SETON_PROJECTS_SUBDIR   Vault subdir mirroring ~/projects (default: projects)
-    SETON_LOCK              Sync lock file (default: \$TMPDIR/seton-sync.lock)
+    SETON_LOCK              Sync lock file (default: $TMPDIR/seton-sync.lock)
 
 EOF
 }

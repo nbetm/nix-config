@@ -32,8 +32,8 @@ alias hsl="herdr session list"
 hupdate() {
     local skill_url="https://raw.githubusercontent.com/ogulcancelik/herdr/refs/heads/master/SKILL.md"
     local skill_path="$HOME/.claude/skills/herdr"
-    mkdir -p skill_path
-    curl -fsSL $skill_url -o "$skill_path/SKILL.md"
+    mkdir -p "$skill_path"
+    curl -fsSL "$skill_url" -o "$skill_path/SKILL.md"
 }
 
 # ------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ hupdate() {
 # ------------------------------------------------------------------------------
 
 alias n="nvim"
-alias ndiff="nvim -d" # diff two files in Neovim (nord-deep colors)
+alias ndiff="nvim -d"
 
 # ------------------------------------------------------------------------------
 # Claude

@@ -13,6 +13,7 @@ Poke around if you find anything useful, but you'll need to know Nix to make sen
 - **aura** - NixOS desktop (x86_64-linux), KDE Plasma
 - **atlas** - macOS (aarch64-darwin), nix-darwin
 - **andromeda** - NixOS headless VM (aarch64-linux)
+- **aphrodite** - NixOS homelab (x86_64-linux), NAS + Jellyfin
 
 ## Usage
 

@@ -27,8 +27,8 @@
     ../../configs/plasma/dot-local/share/color-schemes/NordDeep.colors;
 
   # Plasma settings via plasma-manager
-  # overrideConfig stays false: only declared keys are managed, the rest of
-  # the live Plasma config is left untouched. Grow this incrementally.
+  # overrideConfig stays false. home-manager manages only the declared keys and
+  # leaves the rest of the live Plasma config untouched. Grow this incrementally.
   programs.plasma = {
     enable = true;
     workspace.iconTheme = "Papirus-Dark";

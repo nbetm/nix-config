@@ -35,7 +35,6 @@
   # (unsigned store paths) are accepted
   nix.settings.trusted-users = [ "nbetm" ];
 
-  # Cleans up after itself
   nix.gc = {
     automatic = true;
     dates = "weekly";

@@ -1,5 +1,5 @@
 # Home-manager config shared across all hosts.
-# Used purely as a symlink engine — no programs.<tool>.enable.
+# Used purely as a symlink engine, with no programs.<tool>.enable.
 { pkgs, ... }:
 
 {
@@ -44,7 +44,7 @@
     # GH-Dash
     ".local/bin/ghd".source = ../../configs/gh-dash/dot-local/bin/ghd;
 
-    # ZSH completions (manual — not provided by nix packages)
+    # ZSH completions (manual, since nix packages do not provide them)
     ".zsh/completions" = {
       source = ../../configs/shell/dot-zsh/completions;
       recursive = true;

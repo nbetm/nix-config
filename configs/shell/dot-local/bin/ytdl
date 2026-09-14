@@ -47,7 +47,7 @@ Output files:
 Get Exportify CSV from: https://exportify.net
 
 Requirements: yt-dlp, ffmpeg
-  nix: yt-dlp, ffmpeg (via base.nix)
+  nix: yt-dlp, ffmpeg (via packages-base.nix)
 EOF
     exit 1
 }
@@ -122,12 +122,12 @@ if [[ ! -f "$INPUT_FILE" ]]; then
 fi
 
 if ! command -v yt-dlp &>/dev/null; then
-    echo "Error: yt-dlp not found. Install via nix (base.nix)"
+    echo "Error: yt-dlp not found. Install via nix (packages-base.nix)"
     exit 1
 fi
 
 if ! command -v ffmpeg &>/dev/null; then
-    echo "Error: ffmpeg not found. Install via nix (base.nix)"
+    echo "Error: ffmpeg not found. Install via nix (packages-base.nix)"
     exit 1
 fi
 
@@ -174,7 +174,7 @@ echo ""
 while IFS=$'\t' read -r artist title; do
     [[ -z "$artist" || -z "$title" ]] && continue
 
-    # Only for the filename; the search still uses the untouched text
+    # Only for the filename. The search still uses the untouched text
     clean_artist=$(echo "$artist" | sed 's/[<>:"/\\|?*]/-/g')
     clean_title=$(echo "$title" | sed 's/[<>:"/\\|?*]/-/g')
     OUTPUT_FILE="$OUTPUT_DIR/$clean_artist - $clean_title.$FORMAT"
@@ -269,8 +269,8 @@ while IFS=$'\t' read -r artist title; do
         fi
     else
         if [[ "$MIN_DURATION" -gt 0 ]]; then
-            # No URL is picked here: which result passes the filter is not
-            # known until yt-dlp applies it, so hand it the search instead
+            # Nothing picks a URL here. Which result passes the filter is not
+            # known until yt-dlp applies it. Hand it the search instead
             YT_CMD+=(--match-filter "duration>=$MIN_DURATION")
             if "${YT_CMD[@]}" "ytsearch5:$SEARCH_QUERY" --max-downloads 1; then
                 echo "  ✓ Done"
@@ -282,7 +282,7 @@ while IFS=$'\t' read -r artist title; do
                 FAILED_TRACKS="$FAILED_TRACKS\n  - $artist - $title"
             fi
         else
-            # Reuse the URL already seen; re-running the search can rank a
+            # Reuse the URL already seen. Re-running the search can rank a
             # different video first and download something else
             if "${YT_CMD[@]}" "$FIRST_URL"; then
                 echo "  ✓ Done"

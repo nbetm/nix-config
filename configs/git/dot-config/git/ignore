@@ -20,9 +20,9 @@ logs/
 .zed/
 
 # notes
-# Deliberately no trailing slash: a pattern ending in / matches directories
+# Deliberately no trailing slash. A pattern ending in / matches directories
 # only, and .notes is a symlink into the notes vault in most repos. Git does
-# not follow symlinks, so `.notes/` would leave every one of them untracked.
+# not follow symlinks. `.notes/` would leave every one of them untracked.
 .notes
 
 # direnv

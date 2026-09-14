@@ -13,7 +13,7 @@ _agent_sandbox() {
         return
     fi
 
-    # Second word: complete container names. stop -> running only; destroy -> all.
+    # Second word completes container names. stop -> running only, destroy -> all.
     local names
     case "$prev" in
         stop)

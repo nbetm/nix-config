@@ -13,10 +13,10 @@
   # Required for user-scoped options (gnupg agent, etc.)
   system.primaryUser = "nbetm";
 
-  # User home path — required for home-manager to derive homeDirectory
+  # User home path, required for home-manager to derive homeDirectory
   users.users.nbetm.home = "/Users/nbetm";
 
-  # Make the nix bash a legitimate login shell, so chsh will accept it
+  # Make the nix bash a legitimate login shell so chsh will accept it
   environment.shells = [ pkgs.bash ];
 
   # GPG agent

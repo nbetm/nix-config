@@ -2,20 +2,20 @@
 #
 # Description: Manage the tmux side pane and the stack of panes living in it
 #
-# The side slot holds one visible pane; any other members are parked in a hidden
-# session, still running, and swapped in on demand. `swap-pane` is what keeps
-# this cheap: it exchanges two panes without touching the layout, so the rest of
-# the window never reflows and the main region is untouched no matter what the
-# stack does.
+# The side slot holds one visible pane. Any other members park in a hidden
+# session, still running, and swap in on demand. `swap-pane` keeps this cheap.
+# It exchanges two panes without touching the layout. The rest of the window
+# never reflows, and the main region stays put whatever the stack does.
 #
-# State lives in three window options, scoped to the window that owns the stack
+# State lives in four window options, scoped to the window that owns the stack
 # and surviving detach:
 #   @stack_session   parking session, <parent>-<hex>-stack
 #   @stack_members   ordered pane IDs, e.g. "%12 %19 %23"
+#   @stack_count     member count the status line reads
 #   @stack_index     0-based index into @stack_members of the visible member
 #
-# A stack of one behaves exactly like a plain side pane, so nothing changes
-# until a second member exists.
+# A stack of one behaves exactly like a plain side pane. Nothing changes until
+# a second member exists.
 #
 # Every tmux query targets $WIN explicitly. Implicit targeting survives
 # interactive use and then fails where it matters: `break-pane` moves the
@@ -46,9 +46,8 @@ WIN=""
 # Helpers
 # -----------------------------------------------------------------------------
 
-# run-shell swallows output, so anything the user must see goes to tmux's
-# message line. Also echoed to stderr so the script stays debuggable from a
-# plain terminal.
+# run-shell swallows output. Anything the user must see goes to tmux's message
+# line. The stderr copy keeps the script debuggable from a plain terminal.
 _die() {
     echo "Error: $1" >&2
     tmux display-message "side-pane: $1" 2>/dev/null || true
@@ -83,7 +82,7 @@ _member_count() {
         echo 0
         return 0
     fi
-    # Pane ids never contain spaces, so counting words needs no splitting.
+    # Pane ids never contain spaces. Counting words needs no splitting.
     printf '%s' "$m" | wc -w | tr -d ' '
 }
 
@@ -179,8 +178,8 @@ _remove_member() {
     _write_members "$out"
 }
 
-# Parked members wait at the size they will be shown at, so they do not reflow
-# on the way in.
+# Parked members wait at the size they will be shown at. They do not reflow on
+# the way in.
 _slot_geometry() {
     local slot
     slot="$(_visible_member)"
@@ -212,8 +211,8 @@ _ensure_parking() {
     printf '%s' "$parking"
 }
 
-# Put `target` into a slot that does not exist yet. tmux will only create a pane
-# fresh, so the split's throwaway shell is swapped out and killed.
+# Put `target` into a slot that does not exist yet. tmux only creates a pane
+# fresh. This splits a throwaway shell, swaps it out, and kills it.
 #
 # Focus is restored because reconcile calls this as a side effect of an unrelated
 # keypress. Callers wanting focus to follow the target select it themselves.
@@ -244,13 +243,13 @@ _show_member() {
 }
 
 # Always splits a fresh pane rather than adopting an existing one. Adoption used
-# to guess "last pane in the window", which is only the side pane when the main
-# region is unsplit; with a split main it claims a main pane as the slot, leaving
-# no side pane and no way for toggle to make one.
+# to guess the last pane in the window, which is only the side pane when the
+# main region is unsplit. With a split main it claims a main pane as the slot,
+# leaving no side pane and no way for toggle to make one.
 #
-# `send` is the explicit way to move an existing pane into the stack, so nothing
-# is lost by refusing to guess. Prints "created" so `new` knows the slot it asked
-# for already exists and it should not add a second member on top.
+# `send` already moves an existing pane into the stack, which is why refusing to
+# guess costs nothing. Printing "created" lets `new` know the slot it asked for
+# already exists and that it should not add a second member.
 _ensure_slot() {
     local pane
     if [[ -n "$(_visible_member)" ]]; then
@@ -333,9 +332,8 @@ stack_send() {
     tmux break-pane -d -s "$current" -t "${parking}:"
     _append_member "$current"
 
-    # _ensure_slot is deliberately not used here. With no stack yet it adopts
-    # the last pane in the window, which is the very pane being sent, so the
-    # member list would gain it twice.
+    # Calling _ensure_slot here would append the pane it splits as a second
+    # member, next to the one just broken out.
     slot="$(_visible_member)"
     if [[ -z "$slot" ]]; then
         _install_slot "$current"
@@ -358,9 +356,9 @@ stack_close() {
         return 0
     fi
 
-    # A survivor moves into the slot before the kill, so the side region is
-    # never briefly empty. Killing first collapses the layout and reconcile has
-    # to re-split it, which is visible.
+    # A survivor moves into the slot before the kill. The side region is never
+    # briefly empty. Killing first collapses the layout, and reconcile has to
+    # re-split it, which the user sees.
     count="$(_member_count)"
     if [[ "$count" -gt 1 ]]; then
         _cycle 1
@@ -369,7 +367,7 @@ stack_close() {
     _remove_member "$current"
     tmux kill-pane -t "$current" 2>/dev/null || true
 
-    # Removing a member shifts every index after it, so take the index back from
+    # Removing a member shifts every index after it. Take the index back from
     # whatever actually holds the slot rather than trusting the old value.
     slot="$(_visible_member)"
     if [[ -n "$slot" ]]; then
@@ -423,11 +421,11 @@ stack_prev() { _cycle -1; }
 # -----------------------------------------------------------------------------
 
 # Windows that own a stack, as session:index. Mirrors the scan in
-# tmux-float-session cleanup: a hook fires wherever the pane died, which for a
-# parked member is the parking session, so the owning window has to be found
-# rather than assumed.
+# tmux-float-session cleanup. A hook fires wherever the pane died, which for a
+# parked member is the parking session. The scan has to find the owning window
+# rather than assume it.
 #
-# Matches on the parking session too, not just the member list, so a window left
+# It matches on the parking session as well as the member list. A window left
 # holding only an empty parking session still gets cleaned up.
 _stack_windows() {
     local target
@@ -456,10 +454,11 @@ _reconcile_window() {
 
     m="$(_members)"
     if [[ -z "$m" ]]; then
-        # `close` and `eject` remove the last member themselves, so the list can
-        # empty without the dead-member path below ever running. Whatever is left
-        # is debris. Checking both keys matters: a stack of one never creates a
-        # parking session, so gating on that alone strands @stack_index.
+        # `close` and `eject` remove the last member themselves. The list can
+        # empty without the dead-member path below ever running, and whatever is
+        # left is debris. Checking both keys matters. A stack of one never
+        # creates a parking session, and gating on that alone strands
+        # @stack_index.
         if [[ -n "$(_get @stack_session)" ]] || [[ -n "$(_get @stack_index)" ]]; then
             _teardown
         fi
@@ -488,7 +487,7 @@ _reconcile_window() {
     fi
     _set @stack_index "$idx"
 
-    # The visible member died, so the slot collapsed and the layout reflowed.
+    # The visible member died. The slot collapsed and the layout reflowed.
     # Rebuild the slot, then swap the surviving member into it.
     if [[ -z "$(_visible_member)" ]]; then
         target="$(_member_at "$idx")"
@@ -498,10 +497,10 @@ _reconcile_window() {
     fi
 }
 
-# Kill parking sessions no window claims any more. A window can be destroyed
-# outright, and kill-window fires no pane hook, so its @stack_session dies with
-# it and the parked panes would otherwise run forever. Mirrors the scan in
-# tmux-float-session cleanup, which does the same job for -float sessions.
+# Kill parking sessions no window claims any more. Destroying a window outright
+# fires no pane hook. Its @stack_session dies with it, and the parked panes
+# would otherwise run forever. Mirrors the scan in tmux-float-session cleanup,
+# which covers -float sessions.
 _collect_orphan_parking() {
     local referenced="" target park
 
@@ -569,15 +568,14 @@ main() {
 
     # A float is deliberately a dumb popup window: one window, no status line,
     # small. A stack there would have nowhere to show its indicator and no room
-    # to split, so the stack verbs decline. (Floats are sessions rather than bare
-    # popups so their contents persist across toggles, not because they are
-    # short-lived.)
+    # to split. The stack verbs decline. (Floats are sessions rather than bare
+    # popups because their contents persist across toggles.)
     #
     # Two exemptions. `reconcile` runs from server-global hooks and cleans every
-    # window regardless of where the hook fired, so refusing it by the caller's
-    # session would strand dead members elsewhere. `close` is bound over
-    # kill-pane, and with no members present it already degrades to exactly that,
-    # which is the behavior a popup wants.
+    # window regardless of where the hook fired. Refusing it by the caller's
+    # session would strand dead members elsewhere. `close` sits over kill-pane,
+    # and with no members present it already degrades to exactly that, which is
+    # the behavior a popup wants.
     case "$command" in
         reconcile | close | help | --help | -h) ;;
         *)
@@ -589,8 +587,8 @@ main() {
     esac
 
     # Repair before acting. Hooks only fire when a pane's process exits on its
-    # own: kill-pane and kill-window fire nothing, so a force-killed member
-    # would otherwise linger in the list and make the next swap-pane fail.
+    # own. kill-pane and kill-window fire nothing. A force-killed member would
+    # otherwise linger in the list and make the next swap-pane fail.
     case "$command" in
         toggle | new | next | prev | send | eject | close) _reconcile_window ;;
     esac

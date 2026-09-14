@@ -2,9 +2,9 @@
 pkgs: with pkgs; [
   # GNU tool replacements (shadow macOS builtins)
   #
-  # coreutils minus stty: XNU sets PENDIN whenever ICANON is turned on, so GNU
-  # stty's post-write memcmp always trips — once per command under ble.sh. Let
-  # BSD /bin/stty win; GNU's is still at `coreutils --coreutils-prog=stty`.
+  # coreutils minus stty. XNU sets PENDIN whenever ICANON is turned on. GNU
+  # stty's post-write memcmp then always trips, once per command under ble.sh.
+  # Let BSD /bin/stty win. GNU's is still at `coreutils --coreutils-prog=stty`.
   (symlinkJoin {
     name = "coreutils-no-stty";
     paths = [ coreutils ];

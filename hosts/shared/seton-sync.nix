@@ -17,10 +17,10 @@
 
       # NixOS's default PATH for user units omits jj and flock.
       #
-      # No SSH_AUTH_SOCK on purpose: the account key needs a passphrase, so an
+      # No SSH_AUTH_SOCK on purpose. The account key needs a passphrase, and an
       # agent-based unit could never run unattended on headless andromeda. This
       # requires the vault remote to use the `github-seton` alias and its
-      # passphrase-less deploy key; without that, every run fails as a silent 2.
+      # passphrase-less deploy key. Without that, every run fails as a silent 2.
       Environment = "PATH=/run/current-system/sw/bin";
     };
   };
@@ -36,6 +36,6 @@
     };
   };
 
-  # No After=network-online.target: offline already yields a self-healing exit 2,
-  # so ordering against network state would add a hangable dependency for free.
+  # No After=network-online.target. Offline already yields a self-healing exit 2.
+  # Ordering against network state would add a hangable dependency for free.
 }

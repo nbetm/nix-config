@@ -24,11 +24,11 @@ pkgs: with pkgs; [
     (vivaldi.override {
       commandLineArgs = "--password-store=kwallet6 --disable-features=WaylandWpColorManagerV1";
     }).overrideAttrs
-    (oldAttrs: {
-      dontWrapQtApps = false;
-      dontPatchELF = true;
-      nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ pkgs.kdePackages.wrapQtAppsHook ];
-    })
+      (oldAttrs: {
+        dontWrapQtApps = false;
+        dontPatchELF = true;
+        nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ pkgs.kdePackages.wrapQtAppsHook ];
+      })
   )
   vivaldi-ffmpeg-codecs
 
