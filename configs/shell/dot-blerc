@@ -127,21 +127,22 @@ bind 'set match-hidden-files off'
 # Keybindings
 # ------------------------------------------------------------------------------
 
-# Word navigation (Cody's config)
-# Alt-b/f: Move by word (ignoring punctuation)
-ble-bind -f 'M-b' backward-sword
-ble-bind -f 'M-f' forward-sword
+# cword is the ble.sh word class matching the WORDCHARS tweak in dot-zshrc.
+# Its set is _a-zA-Z0-9. ble.sh has no WORDCHARS of its own.
+#
+# C-M-? is a copy widget rather than a kill.
+# M-b and M-f are already cword, pinned against a nightly bump.
 
-# Ctrl-Alt-b/f: Move by word (including punctuation)
-ble-bind -f 'C-M-b' backward-cword
-ble-bind -f 'C-M-f' forward-cword
+# Alt-b/f: Move by word
+ble-bind -f 'M-b' backward-cword
+ble-bind -f 'M-f' forward-cword
 
 # Alt/Option+Delete: Delete word backward
-ble-bind -f 'M-DEL' kill-backward-sword
-ble-bind -f 'M-C-?' kill-backward-sword
+ble-bind -f 'M-DEL' kill-backward-cword
+ble-bind -f 'M-C-?' kill-backward-cword
 
-# Ctrl-Alt-w: Delete word including punctuation
-ble-bind -f 'C-M-w' kill-backward-cword
+ble-bind -f 'C-w' 'kill-region-or kill-backward-cword'
+ble-bind -f 'S-delete' 'kill-region-or kill-backward-cword'
 
 # Edit command in $EDITOR
 ble-bind -f 'C-x C-e' edit-and-execute-command
