@@ -138,6 +138,7 @@
   environment.variables = {
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
     FREETYPE_PROPERTIES = "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
+    TMUX_SIDE_WIDTH = "33%";
   };
 
   # Dropbox sync service

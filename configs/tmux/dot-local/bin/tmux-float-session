@@ -22,8 +22,8 @@ set -euo pipefail
 # Constants
 # -----------------------------------------------------------------------------
 
-FLOAT_WIDTH="${FLOAT_WIDTH:-70%}"
-FLOAT_HEIGHT="${FLOAT_HEIGHT:-70%}"
+TMUX_FLOAT_WIDTH="${TMUX_FLOAT_WIDTH:-70%}"
+TMUX_FLOAT_HEIGHT="${TMUX_FLOAT_HEIGHT:-70%}"
 # Load-bearing: cleanup recognises floats by it, and sesh-picker filters on it.
 FLOAT_SUFFIX="-float"
 
@@ -72,7 +72,7 @@ float_toggle() {
     # falling back to another session. status off keeps a single-window popup
     # from drawing a status bar it has nothing to fill.
     tmux popup -d "#{pane_current_path}" -xC -yC \
-        -w"$FLOAT_WIDTH" -h"$FLOAT_HEIGHT" \
+        -w"$TMUX_FLOAT_WIDTH" -h"$TMUX_FLOAT_HEIGHT" \
         -E "tmux new -As '${float}' \; set detach-on-destroy on \; set status off"
 }
 
@@ -122,8 +122,8 @@ Commands:
     help          Show this help message
 
 Environment:
-    FLOAT_WIDTH   Popup width (default: 70%)
-    FLOAT_HEIGHT  Popup height (default: 70%)
+    TMUX_FLOAT_WIDTH   Popup width (default: 70%)
+    TMUX_FLOAT_HEIGHT  Popup height (default: 70%)
 
 EOF
 }

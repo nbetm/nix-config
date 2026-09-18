@@ -34,10 +34,10 @@ set -euo pipefail
 # Constants
 # -----------------------------------------------------------------------------
 
-SIDE_WIDTH="${SIDE_WIDTH:-40%}"
+TMUX_SIDE_WIDTH="${TMUX_SIDE_WIDTH:-40%}"
 # Fallback geometry for the parking session when no slot exists yet to measure.
-PARK_COLS="${PARK_COLS:-80}"
-PARK_ROWS="${PARK_ROWS:-40}"
+TMUX_PARK_COLS="${TMUX_PARK_COLS:-80}"
+TMUX_PARK_ROWS="${TMUX_PARK_ROWS:-40}"
 
 # Window every query is aimed at, as session:index. Set once per invocation.
 WIN=""
@@ -186,7 +186,7 @@ _slot_geometry() {
     if [[ -n "$slot" ]]; then
         tmux display-message -p -t "$slot" -F '#{pane_width} #{pane_height}'
     else
-        printf '%s %s' "$PARK_COLS" "$PARK_ROWS"
+        printf '%s %s' "$TMUX_PARK_COLS" "$TMUX_PARK_ROWS"
     fi
 }
 
@@ -219,7 +219,7 @@ _ensure_parking() {
 _install_slot() {
     local target="$1" tmp was_active
     was_active="$(tmux display-message -p -t "$WIN" -F '#{pane_id}')"
-    tmp="$(tmux split-window -h -l "$SIDE_WIDTH" -t "$WIN" -c "$(_pane_path)" \
+    tmp="$(tmux split-window -h -l "$TMUX_SIDE_WIDTH" -t "$WIN" -c "$(_pane_path)" \
         -P -F '#{pane_id}')"
     tmux swap-pane -s "$target" -t "$tmp"
     tmux kill-pane -t "$tmp" 2>/dev/null || true
@@ -255,7 +255,7 @@ _ensure_slot() {
     if [[ -n "$(_visible_member)" ]]; then
         return 0
     fi
-    pane="$(tmux split-window -h -l "$SIDE_WIDTH" -t "$WIN" -c "$(_pane_path)" \
+    pane="$(tmux split-window -h -l "$TMUX_SIDE_WIDTH" -t "$WIN" -c "$(_pane_path)" \
         -P -F '#{pane_id}')"
     _append_member "$pane"
     _set @stack_index "0"
@@ -551,9 +551,9 @@ Commands:
     help        Show this help message
 
 Environment:
-    SIDE_WIDTH  Width of the side pane (default: 40%)
-    PARK_COLS   Parking session width when no slot exists yet (default: 80)
-    PARK_ROWS   Parking session height when no slot exists yet (default: 40)
+    TMUX_SIDE_WIDTH  Width of the side pane (default: 40%)
+    TMUX_PARK_COLS   Parking session width when no slot exists yet (default: 80)
+    TMUX_PARK_ROWS   Parking session height when no slot exists yet (default: 40)
 
 EOF
 }
