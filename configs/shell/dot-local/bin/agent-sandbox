@@ -376,6 +376,7 @@ create_sandbox() {
 
     # Read-only config binds (matched paths, shift so host-1000 files read as nbetm)
     _add_ro_bind "$container" claude-md "$HOME/.claude/CLAUDE.md"
+    _add_ro_bind "$container" claude-agents "$HOME/.claude/agents"
     _add_ro_bind "$container" claude-cmds "$HOME/.claude/commands"
     _add_ro_bind "$container" claude-inst "$HOME/.claude/instructions"
     _add_ro_bind "$container" claude-skills "$HOME/.claude/skills"
