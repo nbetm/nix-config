@@ -88,9 +88,9 @@ awsl() {
     [[ -z "$choice" ]] && return
 
     if [[ -n "$SSH_TTY" ]]; then
-        aws sso login --no-browser --profile "$choice" || return
+        aws sso login --no-browser --use-device-code --profile "$choice" || return
     else
-        aws sso login --profile "$choice" || return
+        aws sso login --use-device-code --profile "$choice" || return
     fi
 
     export AWS_PROFILE="$choice"

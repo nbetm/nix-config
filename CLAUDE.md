@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-See @README.md for project overview. Run `make help` for available commands.
+This file provides guidance to Claude Code when working with code in this repository.
+See @README.md for project overview and @Makefile for available automation commands
 
 ## Where to Add Things
 
@@ -16,11 +17,14 @@ Use `u.` prefix for unstable packages (e.g., `u.ghostty`).
 
 ## Home-Manager
 
-Used purely as a symlink engine via `home.file` and `xdg.configFile`. No `programs.<tool>.enable` modules. Raw config files only.
+Used purely as a symlink engine via `home.file` and `xdg.configFile`.
+No `programs.<tool>.enable` modules.
+Raw config files only.
 
 ## Platform-Specific Configs
 
-ghostty and kitty have `os-darwin.conf` / `os-linux.conf` in the same directory. The `home-desktop.nix` and `home-darwin.nix` modules select the right one and symlink it as `os.conf`.
+ghostty and kitty have `os-darwin.conf` / `os-linux.conf` in the same directory.
+The `home-desktop.nix` and `home-darwin.nix` modules select the right one and symlink it as `os.conf`.
 
 ## Development Workflow
 
@@ -30,7 +34,17 @@ ghostty and kitty have `os-darwin.conf` / `os-linux.conf` in the same directory.
 - New files must be `git add`ed before nix can see them (flake limitation)
 - Run `nix fmt` (or `make format`) to auto-format nix files
 
-## Don't Modify
+## Critical Rules
 
-- `hosts/*/hardware-configuration.nix` - auto-generated, will be overwritten
-- `flake.lock` - update via `make update` or `make upp i=<input>`
+**You MUST follow these rules**:
+
+- **Ask for more information when unsure** - don't make assumptions on the developers behalf
+- **Learn from mistakes** - if you make repeated errors or miss important patterns, offer to update CLAUDE.md
+- **Sentence-per-line in markdown** - when writing markdown files, put each sentence on its own line
+- **Do not inject or rewrite prose** - Developers are ultimately better at explaining the why.
+  This includes code comments and docstrings, even when the surrounding code has them.
+  You may write prose if the developer explicitly asks, but write all prose in plain language: one idea per sentence, active voice, strong verbs, no filler words, and numbers instead of vague adjectives.
+  Use a colon only to introduce a list.
+  Never join two thoughts with a semicolon, a dash, or a colon.
+  Write two sentences instead.
+- **Do not modify** - `hosts/*/hardware-configuration.nix` (auto-generated) and `flake.lock` (update via `make update` or `make upp i=<input>`)

@@ -4,9 +4,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/nbetm/nix-config)
 ![Monthly Commit Activity](https://img.shields.io/github/commit-activity/m/nbetm/nix-config)
 
-My NixOS and nix-darwin configs.
-Just how I manage my systems.
-Poke around if you find anything useful, but you'll need to know Nix to make sense of it.
+My NixOS and nix-darwin configs plus dotfiles.
 
 ## Hosts
 
@@ -27,6 +25,6 @@ make ci        # run all checks (nix fmt, flake check, shellcheck, shfmt)
 
 ## Dotfiles
 
-Everything in `configs/` uses stow's `dot-` prefix layout: one set of files for both nix and non-nix machines.
-Nix hosts: home-manager symlinks them into `$HOME`.
-Everywhere else: `cd configs && stow shell`.
+My dotfiles are in `configs/`.
+They use the Stow's `dot-` prefix layout.
+This lets me use Stow on non-NixOS machines.
