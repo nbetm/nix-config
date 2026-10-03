@@ -57,6 +57,7 @@ pkgs: with pkgs; [
         --replace-fail 'Exec=${u.enpass}/bin/Enpass' 'Exec=env QT_AUTO_SCREEN_SCALE_FACTOR=1 QT_SCALE_FACTOR_ROUNDING_POLICY=Round ${u.enpass}/bin/Enpass'
     '';
   })
+  u.proton-pass
 
   # System
   u.flameshot

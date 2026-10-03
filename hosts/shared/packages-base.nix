@@ -45,6 +45,7 @@ pkgs: with pkgs; [
   lazygit
   ncdu
   pandoc
+  u.proton-pass-cli
   ripgrep
   sesh
   silver-searcher
