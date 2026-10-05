@@ -1,6 +1,7 @@
 # Base packages - Core CLI tools available on all systems
 pkgs: with pkgs; [
   # AI coding agents (from nixpkgs-unstable for fresher releases)
+  u.amp-cli
   u.claude-code
   # u.codex
   # u.gemini-cli
@@ -14,7 +15,7 @@ pkgs: with pkgs; [
   bash-completion
   blesh
   complete-alias
-  starship
+  u.starship
   zsh-autosuggestions
   zsh-fast-syntax-highlighting
 
