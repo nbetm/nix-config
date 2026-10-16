@@ -275,10 +275,28 @@ _ghpr_ready_one() {
     return $rc
 }
 
-ghprm() { _ghpr_each _ghpr_merge_one "$@"; }
-alias ghm="ghprm"
+_ghpr_dependabot_one() {
+    local mergeable
+    mergeable="$(gh pr view "$@" --json mergeable --jq .mergeable </dev/null)" || return 1
+    if [[ $mergeable == "CONFLICTING" ]]; then
+        gh pr comment "$@" --body "@dependabot rebase" </dev/null || return 1
+    else
+        echo "ghprmd: ${1:-current branch} is $mergeable, labelling only" >&2
+    fi
+    _ghpr_merge_one "$@"
+}
 
+ghprmd() {
+    if (($# == 0)); then
+        gh pr list --app dependabot --state open --limit 100 \
+            --json number --jq '.[].number' | _ghpr_each _ghpr_dependabot_one -
+    else
+        _ghpr_each _ghpr_dependabot_one "$@"
+    fi
+}
+
+ghprm() { _ghpr_each _ghpr_merge_one "$@"; }
 ghprr() { _ghpr_each _ghpr_ready_one "$@"; }
-alias ghr="ghprr"
 
 alias ghprl="gh pr list --author nbetm"
+alias ghprld="gh pr list --app dependabot"
