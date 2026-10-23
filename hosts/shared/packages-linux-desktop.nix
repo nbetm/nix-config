@@ -37,6 +37,7 @@ pkgs: with pkgs; [
   u.zoom-us
 
   # Media
+  u.haruna
   u.spotify
 
   # Password management
