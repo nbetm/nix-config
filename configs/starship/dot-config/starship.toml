@@ -2,7 +2,58 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 # Prompt Format
-format = "$all"
+format = """
+$hostname\
+$username\
+$localip\
+$directory\
+$vcs\
+$docker_context\
+$package\
+$c\
+$cmake\
+$cpp\
+$elixir\
+$erlang\
+$gleam\
+$golang\
+$helm\
+$lua\
+$nodejs\
+$perl\
+$pulumi\
+$python\
+$ruby\
+$rust\
+$scala\
+$terraform\
+$typst\
+$vagrant\
+$zig\
+$guix_shell\
+$nix_shell\
+$conda\
+$meson\
+$memory_usage\
+$aws\
+$gcloud\
+$azure\
+$direnv\
+$env_var\
+$mise\
+$custom\
+$sudo\
+$cmd_duration\
+$line_break\
+$jobs\
+$battery\
+$time\
+$status\
+$container\
+$netns\
+$os\
+$shell\
+$character"""
 
 # Inserts a blank line between shell prompts
 add_newline = true
@@ -56,6 +107,20 @@ truncation_symbol = "../"
 truncation_length = 3
 truncate_to_repo = false
 
+[vcs]
+order = ["jj", "git"]
+jj_modules = "$jj_change$jj_bookmark"
+
+[jj_bookmark]
+truncation_symbol = "‥"
+ignore_names = ["main", "master"]
+format = "[⟮$bookmark(@$remote)$diverged⟯]($style) "
+
+[jj_change]
+prefix_style = "bold magenta"
+suffix_style = "bold grey1"
+format = "[ ]($prefix_style)[$change_prefix]($prefix_style)[$change_suffix]($suffix_style) [$commit_prefix](bold green)[$commit_suffix]($suffix_style) "
+
 [git_branch]
 symbol = " "
 style = "bold magenta"
@@ -68,7 +133,6 @@ style = "bold magenta"
 format = "⟮[$state( $progress_current/$progress_total)]($style)⟯ "
 
 [git_status]
-disabled = true
 style = "bold magenta"
 format = "([⟮$all_status$ahead_behind⟯]($style) )"
 ahead = "↑"
@@ -118,7 +182,7 @@ disabled = true
 [nix_shell]
 symbol = "󱄅 "
 style = "bold aqua"
-format = "[$symbol$state( ⟮$name⟯)]($style) "
+format = "[$symbol$state]($style) "
 
 [docker_context]
 symbol = "󰡨 "
