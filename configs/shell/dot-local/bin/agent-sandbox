@@ -17,7 +17,7 @@ INCUS_IMAGE="images:debian/13"
 IMAGE_ALIAS="agent-base"
 BUILDER="agent-base-builder"
 PROFILE="agent-sandbox"
-JJ_VERSION="v0.44.0"
+JJ_VERSION="v0.46.0"
 TFLINT_VERSION="v0.64.0"
 
 HOST_UID="$(id -u)"
