@@ -46,6 +46,7 @@ pkgs: with pkgs; [
   lazygit
   ncdu
   pandoc
+  presenterm
   u.proton-pass-cli
   ripgrep
   sesh
