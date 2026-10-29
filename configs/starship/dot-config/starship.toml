@@ -63,6 +63,7 @@ palette = "nord_deep"
 
 [palettes.nord_deep]
 bg = "#212732"
+bg_s = "#282e39"
 bg1 = "#2e3440"
 bg2 = "#3b4252"
 bg3 = "#434c5e"
