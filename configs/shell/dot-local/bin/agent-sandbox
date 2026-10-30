@@ -331,14 +331,29 @@ _push_host_files() {
 }
 
 create_sandbox() {
-    local project_path container enc notes_dir
+    local project_path container enc notes_dir parent name dir
+    local -a names extras=()
     project_path=$(realpath .)
     container=$(_container_name)
+    parent=$(dirname "$project_path")
 
     if incus info "$container" >/dev/null 2>&1; then
         echo "Sandbox $container already exists. Run: agent-sandbox enter" >&2
         return 1
     fi
+
+    IFS=: read -ra names <<<"${AGENT_SANDBOX_PROJECTS_EXTRA:-}"
+    for name in "${names[@]}"; do
+        if [[ -z "$name" || "$name" == */* || "$name" == . || "$name" == .. ]]; then
+            echo "Error: AGENT_SANDBOX_PROJECTS_EXTRA entry '$name' is not a directory name" >&2
+            return 1
+        fi
+        if [[ ! -d "$parent/$name" ]]; then
+            echo "Error: AGENT_SANDBOX_PROJECTS_EXTRA entry '$name' not found at $parent/$name" >&2
+            return 1
+        fi
+        extras+=("$parent/$name")
+    done
 
     _print_header "Creating sandbox $container"
 
@@ -368,6 +383,20 @@ create_sandbox() {
     incus config device add "$container" claude-projects disk \
         source="$HOME/.claude/projects/$enc" \
         path="$HOME/.claude/projects/$enc" shift=true
+
+    for dir in "${extras[@]}"; do
+        name=$(basename "$dir")
+        incus config device add "$container" "extra-$name" disk \
+            source="$dir" path="$dir" shift=true
+        enc=${dir//\//-}
+        mkdir -p "$HOME/.claude/projects/$enc"
+        incus config device add "$container" "extra-$name-claude" disk \
+            source="$HOME/.claude/projects/$enc" \
+            path="$HOME/.claude/projects/$enc" shift=true
+        if [[ -e "$dir/.notes" && "$(realpath "$dir/.notes")" != "${notes_dir:-}" ]]; then
+            echo "Warning: $dir/.notes resolves outside the notes bind, skipping" >&2
+        fi
+    done
 
     # Claude credential store (RW, shifted)
     incus config device add "$container" claude-auth disk \
@@ -409,13 +438,15 @@ create_sandbox() {
         --uid "$HOST_UID" --gid "$HOST_GID" --mode 644
 
     # Pre-authorize the workspace's .envrc so direnv loads it on entry
-    if [[ -f "$project_path/.envrc" ]]; then
-        incus exec "$container" \
-            --user "$HOST_UID" --group "$HOST_GID" \
-            --env HOME="/home/$HOST_USER" \
-            -- direnv allow "$project_path" ||
-            echo "Warning: could not direnv-allow $project_path" >&2
-    fi
+    for dir in "$project_path" "${extras[@]}"; do
+        if [[ -f "$dir/.envrc" ]]; then
+            incus exec "$container" \
+                --user "$HOST_UID" --group "$HOST_GID" \
+                --env HOME="/home/$HOST_USER" \
+                -- direnv allow "$dir" ||
+                echo "Warning: could not direnv-allow $dir" >&2
+        fi
+    done
 
     _wait_for_network "$container"
 
