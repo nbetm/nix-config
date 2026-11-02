@@ -32,7 +32,7 @@
     xremap-flake.url = "github:xremap/nix-flake";
 
     # ghostty (comment this out to fall back to nixpkgs-unstable)
-    ghostty.url = "github:ghostty-org/ghostty";
+    # ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs =
