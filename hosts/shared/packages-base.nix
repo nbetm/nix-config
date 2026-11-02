@@ -102,7 +102,9 @@ pkgs: with pkgs; [
   nixfmt-tree
 
   # Python
+  python313
   python314
+  python315
   pyright
   ruff
   uv
