@@ -97,7 +97,7 @@
     enable = true;
     nativeMessagingHosts.packages = [
       pkgs.kdePackages.plasma-browser-integration
-      pkgs.keepassxc
+      pkgs.u.keepassxc
     ];
     preferences = {
       "widget.use-xdg-desktop-portal.file-picker" = 1;

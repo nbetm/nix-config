@@ -41,7 +41,10 @@ pkgs: with pkgs; [
   u.spotify
 
   # Password management
-  keepassxc
+  u.keepassxc
+  (writeShellScriptBin "keepassxc-proxy-clean" ''
+    exec env -u LD_LIBRARY_PATH -u LD_PRELOAD ${u.keepassxc}/bin/keepassxc-proxy "$@"
+  '')
   (pass-wayland.withExtensions (exts: [
     exts.pass-audit
     exts.pass-import
