@@ -32,6 +32,7 @@ if [[ $OS_NAME == "Darwin" ]]; then
     if [[ -d /run/current-system/sw/bin ]]; then
         PATH="$XDG_BIN_HOME:$HOME/.nix-profile/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:$PATH"
     fi
+    PATH="$PATH:$HOME/.docker/bin"
 
 elif [[ $OS_NAME == "Linux" ]]; then
     if [[ "$OS_DISTRO" != "nixos" ]]; then

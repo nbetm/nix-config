@@ -11,6 +11,7 @@ if [[ $OS_NAME == "Darwin" ]]; then
     path=(
         "$XDG_BIN_HOME"
         $path
+        "$HOME/.docker/bin"
     )
 
 elif [[ $OS_NAME = "Linux" ]]; then

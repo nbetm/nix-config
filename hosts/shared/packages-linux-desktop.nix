@@ -65,6 +65,7 @@ pkgs: with pkgs; [
   u.proton-pass
 
   # System
+  u.docker-sbx
   u.flameshot
   kdePackages.francis
   kdePackages.partitionmanager

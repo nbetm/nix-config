@@ -25,9 +25,7 @@ pkgs: with pkgs; [
   less
   rsync
 
-  # Docker (via Colima on macOS)
-  colima
-  docker-client
+  (u.docker-sbx.overrideAttrs { doInstallCheck = false; })
 
   # GUI apps
   flameshot

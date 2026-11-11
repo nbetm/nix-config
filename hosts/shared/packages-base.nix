@@ -26,7 +26,6 @@ pkgs: with pkgs; [
   bats
   btop
   delta
-  docker-buildx
   doitlive
   fd
   ffmpeg
@@ -78,7 +77,6 @@ pkgs: with pkgs; [
   # Docker
   docker-language-server
   dockerfmt
-  hadolint
 
   # JSON
   vscode-json-languageserver
