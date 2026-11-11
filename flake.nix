@@ -31,6 +31,11 @@
     # xremap
     xremap-flake.url = "github:xremap/nix-flake";
 
+    rex = {
+      url = "https://pkgs.superlogical.com/rex/nix/preview.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     # ghostty (comment this out to fall back to nixpkgs-unstable)
     # ghostty.url = "github:ghostty-org/ghostty";
   };

@@ -246,3 +246,7 @@ if [[ -d "${XDG_DATA_HOME}/shell" ]]; then
         [[ -s $item ]] && source $item
     done
 fi
+
+if [[ -n "$REX_BIN_DIR" ]]; then
+    path=("$REX_BIN_DIR" ${path:#$REX_BIN_DIR})
+fi

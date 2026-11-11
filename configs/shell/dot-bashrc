@@ -100,6 +100,10 @@ if command -v complete_alias &>/dev/null; then
     complete -F _complete_alias g t s tf j ass asd
 fi
 
+if [[ -n "${REX_BIN_DIR:-}" && ":$PATH:" != ":$REX_BIN_DIR:"* ]]; then
+    PATH="$REX_BIN_DIR:$PATH"
+fi
+
 # ------------------------------------------------------------------------------
 # Zoxide (must be near the end per zoxide docs)
 # ------------------------------------------------------------------------------
