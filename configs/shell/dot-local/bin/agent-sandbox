@@ -232,6 +232,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 curl -fsSL https://claude.ai/install.sh | bash
 
 # Shell environment
+sed -i 's/^#force_color_prompt=yes$/force_color_prompt=yes/' "$HOME/.bashrc"
+
 cat >>"$HOME/.bashrc" <<'BASHRC'
 
 # ----- agent-sandbox environment -----
@@ -459,6 +461,19 @@ create_sandbox() {
 # enter
 # -----------------------------------------------------------------------------
 
+_push_terminfo() {
+    local container="$1"
+    [[ -n "${TERM:-}" ]] || return 0
+    if ! infocmp -x "$TERM" >/dev/null 2>&1; then
+        echo "Warning: no terminfo for TERM=$TERM on host, skipping push" >&2
+        return 0
+    fi
+    infocmp -x "$TERM" |
+        incus exec "$container" -- tic -x -o /etc/terminfo - \
+            2> >(grep -v 'older tic versions may treat the description field as an alias' >&2) ||
+        echo "Warning: could not install terminfo for TERM=$TERM" >&2
+}
+
 enter_sandbox() {
     local container
     container=$(_container_name)
@@ -468,6 +483,7 @@ enter_sandbox() {
     fi
     incus start "$container" 2>/dev/null || true
     _wait_for_container "$container"
+    _push_terminfo "$container"
     # su - (not `incus exec --user`) so the login initializes supplementary groups
     # (docker, sudo). --user/--group alone sets only uid + primary gid.
     incus exec "$container" -- su - "$HOST_USER"
