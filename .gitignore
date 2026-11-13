@@ -13,8 +13,8 @@ result-*
 .envrc
 .direnv/
 
-# Notes and plans
-.notes/
+# Local notes (no trailing slash in case it's a symlink)
+.notes
 
 # Claude
 .claude/settings.local.json

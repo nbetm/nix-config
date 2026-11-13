@@ -17,15 +17,13 @@ set -euo pipefail
 # Constants
 # -----------------------------------------------------------------------------
 
-# Mirrors HIDDEN_RE in sesh-picker, which hides the same sessions from the picker.
+# Mirrors the blacklist in sesh.toml, which hides the same sessions from the picker.
 HIDDEN_RE='-float$|-stack$'
 
 # -----------------------------------------------------------------------------
 # cycle
 # -----------------------------------------------------------------------------
 
-# Landing on the first visible session is the useful answer when the current one
-# is itself hidden, which happens when the gesture arrives from inside a float.
 cycle() {
     local direction="$1" current target idx=-1 i count
     local -a sessions

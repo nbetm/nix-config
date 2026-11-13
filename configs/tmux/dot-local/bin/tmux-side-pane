@@ -4,24 +4,24 @@
 #
 # The side slot holds one visible pane. Any other members park in a hidden
 # session, still running, and swap in on demand. `swap-pane` keeps this cheap.
-# It exchanges two panes without touching the layout. The rest of the window
-# never reflows, and the main region stays put whatever the stack does.
+# It exchanges two panes without touching the layout, and the rest of the
+# window never reflows.
 #
-# State lives in four window options, scoped to the window that owns the stack
+# State lives in five window options, scoped to the window that owns the stack
 # and surviving detach:
 #   @stack_session   parking session, <parent>-<hex>-stack
 #   @stack_members   ordered pane IDs, e.g. "%12 %19 %23"
 #   @stack_count     member count the status line reads
 #   @stack_index     0-based index into @stack_members of the visible member
+#   @stack_width     slot width as <cols>/<window cols>, kept after the stack ends
 #
-# A stack of one behaves exactly like a plain side pane. Nothing changes until
-# a second member exists.
+# A stack of one behaves exactly like a plain side pane.
 #
 # Every tmux query targets $WIN explicitly. Implicit targeting survives
-# interactive use and then fails where it matters: `break-pane` moves the
-# current window out from under the script, and hooks fire in whichever window
-# the dying pane lived in, which for a parked member is the parking session
-# rather than the window that owns the stack.
+# interactive use and then fails where it matters. `break-pane` moves the
+# current window out from under the script. Hooks fire in whichever window the
+# dying pane lived in, which for a parked member is the parking session rather
+# than the window that owns the stack.
 #
 # Set options:
 #   e: Stop script if command fails
@@ -35,19 +35,17 @@ set -euo pipefail
 # -----------------------------------------------------------------------------
 
 TMUX_SIDE_WIDTH="${TMUX_SIDE_WIDTH:-40%}"
-# Fallback geometry for the parking session when no slot exists yet to measure.
 TMUX_PARK_COLS="${TMUX_PARK_COLS:-80}"
 TMUX_PARK_ROWS="${TMUX_PARK_ROWS:-40}"
 
-# Window every query is aimed at, as session:index. Set once per invocation.
 WIN=""
 
 # -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
 
-# run-shell swallows output. Anything the user must see goes to tmux's message
-# line. The stderr copy keeps the script debuggable from a plain terminal.
+# run-shell swallows output. The stderr copy keeps the script debuggable from a
+# plain terminal.
 _die() {
     echo "Error: $1" >&2
     tmux display-message "side-pane: $1" 2>/dev/null || true
@@ -68,9 +66,8 @@ _is_zoomed() { tmux list-panes -t "$WIN" -F '#F' | grep -q Z; }
 
 _pane_path() { tmux display-message -p -t "$WIN" -F '#{pane_current_path}'; }
 
-# Every pane id that exists anywhere on the server. Membership is validated
-# against this rather than trusted: a member can die at any moment and nothing
-# announces it until the next hook fires.
+# A member can die at any moment, and nothing announces it until the next hook
+# fires.
 _live_panes() { tmux list-panes -a -F '#{pane_id}'; }
 
 _members() { _get @stack_members; }
@@ -82,7 +79,7 @@ _member_count() {
         echo 0
         return 0
     fi
-    # Pane ids never contain spaces. Counting words needs no splitting.
+    # Pane ids never contain spaces.
     printf '%s' "$m" | wc -w | tr -d ' '
 }
 
@@ -145,9 +142,8 @@ _visible_member() {
     done
 }
 
-# The single writer for the member list. @stack_count is derived here rather
-# than in the status format because tmux has no word-count modifier (#{w:...} is
-# display width), and keeping both writes together means they cannot drift.
+# @stack_count is derived here rather than in the status format because tmux
+# has no word-count modifier. #{w:...} is display width.
 _write_members() {
     if [[ -z "$1" ]]; then
         _unset @stack_members
@@ -194,7 +190,6 @@ _ensure_parking() {
     local parking parent cols rows
     parking="$(_get @stack_session)"
 
-    # A recorded session that no longer exists is stale state, not an error.
     if [[ -n "$parking" ]] && ! tmux has-session -t "=${parking}" 2>/dev/null; then
         _unset @stack_session
         parking=""
@@ -211,15 +206,43 @@ _ensure_parking() {
     printf '%s' "$parking"
 }
 
+_remember_width() {
+    local slot
+    slot="$(_visible_member)"
+    if [[ -z "$slot" ]] || _is_zoomed; then
+        return 0
+    fi
+    _set @stack_width "$(tmux display-message -p -t "$slot" -F '#{pane_width}/#{window_width}')"
+}
+
+# tmux measures a split-window -l percentage against the pane it splits.
+# Scaling the saved columns by the window keeps the slot's share of it.
+_side_width() {
+    local saved cols saved_win win_w target_w
+    saved="$(_get @stack_width)"
+    if [[ -z "$saved" ]]; then
+        printf '%s' "$TMUX_SIDE_WIDTH"
+        return 0
+    fi
+    IFS=/ read -r cols saved_win <<<"$saved"
+    read -r win_w target_w < <(tmux display-message -p -t "$WIN" -F '#{window_width} #{pane_width}')
+    cols=$(((cols * win_w + saved_win / 2) / saved_win))
+    if ((cols >= target_w)); then
+        printf '%s' "$TMUX_SIDE_WIDTH"
+    else
+        printf '%s' "$cols"
+    fi
+}
+
 # Put `target` into a slot that does not exist yet. tmux only creates a pane
-# fresh. This splits a throwaway shell, swaps it out, and kills it.
+# fresh.
 #
 # Focus is restored because reconcile calls this as a side effect of an unrelated
 # keypress. Callers wanting focus to follow the target select it themselves.
 _install_slot() {
     local target="$1" tmp was_active
     was_active="$(tmux display-message -p -t "$WIN" -F '#{pane_id}')"
-    tmp="$(tmux split-window -h -l "$TMUX_SIDE_WIDTH" -t "$WIN" -c "$(_pane_path)" \
+    tmp="$(tmux split-window -h -l "$(_side_width)" -t "$WIN" -c "$(_pane_path)" \
         -P -F '#{pane_id}')"
     tmux swap-pane -s "$target" -t "$tmp"
     tmux kill-pane -t "$tmp" 2>/dev/null || true
@@ -255,7 +278,7 @@ _ensure_slot() {
     if [[ -n "$(_visible_member)" ]]; then
         return 0
     fi
-    pane="$(tmux split-window -h -l "$TMUX_SIDE_WIDTH" -t "$WIN" -c "$(_pane_path)" \
+    pane="$(tmux split-window -h -l "$(_side_width)" -t "$WIN" -c "$(_pane_path)" \
         -P -F '#{pane_id}')"
     _append_member "$pane"
     _set @stack_index "0"
@@ -291,16 +314,15 @@ side_toggle() {
 
 stack_new() {
     local parking pane path
-    # Creating the side pane already produced the member that was asked for.
     if [[ "$(_ensure_slot)" == "created" ]]; then
         return 0
     fi
     parking="$(_ensure_parking)"
     path="$(_pane_path)"
 
-    # One window per parked member: a lone pane in its own window gets the
-    # parking session's full size, where several sharing a window would each
-    # wait at a fraction of it and reflow on the way in.
+    # One window per parked member. A lone pane in its own window gets the
+    # parking session's full size. Several sharing a window would each wait at a
+    # fraction of it and reflow on the way in.
     pane="$(tmux new-window -d -t "${parking}:" -c "$path" -P -F '#{pane_id}')"
     _append_member "$pane"
     _show_member "$pane"
@@ -308,27 +330,24 @@ stack_new() {
 
 stack_send() {
     local current parking slot
-    # The active pane is the one under the cursor when the binding fires.
     current="$(tmux display-message -p -t "$WIN" -F '#{pane_id}')"
 
-    # Dual mode. From inside the stack there is nothing to send, and the only
-    # sensible reading of "stack this" is another member.
     if _is_member "$current"; then
         stack_new
         return 0
     fi
 
-    # Counting non-members, not panes: with a side slot present the window has
-    # two panes while the main region has one, and sending it would leave the
-    # window holding nothing but the stack.
+    # With a side slot present, the window has two panes while the main region
+    # has one. Sending that one would leave the window holding nothing but the
+    # stack.
     if [[ "$(_non_member_count)" -le 1 ]]; then
         _die "that is the last pane in the main region"
     fi
 
     parking="$(_ensure_parking)"
 
-    # break-pane moves it out intact, keeping the process and scrollback. -d so
-    # the new window does not become current and pull later queries off $WIN.
+    # -d so the new window does not become current and pull later queries off
+    # $WIN.
     tmux break-pane -d -s "$current" -t "${parking}:"
     _append_member "$current"
 
@@ -350,15 +369,13 @@ stack_close() {
 
     current="$(tmux display-message -p -t "$WIN" -F '#{pane_id}')"
 
-    # Not part of the stack: behave exactly like the binding it replaced.
     if ! _is_member "$current"; then
         tmux kill-pane -t "$current"
         return 0
     fi
 
-    # A survivor moves into the slot before the kill. The side region is never
-    # briefly empty. Killing first collapses the layout, and reconcile has to
-    # re-split it, which the user sees.
+    # A survivor moves into the slot before the kill. Killing first collapses the
+    # layout, and reconcile has to re-split it, which the user sees.
     count="$(_member_count)"
     if [[ "$count" -gt 1 ]]; then
         _cycle 1
@@ -367,8 +384,7 @@ stack_close() {
     _remove_member "$current"
     tmux kill-pane -t "$current" 2>/dev/null || true
 
-    # Removing a member shifts every index after it. Take the index back from
-    # whatever actually holds the slot rather than trusting the old value.
+    # Removing a member shifts every index after it.
     slot="$(_visible_member)"
     if [[ -n "$slot" ]]; then
         _set @stack_index "$(_index_of "$slot")"
@@ -381,8 +397,8 @@ stack_eject() {
     local current
     current="$(tmux display-message -p -t "$WIN" -F '#{pane_id}')"
 
-    # Acts on the pane under the cursor, like send and close. Reading the visible
-    # member instead would let a keypress from the main region eject the side.
+    # Reading the visible member instead of the active pane would let a keypress
+    # from the main region eject the side.
     if ! _is_member "$current"; then
         _die "not a stack member"
     fi
@@ -420,13 +436,8 @@ stack_prev() { _cycle -1; }
 # reconcile
 # -----------------------------------------------------------------------------
 
-# Windows that own a stack, as session:index. Mirrors the scan in
-# tmux-float-session cleanup. A hook fires wherever the pane died, which for a
-# parked member is the parking session. The scan has to find the owning window
-# rather than assume it.
-#
-# It matches on the parking session as well as the member list. A window left
-# holding only an empty parking session still gets cleaned up.
+# Windows that own a stack, as session:index. Matching @stack_session too
+# catches a window left holding only an empty parking session.
 _stack_windows() {
     local target
     while IFS= read -r target; do
@@ -456,14 +467,15 @@ _reconcile_window() {
     if [[ -z "$m" ]]; then
         # `close` and `eject` remove the last member themselves. The list can
         # empty without the dead-member path below ever running, and whatever is
-        # left is debris. Checking both keys matters. A stack of one never
-        # creates a parking session, and gating on that alone strands
-        # @stack_index.
+        # left is debris. A stack of one never creates a parking session, and
+        # gating on that alone strands @stack_index.
         if [[ -n "$(_get @stack_session)" ]] || [[ -n "$(_get @stack_index)" ]]; then
             _teardown
         fi
         return 0
     fi
+
+    _remember_width
 
     live="$(_live_panes)"
     for id in $m; do
@@ -487,8 +499,6 @@ _reconcile_window() {
     fi
     _set @stack_index "$idx"
 
-    # The visible member died. The slot collapsed and the layout reflowed.
-    # Rebuild the slot, then swap the surviving member into it.
     if [[ -z "$(_visible_member)" ]]; then
         target="$(_member_at "$idx")"
         if [[ -n "$target" ]]; then
@@ -551,7 +561,7 @@ Commands:
     help        Show this help message
 
 Environment:
-    TMUX_SIDE_WIDTH  Width of the side pane (default: 40%)
+    TMUX_SIDE_WIDTH  Width of a window's first side pane (default: 40%)
     TMUX_PARK_COLS   Parking session width when no slot exists yet (default: 80)
     TMUX_PARK_ROWS   Parking session height when no slot exists yet (default: 40)
 
@@ -566,21 +576,18 @@ main() {
     local command="${1:-toggle}"
     WIN="$(_current_window)"
 
-    # A float is deliberately a dumb popup window: one window, no status line,
-    # small. A stack there would have nowhere to show its indicator and no room
-    # to split. The stack verbs decline. (Floats are sessions rather than bare
-    # popups because their contents persist across toggles.)
+    # In tmux 3.8, split-window aimed at a window whose active pane is floating
+    # creates another floating pane instead of a side pane.
     #
     # Two exemptions. `reconcile` runs from server-global hooks and cleans every
-    # window regardless of where the hook fired. Refusing it by the caller's
-    # session would strand dead members elsewhere. `close` sits over kill-pane,
-    # and with no members present it already degrades to exactly that, which is
-    # the behavior a popup wants.
+    # window regardless of where the hook fired. Refusing it would strand dead
+    # members elsewhere. `close` sits over kill-pane, and with no members present
+    # it already degrades to exactly that.
     case "$command" in
         reconcile | close | help | --help | -h) ;;
         *)
-            if [[ "${WIN%%:*}" == *-float ]]; then
-                tmux display-message "side-pane: not available in a float session" 2>/dev/null || true
+            if [[ "$(tmux display-message -p -t "$WIN" '#{pane_floating_flag}')" == 1 ]]; then
+                tmux display-message "side-pane: not available in a floating pane" 2>/dev/null || true
                 exit 0
             fi
             ;;

@@ -1,4 +1,6 @@
-blacklist = ["scratch"]
+# tmux-float-session parks floats in -float sessions. tmux-side-pane parks stack
+# members in -stack sessions.
+blacklist = ["scratch", "-float$", "-stack$"]
 
 [default_session]
 disable_startup_command = true

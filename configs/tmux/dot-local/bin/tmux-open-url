@@ -192,7 +192,6 @@ def open_urls(urls: list[str]) -> None:
 
 
 def main() -> None:
-    # Get URLs from tmux
     content = get_tmux_content()
     urls = extract_urls(content)
 
@@ -205,9 +204,7 @@ def main() -> None:
     if not selected:
         return
 
-    # Handle fzf output
     if selected[0] == "ctrl-y":
-        # ctrl-y always copies
         if len(selected) > 1:
             copy_to_clipboard("\n".join(selected[1:]))
         else:

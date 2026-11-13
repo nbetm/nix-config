@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 #
-# Description: Manage per-window floating tmux sessions
-#
-# A float is a popup whose contents live in their own session, one per window,
-# named <parent>-<hex>-float and recorded in that window's @float_session.
-# Backing it with a session rather than a bare popup is what makes the work
-# inside survive being dismissed.
-#
-# That persistence is also why cleanup exists. Nothing destroys a float when its
-# owning window goes away. Cleanup finds orphans by comparing the float sessions
-# that exist against the ones windows still claim.
+# Description: Manage per-window floating panes
 #
 # Set options:
 #   e: Stop script if command fails
@@ -24,56 +15,108 @@ set -euo pipefail
 
 TMUX_FLOAT_WIDTH="${TMUX_FLOAT_WIDTH:-70%}"
 TMUX_FLOAT_HEIGHT="${TMUX_FLOAT_HEIGHT:-70%}"
-# Load-bearing: cleanup recognises floats by it, and sesh-picker filters on it.
+# cleanup, tmux-session-cycle, and the sesh.toml blacklist all find parked floats
+# by this suffix.
 FLOAT_SUFFIX="-float"
 
 # -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
 
-_session_name() { tmux display-message -p -F '#{session_name}'; }
-
-_in_float() { [[ "$(_session_name)" == *"${FLOAT_SUFFIX}" ]]; }
-
-# A stale name is ordinary state, not an error. Anything can kill the session,
-# and the window has no way to hear about it. This drops the record on read.
-_float_for_window() {
-    local float
-    float="$(tmux show-option -wqv @float_session)"
-    if [[ -n "$float" ]] && ! tmux has-session -t "=${float}" 2>/dev/null; then
-        tmux set-option -wu @float_session 2>/dev/null || true
-        float=""
+_park_name() {
+    local win="$1" park
+    park="$(tmux show-option -wqv -t "$win" @float_session)"
+    if [[ -z "$park" ]]; then
+        park="$(tmux display-message -p -t "$win" '#{session_name}')-$(printf '%04x' "${RANDOM}")${FLOAT_SUFFIX}"
+        tmux set-option -w -t "$win" @float_session "$park"
     fi
-    printf '%s' "$float"
+    printf '%s' "$park"
+}
+
+_zoomed_pane() {
+    tmux list-panes -t "$1" -F '#{?pane_zoomed_flag,#{pane_id},}' | grep . || true
+}
+
+# Moving a pane between windows unzooms the window, even with swap-pane -Z.
+_rezoom() {
+    local win="$1" zoomed="$2"
+    if [[ -n "$zoomed" && "$(tmux display-message -p -t "$win" '#{window_zoomed_flag}')" == 0 ]]; then
+        tmux resize-pane -Z -t "$zoomed"
+    fi
 }
 
 # -----------------------------------------------------------------------------
 # toggle
 # -----------------------------------------------------------------------------
 
+_float_open() {
+    local win="$1" pane
+    pane="$(tmux new-pane -A -t "$win" -c '#{pane_current_path}' \
+        -x "$TMUX_FLOAT_WIDTH" -y "$TMUX_FLOAT_HEIGHT" -P -F '#{pane_id}')"
+    tmux move-pane -t "$pane" -P centre
+    tmux set-option -w -t "$win" @float_pane "$pane"
+}
+
+# break-pane would park the float at the parking session's size and make it
+# redraw. Swapping with a placeholder of the float's size moves it without a
+# resize.
+_float_park() {
+    local win="$1" pane="$2" park="$3" zoomed x y w h holder
+    zoomed="$(_zoomed_pane "$win")"
+    read -r x y w h <<<"$(tmux display-message -p -t "$pane" \
+        '#{pane_left} #{pane_top} #{pane_width} #{pane_height}')"
+    tmux set-option -w -t "$win" @float_geometry "$x $y $w $h"
+
+    tmux kill-session -t "=${park}" 2>/dev/null || true
+    holder="$(tmux new-session -d -s "$park" -x "$w" -y "$h" -E -P -F '#{pane_id}')"
+    tmux swap-pane -d -s "$pane" -t "$holder"
+    tmux kill-pane -t "$holder"
+    _rezoom "$win" "$zoomed"
+}
+
+_float_restore() {
+    local win="$1" pane="$2" zoomed x y w h win_w win_h holder
+    zoomed="$(_zoomed_pane "$win")"
+    read -r x y w h <<<"$(tmux show-option -wqv -t "$win" @float_geometry)"
+    read -r win_w win_h <<<"$(tmux display-message -p -t "$win" '#{window_width} #{window_height}')"
+
+    # pane_left and pane_width describe the content area. new-pane -X and -x size
+    # the box, border included.
+    x=$((x - 1)) y=$((y - 1)) w=$((w + 2)) h=$((h + 2))
+    if ((w > win_w)); then w=$win_w; fi
+    if ((h > win_h)); then h=$win_h; fi
+    if ((x + w > win_w)); then x=$((win_w - w)); fi
+    if ((y + h > win_h)); then y=$((win_h - h)); fi
+    if ((x < 0)); then x=0; fi
+    if ((y < 0)); then y=0; fi
+
+    holder="$(tmux new-pane -A -d -t "$win" -X "$x" -Y "$y" -x "$w" -y "$h" -E -P -F '#{pane_id}')"
+    tmux swap-pane -d -s "$pane" -t "$holder"
+    tmux kill-pane -t "$holder"
+    _rezoom "$win" "$zoomed"
+    tmux select-pane -Z -t "$pane"
+}
+
 float_toggle() {
-    local float parent
+    local win pane park info pane_win floating session
+    win="$(tmux display-message -p '#{window_id}')"
+    pane="$(tmux show-option -wqv -t "$win" @float_pane)"
+    park="$(_park_name "$win")"
 
-    # From inside, the gesture means dismiss. Only the client goes away. The
-    # session keeps running, which is the whole point of backing it with one.
-    if _in_float; then
-        tmux detach-client
-        return 0
+    if [[ -n "$pane" ]] && info="$(tmux display-message -p -t "$pane" \
+        '#{window_id} #{pane_floating_flag} #{session_name}' 2>/dev/null)"; then
+        read -r pane_win floating session <<<"$info"
+        if [[ "$pane_win" == "$win" && "$floating" == 1 ]]; then
+            _float_park "$win" "$pane" "$park"
+            return 0
+        fi
+        if [[ "$session" == "$park" ]]; then
+            _float_restore "$win" "$pane"
+            return 0
+        fi
     fi
 
-    float="$(_float_for_window)"
-    if [[ -z "$float" ]]; then
-        parent="$(_session_name)"
-        float="${parent}-$(printf '%04x' "${RANDOM}")${FLOAT_SUFFIX}"
-        tmux set-option -w @float_session "$float"
-    fi
-
-    # detach-on-destroy so the popup closes with its last window instead of
-    # falling back to another session. status off keeps a single-window popup
-    # from drawing a status bar it has nothing to fill.
-    tmux popup -d "#{pane_current_path}" -xC -yC \
-        -w"$TMUX_FLOAT_WIDTH" -h"$TMUX_FLOAT_HEIGHT" \
-        -E "tmux new -As '${float}' \; set detach-on-destroy on \; set status off"
+    _float_open "$win"
 }
 
 # -----------------------------------------------------------------------------
@@ -117,13 +160,13 @@ show_usage() {
 Usage: tmux-float-session <command>
 
 Commands:
-    toggle        Show the window's float, or dismiss it from inside (default)
-    cleanup       Kill float sessions no window references (hook-driven)
+    toggle        Show the window's float, or park it if visible (default)
+    cleanup       Kill parked floats no window references (hook-driven)
     help          Show this help message
 
 Environment:
-    TMUX_FLOAT_WIDTH   Popup width (default: 70%)
-    TMUX_FLOAT_HEIGHT  Popup height (default: 70%)
+    TMUX_FLOAT_WIDTH   Float width (default: 70%)
+    TMUX_FLOAT_HEIGHT  Float height (default: 70%)
 
 EOF
 }
