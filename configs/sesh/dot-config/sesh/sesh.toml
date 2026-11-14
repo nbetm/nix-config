@@ -10,8 +10,20 @@ name = "nix-config"
 path = "~/projects/personal/nix-config"
 
 [[session]]
+name = "nvim-config"
+path = "~/.config/nvim"
+
+[[session]]
 name = "seton"
 path = "~/seton"
+
+[[session]]
+name = "px-notes"
+path = "~/seton/projects/px"
+
+[[session]]
+name = "weekly-updates"
+path = "~/seton/projects/px/weekly-updates"
 
 [[session]]
 name = "px-cli"
@@ -26,6 +38,10 @@ name = "px-cli2"
 path = "~/projects/px/cli2"
 
 [[session]]
+name = "px-cli99"
+path = "~/projects/px/cli99"
+
+[[session]]
 name = "px-dashx"
 path = "~/projects/px/dashx"
 
@@ -38,8 +54,24 @@ name = "px-dashx2"
 path = "~/projects/px/dashx2"
 
 [[session]]
+name = "px-dashx99"
+path = "~/projects/px/dashx99"
+
+[[session]]
 name = "px-webx"
 path = "~/projects/px/webx"
+
+[[session]]
+name = "px-webx1"
+path = "~/projects/px/webx1"
+
+[[session]]
+name = "px-webx2"
+path = "~/projects/px/webx2"
+
+[[session]]
+name = "px-webx99"
+path = "~/projects/px/webx99"
 
 [[session]]
 name = "px-iac"
@@ -54,8 +86,16 @@ name = "px-iac2"
 path = "~/projects/px/iac2"
 
 [[session]]
+name = "px-iac99"
+path = "~/projects/px/iac99"
+
+[[session]]
 name = "px-examples"
 path = "~/projects/px/examples"
+
+[[session]]
+name = "px-examples-private"
+path = "~/projects/px/examples-private"
 
 [[session]]
 name = "px-testbench"
