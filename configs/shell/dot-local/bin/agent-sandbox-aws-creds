@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Description: Stage short-lived read-only AWS credentials for agent containers
+# Description: Stage short-lived AWS credentials for agent sandboxes
 #
 # Set options:
 #   e: Stop script if command fails
@@ -10,31 +10,35 @@
 set -euo pipefail
 
 REGION="${AWS_REGION:-us-east-2}"
-STAGE_DIR="${STAGE_DIR:-$HOME/.aws/containers-read-only}"
-PROFILE_PREFIX="${PROFILE_PREFIX:-px}"
-RO_SUFFIX="${RO_SUFFIX:-ro}"
-ACCOUNTS=(management development production)
+STAGE_DIR="${STAGE_DIR:-$HOME/.aws/agent-sandbox}"
+PROFILES=(
+    px-management-ro
+    px-development-ro
+    px-production-ro
+    px-development-devbox
+)
 
 CREDS_FILE="${STAGE_DIR}/credentials"
 CONFIG_FILE="${STAGE_DIR}/config"
 
 show_usage() {
-    cat <<'EOF'
-Usage: awsro
+    cat <<EOF
+Usage: agent-sandbox-aws-creds
 
-Mints ReadOnlyAccess creds per account and writes a self-contained
-credentials + config pair under STAGE_DIR.
+Stage short-lived AWS credentials for agent sandboxes.
+The script exports each profile below from your SSO session.
+It writes them as a credentials and config pair under ${STAGE_DIR}.
+agent-sandbox mounts that directory as a read-only ~/.aws in each new sandbox.
 
-Log in first (the shared px-systems SSO session covers every profile):
+Profiles:
+$(printf '  %s\n' "${PROFILES[@]}")
+
+Log in first. The shared px-systems SSO session covers every profile.
 
   aws sso login --profile px-management
+  agent-sandbox-aws-creds
 
-Generate and stage read-only credentials:
-
-  awsro
-
-Then bind-mount STAGE_DIR read-only as a container user's ~/.aws, giving
-an in-container agent read-only AWS (profiles: px-<account>-ro).
+awsl runs this script after every px-* login.
 EOF
     exit 1
 }
@@ -51,16 +55,14 @@ done
 mkdir -p "$STAGE_DIR"
 chmod 700 "$STAGE_DIR"
 
-# Start fresh so a removed account never lingers in the staged files
+# Start fresh so a removed profile never lingers in the staged files
 : >"$CREDS_FILE"
 : >"$CONFIG_FILE"
 chmod 600 "$CREDS_FILE" "$CONFIG_FILE"
 
 expires=""
-for account in "${ACCOUNTS[@]}"; do
-    profile="${PROFILE_PREFIX}-${account}-${RO_SUFFIX}"
-
-    echo -n "Staging ${account} (${profile})... "
+for profile in "${PROFILES[@]}"; do
+    echo -n "Staging ${profile}... "
     if ! creds=$(aws configure export-credentials --profile "$profile" 2>/dev/null); then
         echo "failed!"
         echo "Error: could not export ${profile}." \
@@ -88,4 +90,4 @@ EOF
 done
 
 echo ""
-echo "Staged ${#ACCOUNTS[@]} accounts under ${STAGE_DIR} (expires ${expires})"
+echo "Staged ${#PROFILES[@]} profiles under ${STAGE_DIR} (expires ${expires})"

@@ -107,7 +107,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends \
     git curl ca-certificates jq make direnv ripgrep build-essential \
-    python3 python3-pip sudo neovim less awscli locales tzdata gnupg \
+    python3 python3-pip sudo neovim less locales tzdata gnupg \
     bash-completion git-delta shellcheck shfmt unzip ncurses-term
 
 # Locale + timezone (mirror nixos-common.nix)
@@ -171,6 +171,13 @@ unzip -o /tmp/tflint.zip -d /usr/local/bin/
 rm /tmp/tflint.zip
 tflint --version
 
+# AWS CLI v2
+curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o /tmp/awscliv2.zip
+unzip -q -o /tmp/awscliv2.zip -d /tmp
+/tmp/aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli
+rm -rf /tmp/awscliv2.zip /tmp/aws
+aws --version
+
 # gcloud
 curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
     -o /etc/apt/keyrings/cloud.google.asc
@@ -229,7 +236,7 @@ set -euo pipefail
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # claude-code (native install)
-curl -fsSL https://claude.ai/install.sh | bash
+curl -fsSL https://claude.ai/install.sh | bash -s stable
 
 # Shell environment
 sed -i 's/^#force_color_prompt=yes$/force_color_prompt=yes/' "$HOME/.bashrc"
@@ -424,13 +431,13 @@ create_sandbox() {
     _add_ro_bind "$container" px-completion \
         "$HOME/.local/share/bash-completion/completions/px"
 
-    # AWS read-only creds (staged dir -> ~/.aws)
-    if [[ -d "$HOME/.aws/containers-read-only" ]]; then
+    # AWS creds staged by agent-sandbox-aws-creds, mounted read-only as ~/.aws
+    if [[ -d "$HOME/.aws/agent-sandbox" ]]; then
         incus config device add "$container" aws disk \
-            source="$HOME/.aws/containers-read-only" \
+            source="$HOME/.aws/agent-sandbox" \
             path="$HOME/.aws" readonly=true shift=true
     else
-        echo "Warning: ~/.aws/containers-read-only not found (run awsro), skipping aws bind" >&2
+        echo "Warning: ~/.aws/agent-sandbox not found (run agent-sandbox-aws-creds), skipping aws bind" >&2
     fi
 
     # Copy-in the host files that can't be bound

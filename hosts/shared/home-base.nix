@@ -26,7 +26,8 @@
 
     # Shell scripts and bins
     ".local/bin/agent-sandbox".source = ../../configs/shell/dot-local/bin/agent-sandbox;
-    ".local/bin/awsro".source = ../../configs/shell/dot-local/bin/awsro;
+    ".local/bin/agent-sandbox-aws-creds".source =
+      ../../configs/shell/dot-local/bin/agent-sandbox-aws-creds;
     ".local/bin/seton".source = ../../configs/shell/dot-local/bin/seton;
     ".local/bin/ytdl".source = ../../configs/shell/dot-local/bin/ytdl;
     ".local/share/shell" = {

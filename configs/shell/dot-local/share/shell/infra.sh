@@ -81,7 +81,7 @@ awsp() {
     [[ -n "$choice" ]] && export AWS_PROFILE="$choice"
 }
 
-# SSO login, set the active profile, then refresh read-only container creds
+# SSO login, set the active profile, then refresh agent sandbox creds
 awsl() {
     local choice
     choice=$(_aws_pick)
@@ -95,8 +95,8 @@ awsl() {
 
     export AWS_PROFILE="$choice"
 
-    # px-systems logins refresh the staged read-only creds for agent containers
-    [[ "$choice" == px-* ]] && command -v awsro >/dev/null && awsro
+    # px-systems logins refresh the staged creds for agent sandboxes
+    [[ "$choice" == px-* ]] && command -v agent-sandbox-aws-creds >/dev/null && agent-sandbox-aws-creds
 }
 
 # ------------------------------------------------------------------------------
