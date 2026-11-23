@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code when working with code in this repository.
-See @README.md for project overview and @Makefile for available automation commands
+See README.md for project overview and Makefile for available automation commands
 
 ## Where to Add Things
 
