@@ -173,3 +173,9 @@ ble-import -d integration/fzf-key-bindings
 # keys like Esc reach it. A -f widget keeps ble.sh's input layer engaged, which
 # swallows Esc. ble.sh's own fzf widgets (C-r/C-t) bind with -x for this reason.
 ble-bind -x 'C-o' 'sesh-picker'
+
+# Shell integration prompt marks (OSC 133) for terminals that don't inject them (Rex)
+_osc133_prompt() { printf '\e]133;A\a'; }
+_osc133_preexec() { printf '\e]133;C\a'; }
+blehook PRECMD+=_osc133_prompt
+blehook PREEXEC+=_osc133_preexec
