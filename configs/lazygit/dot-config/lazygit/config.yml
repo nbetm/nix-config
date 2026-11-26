@@ -1,12 +1,12 @@
 # Lazygit UI Config
 # https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#default
 gui:
-  authorColors:
-    "Nelson R Monserrate": "#88c0d0"
-    "*": "#88c0d0"
-  branchColorPatterns:
-    "^.+$": "#b48ead"
   theme:
+    authorColors:
+      "Nelson R Monserrate": "#88c0d0"
+      "*": "#88c0d0"
+    branchColorPatterns:
+      "^.+$": "#b48ead"
     activeBorderColor:
       - "#88c0d0"
     inactiveBorderColor:
